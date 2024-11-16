@@ -30,7 +30,7 @@
                 <span>Welcome, {{ Auth::user()->name }}!</span>
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                     @csrf
-                    <button type="submit" class="nav-btn">Logout</button>
+                    <button type="submit" class="nav-btn logout-btn">Logout</button>
                 </form>
             @endauth
 
@@ -50,39 +50,39 @@
             <button class="cta-btn">BUY NOW</button>
         </div>
     </main>
-    <h1>Electronic</h1>
+    <h1 class="main-service-heading">Our Services</h1>
     <div class="product-grid">
         <div class="product-card">
-            <h2>Laptop</h2>
-            <p class="price">Start Price $ 100</p>
+            <h2>Iron and CLeaning</h2>
+            <p class="price">Start Price 500 PKR</p>
             <img src="{{ asset('images/bgwashing.jpg') }}" alt="Computers">
             <div class="button-container">
-                <button class="buy-now">Buy Now</button>
+                <button class="buy-now">Avail</button>
                 <a href="#" class="see-more">See More</a>
             </div>
         </div>
         <div class="product-card">
-            <h2>Mobile</h2>
-            <p class="price">Start Price $ 100</p>
+            <h2>Ironing</h2>
+            <p class="price">Start Price 1000 PKR</p>
             <img src="{{ asset('images/bgwashing.jpg') }}" alt="Computers">
             <div class="button-container">
-                <button class="buy-now">Buy Now</button>
+                <button class="buy-now">Avail</button>
                 <a href="#" class="see-more">See More</a>
             </div>
         </div>
         <div class="product-card">
-            <h2>Computers</h2>
-            <p class="price">Start Price $ 100</p>
+            <h2>Cleaning</h2>
+            <p class="price">Start Price 1500 PKR</p>
             <img src="{{ asset('images/bgwashing.jpg') }}" alt="Computers">
             <div class="button-container">
-                <button class="buy-now">Buy Now</button>
+                <button class="buy-now">Avail</button>
                 <a href="#" class="see-more">See More</a>
             </div>
         </div>
     </div>
     <footer>
         <div class="footer-bottom">
-            <p>&copy; 2023 Laundrify. All rights reserved.</p>
+            <p>&copy; 2024 Laundrify. All rights reserved.</p>
         </div>
     </footer>
 </body>

@@ -373,8 +373,21 @@ footer {
     justify-content: center;
     align-items: center;
     height: 100%;
+    
 }
-
+.register-below-btn{
+    color: black;
+}
+.login-below-btn{
+    color: black;
+}
+.register-login-heading{
+    color: black;
+}
+.logout-btn{
+    color: white;
+    background-color: red;
+}
 .auth-form {
     background-color: rgba(255, 255, 255, 0.1);
     padding: 2rem;
@@ -472,10 +485,17 @@ footer {
 }
 .product-card h2 {
     margin-top: 0;
+    color: #3dccc7;
 }
 .product-card .price {
-    color: #ff6600;
+    color: #3dccc7;
     font-weight: bold;
+}
+.main-service-heading{
+color: black;
+text-align: center;
+font-size: 40px;
+padding: 20px;
 }
 .product-card img {
     width: 100%;
@@ -489,7 +509,7 @@ footer {
     align-items: center;
 }
 .buy-now {
-    background-color: #ff6600;
+    background-color: #68d8d6;
     color: white;
     border: none;
     padding: 10px 20px;

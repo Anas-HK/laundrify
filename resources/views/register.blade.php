@@ -17,13 +17,13 @@
     <main class="form-page">
     <form class="auth-form" method="POST" action="{{ route('register') }}">
     @csrf
-    <h2>Register for Laundrify</h2>
+    <h2 class="register-login-heading">Register for Laundrify</h2>
     <input type="text" name="name" placeholder="Full Name" required>
     <input type="email" name="email" placeholder="Email" required>
     <input type="password" name="password" placeholder="Password" required>
     <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
     <button type="submit" class="cta-btn">Register</button>
-    <p>Already have an account? <a href="{{ route('login') }}">Login here</a></p>
+    <p class="register-below-btn">Already have an account? <a href="{{ route('login') }}">Login here</a></p>
 </form>
 
     </main>
