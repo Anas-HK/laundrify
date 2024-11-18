@@ -18,6 +18,15 @@
     <form class="auth-form" method="POST" action="{{ route('register') }}">
     @csrf
     <h2 class="register-login-heading">Register for Laundrify</h2>
+    @if ($errors->any())
+                <div class="error-messages">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
     <input type="text" name="name" placeholder="Full Name" required>
     <input type="email" name="email" placeholder="Email" required>
     <input type="password" name="password" placeholder="Password" required>

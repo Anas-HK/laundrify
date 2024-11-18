@@ -187,7 +187,16 @@ footer {
 
 .auth-form a {
     color: #ff6600;
-}* {
+}
+.error-messages {
+    color: red;
+    background-color: #f8d7da;
+    padding: 10px;
+    border: 1px solid #f5c2c7;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -200,6 +209,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+
 }
 
 header {
