@@ -62,8 +62,8 @@
     <div class="container">
         <div class="button-container">
             <a href="{{ route('home') }}" class="button">Buyer</a>
-            <a href="#" class="button seller">Seller</a>
-        </div>
+            <a href="{{ Auth::guard('seller')->check() ? route('seller.panel') : route('login.seller') }}" class="button seller">Seller</a>
+            </div>
     </div>
 </body>
 </html>
