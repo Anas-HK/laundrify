@@ -52,9 +52,13 @@ class SellerController extends Controller
     }
 
     public function sellerPanel()
-    {
-        return view('seller.panel');
-    }
+{
+    // Get the logged-in seller and their services
+    $seller = auth()->guard('seller')->user();
+    $services = $seller->services; 
+    return view('seller.panel', compact('services'));
+}
+
     public function logout(Request $request)
 {
     Auth::guard('seller')->logout();

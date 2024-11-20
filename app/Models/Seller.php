@@ -24,4 +24,8 @@ class Seller extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($password);
     }
+    public function services()
+{
+    return $this->hasMany(Service::class);
+}
 }
