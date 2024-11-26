@@ -11,7 +11,7 @@ Route::get('/', function () {
 });
 
 // Home route
-Route::get('/home', [HomeController::class, 'showHomePage'])->name('home');
+Route::get('/', [HomeController::class, 'showHomePage'])->name('home');
 
 // Auth routes for users
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
