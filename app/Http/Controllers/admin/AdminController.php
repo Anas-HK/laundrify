@@ -10,7 +10,7 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $pendingSellers = Seller::where('accountIsApproved', 0)->get();
+        $pendingSellers = Seller::where('accountIsApproved', 0)->where('is_deleted', 0)->get();
         return view('admin.dashboard', compact('pendingSellers'));
     }
 
@@ -26,7 +26,8 @@ class AdminController extends Controller
     public function rejectSeller($id)
     {
         $seller = Seller::find($id);
-        $seller->delete();
+        $seller->is_deleted = 1;
+        $seller->save();
 
         return redirect()->route('admin.dashboard')->with('status', 'Seller rejected and deleted.');
     }

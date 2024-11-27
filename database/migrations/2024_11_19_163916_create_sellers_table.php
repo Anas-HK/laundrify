@@ -13,6 +13,7 @@ class CreateSellersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('accountIsApproved')->unsigned()->comment('1 for yes, 0 for no');;
+            $table->boolean('is_deleted')->default(0);
             $table->timestamps();
         });
     }
