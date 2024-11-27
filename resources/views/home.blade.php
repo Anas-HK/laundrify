@@ -165,12 +165,18 @@
                     @csrf
                     <button type="submit" class="nav-btn logout-btn">Logout</button>
                 </form>
+                @if(Auth::user()->sellerType == 1)
+                    <a href="{{ route('admin.dashboard') }}" class="nav-btn">Admin Dashboard</a>
+                @elseif(Auth::user()->sellerType == 3)
+                    <a href="{{ route('seller.panel') }}" class="nav-btn">Seller Panel</a>
+                @endif
             @endauth
 
             <!-- If the user is not authenticated, show Login and Register buttons -->
             @guest
                 <a href="{{ route('login') }}" class="nav-btn">LOGIN</a>
                 <a href="{{ route('register') }}" class="nav-btn">REGISTER</a>
+                <a href="{{ route('register.seller') }}" class="nav-btn">REGISTER AS SELLER</a>
             @endguest
         </div>
     </nav>
