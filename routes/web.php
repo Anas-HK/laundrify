@@ -5,6 +5,7 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SellerServiceController;
 
+
 // Default route
 Route::get('/', function () {
     return view('welcome');
@@ -35,3 +36,4 @@ Route::get('/seller/add-service', [SellerServiceController::class, 'showAddServi
 Route::post('/seller/add-service', [SellerServiceController::class, 'storeService'])->name('store.service')->middleware('auth:seller');
 Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit'])->name('seller.editService');
 Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
+

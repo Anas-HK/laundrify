@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -8,14 +9,18 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-   
     public function logout(Request $request)
-{
-    Auth::logout();
-
-    // Redirect to home or login page after logout
-    return redirect()->route('home');
-}
+    {
+        Auth::logout();
+    
+        // Invalidate the session and regenerate CSRF token
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    
+        // Redirect to the home page after logout
+        return redirect()->route('home')->with('success', 'You have been logged out.');
+    }
+    
 
 
     public function register(Request $request)
@@ -55,15 +60,26 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // Validate input data
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+    
         $credentials = $request->only('email', 'password');
-
+    
         if (Auth::attempt($credentials)) {
-            return redirect()->route('home');
+            // Regenerate session to prevent session fixation attacks
+            $request->session()->regenerate();
+    
+            return redirect()->route('home')->with('success', 'You are logged in.');
         }
-
-        return back()->withErrors(['email' => 'Invalid credentials']);
+    
+        // Redirect back with error if login fails
+        return back()->withErrors(['login' => 'Invalid email or password.'])->withInput();
     }
-
+    
+                    
     public function home()
     {
         return view('home');
