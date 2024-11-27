@@ -28,11 +28,12 @@ class SellerController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
+            'accountIsApproved' => 0,
         ]);
 
         // Log the seller in and redirect to the seller panel
         Auth::guard('seller')->login($seller);
-        return redirect()->route('seller.panel');
+        return redirect()->route('home');
     }
 
     public function showLoginForm()
@@ -42,6 +43,16 @@ class SellerController extends Controller
 
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        $seller = Seller::where('email', $request->email)->first();
+
+        if ($seller->accountIsApproved==0) {
+            return back()->withErrors(['email' => 'Kindly await account confirmation.']);
+        }
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('seller')->attempt($credentials)) {

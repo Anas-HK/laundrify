@@ -150,12 +150,6 @@
             <div class="dropdown">
                 <button class="dropbtn">All Category &#9662;</button>
             </div>
-            <!-- If the user is not authenticated, show Login and Register buttons -->
-            @guest
-            <a href="{{ route('login.seller') }}" class="nav-btn">LOGIN AS SELLER</a>
-            <a href="{{ route('login') }}" class="nav-btn">LOGIN AS BUYER</a>
-            @endguest
-    
             <div class="search-container">
                 <input type="text" placeholder="Search this blog">
                 <button type="submit">&#128269;</button>
@@ -176,7 +170,15 @@
                 @elseif(Auth::user()->sellerType == 3)
                     <a href="{{ route('seller.panel') }}" class="nav-btn">Seller Panel</a>
                 @endif
+                <a href="{{ route('register.seller') }}" class="nav-btn">REGISTER AS SELLER</a>
+                <a href="{{ route('login.seller') }}" class="nav-btn">LOGIN AS SELLER</a>
             @endauth
+
+            <!-- If the user is not authenticated, show Login and Register buttons -->
+            @guest
+                <a href="{{ route('login') }}" class="nav-btn">LOGIN</a>
+                <a href="{{ route('register') }}" class="nav-btn">REGISTER</a>
+            @endguest
         </div>
     </nav>
 </header>

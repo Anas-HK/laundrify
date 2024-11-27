@@ -10,7 +10,7 @@
     <header>
         <nav>
             <div class="logo">Laundrify</div>
-            <a href="{{ route('seller.panel') }}" class="nav-btn">Saller Panel</a>
+            <a href="{{ route('seller.panel') }}" class="nav-btn">Seller Panel</a>
         </nav>
     </header>
     
