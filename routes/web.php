@@ -44,3 +44,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/approve-seller/{id}', [AdminController::class, 'approveSeller'])->name('admin.approveSeller');
     Route::post('/admin/reject-seller/{id}', [AdminController::class, 'rejectSeller'])->name('admin.rejectSeller');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/pending-services', [AdminController::class, 'viewPendingServices'])->name('admin.pending-services');
+    
+    // Approve and Reject Services
+    Route::post('/admin/approve-service/{id}', [AdminController::class, 'approveService'])->name('admin.approveService');
+    Route::post('/admin/reject-service/{id}', [AdminController::class, 'rejectService'])->name('admin.rejectService');
+});

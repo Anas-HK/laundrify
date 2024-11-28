@@ -8,7 +8,7 @@ class HomeController extends Controller
 {
     public function showHomePage()
     {
-        $services = Service::all();
+        $services = Service::where('is_approved', 1)->get();
         return view('home', compact('services'));
     }
 }
