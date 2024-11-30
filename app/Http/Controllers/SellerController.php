@@ -50,6 +50,11 @@ class SellerController extends Controller
 
         $seller = Seller::where('email', $request->email)->first();
 
+        if (!$seller) {
+            return back()->withErrors(['email' => 'Kindly register your account.']);
+        }
+
+
         if ($seller->accountIsApproved==0) {
             return back()->withErrors(['email' => 'Kindly await account confirmation.']);
         }

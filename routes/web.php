@@ -39,17 +39,17 @@ Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit']
 Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
 
 // Admin routes
+
+// Keep the routes organized Umair
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/approve-seller/{id}', [AdminController::class, 'approveSeller'])->name('admin.approveSeller');
     Route::post('/admin/reject-seller/{id}', [AdminController::class, 'rejectSeller'])->name('admin.rejectSeller');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/pending-services', [AdminController::class, 'viewPendingServices'])->name('admin.pending-services');
-    
-    // Approve and Reject Services
     Route::post('/admin/approve-service/{id}', [AdminController::class, 'approveService'])->name('admin.approveService');
     Route::post('/admin/reject-service/{id}', [AdminController::class, 'rejectService'])->name('admin.rejectService');
+
+    // Routes for logging in as seller
+    Route::post('/admin/login-seller/{id}', [AdminController::class, 'loginAsSeller'])->name('admin.loginSeller');
+    Route::post('/admin/return-to-admin', [AdminController::class, 'returnToAdmin'])->name('admin.returnToAdmin');
 });

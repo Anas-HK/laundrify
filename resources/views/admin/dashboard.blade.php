@@ -10,18 +10,18 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Admin Dashboard</h1>
-            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                @csrf
-                <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
-            </form>
+            @if(session('impersonate'))
+                <form action="{{ route('admin.stopImpersonating') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-secondary btn-sm">Logout Seller's Account</button>
+                </form>
+            @endif
         </div>
         @if(session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
             </div>
         @endif
-
-        <!-- Pending Sellers Section -->
         <h2 class="mb-4">Pending Sellers</h2>
         @if($pendingSellers->isEmpty())
             <div class="alert alert-info">
@@ -47,7 +47,7 @@
                                         @csrf
                                         <button type="submit" class="btn btn-success btn-sm">Approve</button>
                                     </form>
-                                    <form action="{{ route('admin.rejectSeller', $seller->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('admin.rejectSeller', $seller->id) }}" method="POST" style="display:inline;" onsubmit="return handleDelete(event, {{ $seller->id }})">
                                         @csrf
                                         <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                                     </form>
@@ -59,14 +59,13 @@
             </div>
         @endif
 
-        <!-- Pending Services Section -->
         <h2 class="mb-4">Pending Services</h2>
         @if($pendingServices->isEmpty())
             <div class="alert alert-info">
                 No pending services at the moment.
             </div>
         @else
-            <div class="table-responsive">
+            <div class="table-responsive mb-5">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -90,6 +89,39 @@
                                     <form action="{{ route('admin.rejectService', $service->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
+        <h2 class="mb-4">All Sellers</h2>
+        @if($sellers->isEmpty())
+            <div class="alert alert-info">
+                No sellers available at the moment.
+            </div>
+        @else
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($sellers as $seller)
+                            <tr>
+                                <td>{{ $seller->name }}</td>
+                                <td>{{ $seller->email }}</td>
+                                <td>
+                                    <form action="{{ route('admin.loginSeller', $seller->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-info btn-sm">Login Seller's Account</button>
                                     </form>
                                 </td>
                             </tr>

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Seller;
 use Illuminate\Http\Request;
 use App\Models\Service;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class AdminController extends Controller
@@ -45,12 +47,10 @@ public function rejectService($id)
 {
     $pendingSellers = Seller::where('accountIsApproved', 0)->where('is_deleted', 0)->get();
     $pendingServices = Service::where('is_approved', 0)->get();
+    $sellers = Seller::where('accountIsApproved', 1)->where('is_deleted', 0)->get();
 
-    return view('admin.dashboard', compact('pendingSellers', 'pendingServices'));
+    return view('admin.dashboard', compact('pendingSellers', 'pendingServices', 'sellers'));
 }
-
-
-    
 
     public function rejectSeller($id)
     {
@@ -59,5 +59,35 @@ public function rejectService($id)
         $seller->save();
 
         return redirect()->route('admin.dashboard')->with('status', 'Seller rejected and deleted.');
+    }
+
+    public function loginAsSeller($id)
+    {
+        // Store admin's ID in session before switching
+        session(['admin_id' => Auth::id()]);
+        
+        $seller = Seller::find($id);
+        if ($seller) {
+            Auth::guard('seller')->login($seller);
+            return redirect()->route('seller.panel');
+        }
+        return redirect()->back()->with('error', 'Seller not found');
+    }
+
+    public function returnToAdmin()
+    {
+        // Get stored admin ID
+        $adminId = session('admin_id');
+        
+        // Logout from seller
+        Auth::guard('seller')->logout();
+        
+        // Login as admin
+        Auth::loginUsingId($adminId);
+        
+        // Clear the stored admin ID
+        session()->forget('admin_id');
+        
+        return redirect()->route('admin.dashboard');
     }
 }

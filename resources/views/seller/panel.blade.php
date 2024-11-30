@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Panel - Laundrify</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         /* Styles */
         body {
@@ -142,6 +144,13 @@
                 <a href="" class="nav-btn">Remove Service</a>
                 <a href="" class="nav-btn">Update Service</a>
                 <a href="" class="nav-btn">Orders</a>
+
+                @if(session('admin_id'))
+                    <form action="{{ route('admin.returnToAdmin') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Return to Admin Panel</button>
+                    </form>
+                 @endif
 
                 <form id="logout-form" action="{{ route('logout.seller') }}" method="POST" style="display: inline;">
                     @csrf
