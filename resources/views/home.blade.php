@@ -194,35 +194,37 @@
 
 <!-- Only show products if the user is authenticated -->
 @auth
-    <div class="product-grid">
-    @foreach ($services as $service)
-    @if ($service->is_approved)
-        <div class="product-card">
-            <h2>{{ $service->service_name }}</h2>
-            <p class="price">Start Price: {{ $service->service_price }} PKR</p>
-            
-            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
+    @if ($services->isEmpty())
+        <p>No services available.</p>
+    @else
+        <div class="product-grid">
+            @foreach ($services as $service)
+                @if ($service->is_approved)
+                    <div class="product-card">
+                        <h2>{{ $service->service_name }}</h2>
+                        <p class="price">Start Price: {{ $service->service_price }} PKR</p>
+                        
+                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
 
-            <p><strong>Description:</strong> {{ $service->service_description }}</p>
-            <p><strong>City:</strong> {{ $service->seller_city }}</p>
-            <p><strong>Area:</strong> {{ $service->seller_area }}</p>
-            <p><strong>Availability:</strong> {{ $service->availability }}</p>
-            <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
-            <p><strong>Contact No:</strong> {{ $service->seller_contact_no }}</p>
+                        <p><strong>Description:</strong> {{ $service->service_description }}</p>
+                        <p><strong>City:</strong> {{ $service->seller_city }}</p>
+                        <p><strong>Area:</strong> {{ $service->seller_area }}</p>
+                        <p><strong>Availability:</strong> {{ $service->availability }}</p>
+                        <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
+                        <p><strong>Contact No:</strong> {{ $service->seller_contact_no }}</p>
 
-            <div class="button-container">
-                <button class="buy-now">Avail</button>
-                <a href="#" class="see-more">See More</a>
-            </div>
+                        <div class="button-container">
+                            <button class="buy-now">Avail</button>
+                            <a href="#" class="see-more">See More</a>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
         </div>
     @endif
-@endforeach
-
-    </div>
 @else
     <p>Please log in to see the services.</p>
 @endauth
-
 <footer>
     <div class="footer-bottom">
         <p>&copy; 2024 Laundrify. All rights reserved.</p>

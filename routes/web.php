@@ -19,7 +19,7 @@ Route::get('/', [HomeController::class, 'showHomePage'])->name('home');
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 // Auth routes for sellers
 Route::get('/register-seller', [SellerController::class, 'showRegisterForm'])->name('register.seller');
@@ -27,7 +27,6 @@ Route::post('/register-seller', [SellerController::class, 'register']);
 Route::get('/login-seller', [SellerController::class, 'showLoginForm'])->name('login.seller');
 Route::post('/login-seller', [SellerController::class, 'login']);
 Route::get('/seller-panel', [SellerController::class, 'sellerPanel'])->name('seller.panel')->middleware('auth:seller');
-
 // Logout routes
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/seller/logout', [SellerController::class, 'logout'])->name('logout.seller');

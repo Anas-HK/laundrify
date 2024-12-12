@@ -13,11 +13,18 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->integer('sellerType')->unsigned()->comment("1=Admin, 2=Buyer, 3=Seller");
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('mobile')->nullable()->comment('Mobile number of the user');
+            $table->string('address')->nullable()->comment('Primary address line');
+            $table->string('address2')->nullable()->comment('Secondary address line (optional)');
+            $table->string('city')->nullable()->comment('City of residence');
+            $table->string('state')->nullable()->comment('State of residence');
+            $table->string('zip')->nullable()->comment('Postal code');
+            $table->enum('pickup_time', ['morning', 'afternoon', 'evening'])->nullable()->comment('Preferred pickup time');
+
             $table->rememberToken();
             $table->timestamps();
         });
