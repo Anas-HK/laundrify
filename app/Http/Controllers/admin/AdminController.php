@@ -51,7 +51,22 @@ public function rejectService($id)
 
     return view('admin.dashboard', compact('pendingSellers', 'pendingServices', 'sellers'));
 }
+public function manageSellers()
+    {
+        $sellers = Seller::all();
+        return view('admin.sellers', compact('sellers'));
+    }
 
+    public function manageServices()
+    {
+        $services = Service::all();
+        return view('admin.services', compact('services'));
+    }
+
+    public function settings()
+    {
+        return view('admin.settings');
+    }
     public function rejectSeller($id)
     {
         $seller = Seller::find($id);
