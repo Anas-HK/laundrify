@@ -20,6 +20,8 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::get('/verify-otp', [AuthController::class, 'showOtpForm'])->name('verify.otp');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
 // Auth routes for sellers
 Route::get('/register-seller', [SellerController::class, 'showRegisterForm'])->name('register.seller');

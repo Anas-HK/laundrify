@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('state')->nullable()->comment('State of residence');
             $table->string('zip')->nullable()->comment('Postal code');
             $table->enum('pickup_time', ['morning', 'afternoon', 'evening'])->nullable()->comment('Preferred pickup time');
+            $table->boolean('is_verified')->default(false)->comment('Indicates if the user has verified their email');
+            $table->string('otp')->nullable()->comment('OTP for email verification');
 
             $table->rememberToken();
             $table->timestamps();
@@ -40,7 +42,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
-            $table->longText('payload');
+            $table->text('payload');
             $table->integer('last_activity')->index();
         });
     }
@@ -54,4 +56,4 @@ return new class extends Migration
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
-};
+}

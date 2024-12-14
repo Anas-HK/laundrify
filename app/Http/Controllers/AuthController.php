@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -20,49 +21,174 @@ class AuthController extends Controller
         // Redirect to the home page after logout
         return redirect()->route('home')->with('success', 'You have been logged out.');
     }
+
     
+public function showOtpForm()
+{
+    return view('auth.verify-otp');
+}
 
 
-    public function register(Request $request)
-    {
-        // Validate the incoming data
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'mobile' => 'required|string|max:15',
-            'address' => 'required|string|max:255',
-            'address2' => 'nullable|string|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'zip' => 'required|string|max:20',
-            'pickup_time' => 'required|in:morning,afternoon,evening',
-            'terms' => 'accepted',
-        ]);
-    
-        // Create the user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'sellerType' => 2, // Buyer
-            'mobile' => $request->mobile,
-            'address' => $request->address,
-            'address2' => $request->address2,
-            'city' => $request->city,
-            'state' => $request->state,
-            'zip' => $request->zip,
-            'pickup_time' => $request->pickup_time,
-        ]);
-    
-        // Log the user in
-        Auth::login($user);
-    
-        // Redirect with a success message
-        return redirect()->route('home')->with('success', 'Registration successful!');
+public function verifyOtp(Request $request)
+{
+    // Validate the OTP input
+    $request->validate([
+        'otp' => 'required|numeric',
+    ]);
+
+    // Retrieve the email from the session
+    $email = session('email');
+
+    if (!$email) {
+        // Handle expired or missing session
+        return redirect()->route('register')->withErrors(['otp' => 'Session expired. Please register again.']);
     }
-    
 
+    // Retrieve the user by email
+    $user = User::where('email', $email)->first();
+
+    if (!$user) {
+        return back()->withErrors(['otp' => 'User not found. Please try registering again.']);
+    }
+
+    // Log the entered OTP and database OTP for debugging
+    logger('Entered OTP: ' . $request->otp);
+    logger('Database OTP: ' . $user->otp);
+
+    // Check if the OTP matches
+    if ($user->otp == $request->otp) {
+        // Mark the user as verified
+        $user->is_verified = true;
+        $user->otp = null; // Clear the OTP after verification
+        $user->save();
+
+        // Clear the email from the session
+        session()->forget('email');
+
+        // Redirect to the login page with a success message
+        return redirect()->route('login')->with('success', 'Your account has been verified. Please log in.');
+    } else {
+        // Return error for invalid OTP
+        return back()->withErrors(['otp' => 'Invalid OTP. Please try again.']);
+    }
+}
+
+
+// public function verifyOtp(Request $request)
+// {
+//     $request->validate([
+//         'otp' => 'required|numeric',
+//     ]);
+
+//     // Retrieve the user based on the email stored in the session
+//     $email = session('email');
+//     $user = User::where('email', $email)->first();
+
+//     if ($user && $request->otp == $user->otp) {
+//         // Mark user as verified
+//         $user->is_verified = true;
+//         $user->otp = null; // Clear the OTP
+//         $user->save();
+
+//         // Clear email from session
+//         session()->forget('email');
+
+//         return redirect()->route('home')->with('success', 'Registration successful!');
+//     } else {
+//         return back()->withErrors(['otp' => 'Invalid OTP']);
+//     }
+// }
+
+public function register(Request $request) 
+{
+    // Validate the request
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+        'mobile' => 'required|string|max:15',
+        'address' => 'required|string|max:255',
+        'address2' => 'nullable|string|max:255',
+        'city' => 'required|string|max:255',
+        'state' => 'required|string|max:255',
+        'zip' => 'required|string|max:20',
+        'pickup_time' => 'required|in:morning,afternoon,evening',
+        'terms' => 'accepted',
+    ]);
+
+    // Generate OTP
+    $otp = rand(100000, 999999);
+
+    // Send OTP to user's email
+    Mail::to($request->email)->send(new OtpMail($otp));
+
+    // Create the user but set a flag to indicate OTP verification is pending
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'sellerType' => 2, // Buyer
+        'mobile' => $request->mobile,
+        'address' => $request->address,
+        'address2' => $request->address2,
+        'city' => $request->city,
+        'state' => $request->state,
+        'zip' => $request->zip,
+        'pickup_time' => $request->pickup_time,
+        'is_verified' => false, // Add this field to your users table
+        'otp' => $otp, // Store OTP in the database
+    ]);
+
+    // Store email in session
+    session(['email' => $request->email]);
+
+    // Redirect to OTP verification page
+    return redirect()->route('verify.otp');
+}
+
+// public function register(Request $request)
+// {
+//     // Validate the request
+//     $request->validate([
+//         'name' => 'required|string|max:255',
+//         'email' => 'required|string|email|max:255|unique:users',
+//         'password' => 'required|string|min:8|confirmed',
+//         'mobile' => 'required|string|max:15',
+//         'address' => 'required|string|max:255',
+//         'address2' => 'nullable|string|max:255',
+//         'city' => 'required|string|max:255',
+//         'state' => 'required|string|max:255',
+//         'zip' => 'required|string|max:20',
+//         'pickup_time' => 'required|in:morning,afternoon,evening',
+//         'terms' => 'accepted',
+//     ]);
+
+//     // Generate OTP
+//     $otp = rand(100000, 999999);
+
+//     // Send OTP to user's email
+//     Mail::to($request->email)->send(new OtpMail($otp));
+
+//     // Create the user but set a flag to indicate OTP verification is pending
+//     $user = User::create([
+//         'name' => $request->name,
+//         'email' => $request->email,
+//         'password' => Hash::make($request->password),
+//         'sellerType' => 2, // Buyer
+//         'mobile' => $request->mobile,
+//         'address' => $request->address,
+//         'address2' => $request->address2,
+//         'city' => $request->city,
+//         'state' => $request->state,
+//         'zip' => $request->zip,
+//         'pickup_time' => $request->pickup_time,
+//         'is_verified' => false, // Add this field to your users table
+//         'otp' => $otp, // Store OTP in the database
+//     ]);
+
+//     // Redirect to OTP verification page
+//     return redirect()->route('verify.otp');
+// }
     public function showLoginForm()
     {
         if (Auth::check()) {
