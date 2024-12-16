@@ -1,233 +1,645 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laundrify</title>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <title>Laundrify - Your Laundry Service Solution</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Global Styles for Product Grid */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            justify-items: center;
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Individual Product Card */
-        .product-card {
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header styles */
+        header {
             background-color: #fff;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;  /* Rounded corners */
-            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
             width: 100%;
-            max-width: 350px;  /* Increased width for better content fit */
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #ddd;  /* Border to define card edges */
-            display: flex;
-            flex-direction: column; /* Vertical layout for content */
-            justify-content: space-between; /* Ensures equal spacing */
-            height: 100%;  /* Stretch to fill available space */
+            top: 0;
+            z-index: 1000;
         }
 
-        .product-card:hover {
-            transform: translateY(-8px);  /* Slightly less aggressive hover effect */
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);  /* Stronger shadow on hover */
-        }
-
-        /* Service Name */
-        .product-card h2 {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-
-        /* Price Styling */
-        .product-card .price {
-            font-size: 20px;
-            color: #00796b;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        /* Image */
-        .product-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;  /* Ensures the image is well cropped */
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        /* Additional Information Styling */
-        .product-card p {
-            font-size: 14px;
-            color: #555;
-            margin: 5px 0;
-            text-align: left;
-        }
-
-        /* Strong Text Styling */
-        .product-card p strong {
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Button Container */
-        .button-container {
-            margin-top: 20px;
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 15px 0;
         }
 
-        /* Avail Button */
-        .buy-now {
-            background-color: #00796b;
-            color: white;
-            padding: 12px 25px;
-            border: none;
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 48%;  /* Reduced button width for better spacing */
         }
 
-        .buy-now:hover {
+        .nav-icons {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-icons a {
+            margin-left: 15px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .profile-icon {
+            margin-left: 15px;
+            color: #333;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+
+    .profile-dropdown {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .profile-icon {
+        font-size: 24px;
+        color: #333;
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+        z-index: 1000;
+    }
+
+    .profile-dropdown:hover .dropdown-menu {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 10px 20px;
+        text-decoration: none;
+        display: block;
+        color: #333;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .logout-btn {
+        background: none;
+        border: none;
+        color: #333;
+        cursor: pointer;
+        font-size: 14px;
+        text-align: left;
+        padding: 10px 20px;
+        width: 100%;
+    }
+
+    .logout-btn:hover {
+        background-color: #f5f5f5;
+    }
+
+
+        /* Slider section styles */
+        .slider {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slider .container {
+            position: relative;
+            height: 100%;
+        }
+
+        .slider-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #ffffff;
+            z-index: 2;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .slider-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slider-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .slider h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .slider .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .slider .btn:hover {
+            background-color: #2980b9;
+        }
+
+        @media (max-width: 768px) {
+            .slider h1 {
+                font-size: 2rem;
+            }
+
+            .slider p {
+                font-size: 1rem;
+            }
+
+            .slider .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        /* USP section styles */
+        .usp {
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .usp h2 {
+            margin-bottom: 30px;
+        }
+
+        .usp-cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .usp-card {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .usp-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Services section styles */
+        .services {
+        padding: 50px 0;
+        background-color: #f9f9f9;
+    }
+
+    .services h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+        color: #333;
+    }
+
+    .service-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .service-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .service-card h3 {
+        font-size: 1.5rem;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+
+    .service-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .service-card p {
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .service-card p strong {
+        color: #333;
+    }
+
+    .button-container {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .buy-now,
+    .see-more {
+        display: inline-block;
+        text-decoration: none;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        font-size: 1rem;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+    .buy-now:hover,
+    .see-more:hover {
+        background-color: #0056b3;
+    }
+
+    .buy-now {
+        background-color: #28a745;
+    }
+
+    .buy-now:hover {
+        background-color: #218838;
+    }
+
+
+        /* Feedback section styles */
+        .feedback {
+            padding: 50px 0;
+        }
+
+        .feedback h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .feedback-cards {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .feedback-card {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* About section styles */
+        .about {
+            background-color: #f9f9f9;
+            padding: 50px 0;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-image {
+            flex: 1;
+        }
+
+        .about-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 30px 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-section {
+            flex: 1;
+            margin-right: 30px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #555;
+        }
+        .nav-btn {
+            margin-left: 10px;
+            padding: 8px 12px;
+            color: #fff;
+            background-color: #00796b;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-btn:hover {
             background-color: #004d40;
         }
 
-        /* See More Link */
-        .see-more {
-            text-decoration: none;
-            color: #00796b;
-            font-size: 14px;
-            transition: color 0.3s ease;
-            width: 48%;
-            text-align: right;  /* Align see more to the right */
+        .logout-btn {
+            background-color: #e53935;
         }
 
-        .see-more:hover {
-            color: #004d40;
-        }
-
-        /* Responsiveness */
-        @media (max-width: 768px) {
-            .product-card {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            .product-card h2 {
-                font-size: 20px;
-            }
-
-            .product-card .price {
-                font-size: 18px;
-            }
-
-            .buy-now, .see-more {
-                width: 100%;  /* Full width buttons on smaller screens */
-                text-align: center;
-                margin-bottom: 10px;
-            }
+        .logout-btn:hover {
+            background-color: #b71c1c;
         }
 
     </style>
 </head>
 <body>
 <header>
-    <nav>
-        <div class="logo">Laundrify</div>
-        <div class="menu-toggle">&#9776;</div>
-        <div class="nav-items">
-            <div class="dropdown">
-                <button class="dropbtn">All Category &#9662;</button>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">Laundrify</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for services...">
             </div>
-            <div class="search-container">
-                <input type="text" placeholder="Search this blog">
-                <button type="submit">&#128269;</button>
-            </div>
-            <div class="dropdown">
-                <button class="dropbtn">English &#9662;</button>
-            </div>
+            <div class="nav-icons">
+                <!-- Static Navigation Links -->
+                <a href="#">Home</a>
+                <a href="#">Services</a>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
 
-            <!-- Check if user is authenticated -->
-            @auth
-                <span>Welcome, {{ Auth::user()->name }}!</span>
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="nav-btn logout-btn">Logout</button>
-                </form>
-                @if(Auth::user()->sellerType == 1)
-                    <a href="{{ route('admin.dashboard') }}" class="nav-btn">Admin Dashboard</a>
-                @elseif(Auth::user()->sellerType == 3)
-                    <a href="{{ route('seller.panel') }}" class="nav-btn">Seller Panel</a>
-                @endif
-                <a href="{{ route('register.seller') }}" class="nav-btn">REGISTER AS SELLER</a>
-                <a href="{{ route('login.seller') }}" class="nav-btn">LOGIN AS SELLER</a>
-            @endauth
+                <!-- Profile Icon with Dropdown -->
+                <div class="profile-dropdown">
+                    <i class="fas fa-user-circle profile-icon"></i>
+                    <div class="dropdown-menu">
+                        @auth
+                            <span>Welcome, {{ Auth::user()->name }}!</span>
+                            <a href="#" class="dropdown-item">Update Profile</a>
+                            <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
+                                @csrf
+                                <button type="submit" class="logout-btn">Logout</button>
+                            </form>
+                            @if(Auth::user()->sellerType == 1)
+                                <a href="{{ route('admin.dashboard') }}" class="dropdown-item">Admin Dashboard</a>
+                            @elseif(Auth::user()->sellerType == 3)
+                                <a href="{{ route('seller.panel') }}" class="dropdown-item">Seller Panel</a>
+                            @endif
+                            <a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a>
+                            <a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a>
+                        @endauth
 
-            <!-- If the user is not authenticated, show Login and Register buttons -->
-            @guest
-                <a href="{{ route('login') }}" class="nav-btn">LOGIN</a>
-                <a href="{{ route('register') }}" class="nav-btn">REGISTER</a>
-            @endguest
+                        @guest
+                            <a href="{{ route('login') }}" class="dropdown-item">Login</a>
+                            <a href="{{ route('register') }}" class="dropdown-item">Register</a>
+                        @endguest
+                    </div>
+                </div>
+            </div>
         </div>
-    </nav>
+    </div>
 </header>
 
-<main>
-    <div class="hero">
-        <h1>GET STARTED<br>WITH LAUNDRIFY</h1>
-        <button class="cta-btn">BUY NOW</button>
-    </div>
-</main>
-
-<h1 class="main-service-heading">Our Services</h1>
-
-<!-- Only show products if the user is authenticated -->
-@auth
-    @if ($services->isEmpty())
-        <p>No services available.</p>
-    @else
-        <div class="product-grid">
-            @foreach ($services as $service)
-                @if ($service->is_approved)
-                    <div class="product-card">
-                        <h2>{{ $service->service_name }}</h2>
-                        <p class="price">Start Price: {{ $service->service_price }} PKR</p>
-                        
-                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
-
-                        <p><strong>Description:</strong> {{ $service->service_description }}</p>
-                        <p><strong>City:</strong> {{ $service->seller_city }}</p>
-                        <p><strong>Area:</strong> {{ $service->seller_area }}</p>
-                        <p><strong>Availability:</strong> {{ $service->availability }}</p>
-                        <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
-                        <p><strong>Contact No:</strong> {{ $service->seller_contact_no }}</p>
-
-                        <div class="button-container">
-                            <button class="buy-now">Avail</button>
-                            <a href="#" class="see-more">See More</a>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
+<section class="slider">
+    <div class="container">
+        <div class="slider-content">
+            <h1>Welcome to Laundrify</h1>
+            <p>Experience the convenience of professional laundry services at your doorstep. We take care of your clothes, so you can focus on what matters most.</p>
+            <a href="#" class="btn">Get Started</a>
         </div>
-    @endif
-@else
-    <p>Please log in to see the services.</p>
-@endauth
+        <div class="slider-image">
+            <img src="{{ asset('images/main-body.jpg') }}" alt="Laundry Service">
+        </div>
+    </div>
+</section>
+
+<section class="usp">
+    <div class="container">
+        <h2>Why Choose Laundrify?</h2>
+        <div class="usp-cards">
+            <div class="usp-card">
+                <h3>Quality Service</h3>
+                <p>We use the best detergents and state-of-the-art equipment to ensure your clothes are cleaned to perfection.</p>
+            </div>
+            <div class="usp-card">
+                <h3>Fast Turnaround</h3>
+                <p>Get your clothes back in as little as 24 hours with our express service option.</p>
+            </div>
+            <div class="usp-card">
+                <h3>Eco-Friendly</h3>
+                <p>We use environmentally friendly cleaning methods to reduce our carbon footprint.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="services">
+    <div class="container">
+        <h2>Our Services</h2>
+        <div class="service-cards">
+            @auth
+                @if ($services->isEmpty())
+                    <p>No services available.</p>
+                @else
+                    @foreach ($services as $service)
+                        @if ($service->is_approved)
+                            <div class="service-card">
+                                <h3>{{ $service->service_name }}</h3>
+                                <p>Start Price: {{ $service->service_price }} PKR</p>
+                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
+                                <p><strong>Description:</strong> {{ $service->service_description }}</p>
+                                <p><strong>City:</strong> {{ $service->seller_city }}</p>
+                                <p><strong>Area:</strong> {{ $service->seller_area }}</p>
+                                <p><strong>Availability:</strong> {{ $service->availability }}</p>
+                                <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
+                                <p><strong>Contact No:</strong> {{ $service->seller_contact_no }}</p>
+                                <div class="button-container">
+                                    <button class="buy-now">Avail</button>
+                                    <a href="#" class="see-more">See More</a>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                @endif
+            @else
+                <p>Please log in to see the services.</p>
+            @endauth
+        </div>
+    </div>
+</section>
+
+<section class="feedback">
+    <div class="container">
+        <h2>What Our Customers Say</h2>
+        <div class="feedback-cards">
+            <div class="feedback-card">
+                <p>"Laundrify has made my life so much easier. Their service is fast, reliable, and my clothes always come back perfectly clean!"</p>
+                <h4>- Sarah M.</h4>
+            </div>
+            <div class="feedback-card">
+                <p>"I love how convenient Laundrify is. Their pickup and delivery service saves me so much time, and the quality is always top-notch."</p>
+                <h4>- John D.</h4>
+            </div>
+            <div class="feedback-card">
+                <p>"As a busy professional, Laundrify has been a game-changer for me. I can always count on them for clean, fresh clothes."</p>
+                <h4>- Emily R.</h4>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about">
+    <div class="container">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>About Laundrify</h2>
+                <p>Laundrify was founded with a simple mission: to make laundry day stress-free for our customers. We combine cutting-edge technology with eco-friendly practices to deliver the best laundry experience possible.</p>
+                <p>Our team of experienced professionals is dedicated to providing top-quality service, ensuring that your clothes are treated with the utmost care and attention to detail.</p>
+            </div>
+            <div class="about-image">
+                <img src="{{ asset('images/about-image.jpeg') }}" alt="About Laundrify">
+            </div>
+        </div>
+    </div>
+</section>
+
 <footer>
-    <div class="footer-bottom">
-        <p>&copy; 2024 Laundrify. All rights reserved.</p>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="#">Wash & Fold</a></li>
+                    <li><a href="#">Dry Cleaning</a></li>
+                    <li><a href="#">Alterations</a></li>
+                    <li><a href="#">Shoe Cleaning</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li>123 Laundry Street, City, Country</li>
+                    <li>Phone: (123) 456-7890</li>
+                    <li>Email: info@laundrify.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Laundrify. All rights reserved.</p>
+        </div>
     </div>
 </footer>
 </body>

@@ -67,13 +67,16 @@ class SellerController extends Controller
         return back()->withErrors(['email' => 'Invalid credentials.']);
     }
 
-    public function sellerPanel()
+// In SellerController.php
+
+public function sellerPanel()
 {
     // Get the logged-in seller and their services
     $seller = auth()->guard('seller')->user();
-    $services = $seller->services; 
+    $services = $seller->services; // Only fetch services associated with the logged-in seller
     return view('seller.panel', compact('services'));
 }
+
 
     public function logout(Request $request)
 {
