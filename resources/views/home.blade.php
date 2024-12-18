@@ -76,60 +76,82 @@
             cursor: pointer;
         }
         
+    /* ...existing styles... */
 
-    .profile-dropdown {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
 
-    .profile-icon {
-        font-size: 24px;
-        color: #333;
-    }
+    <style>
+        /* ...existing styles... */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-    .dropdown-menu {
-        display: none;
-        position: absolute;
-        right: 0;
-        background-color: #fff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        overflow: hidden;
-        z-index: 1000;
-    }
+        .profile-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
 
-    .profile-dropdown:hover .dropdown-menu {
-        display: block;
-    }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
 
-    .dropdown-item {
-        padding: 10px 20px;
-        text-decoration: none;
-        display: block;
-        color: #333;
-        font-size: 14px;
-        transition: background-color 0.2s;
-    }
+        .profile-dropdown:hover .dropdown-menu {
+            display: block;
+        }
 
-    .dropdown-item:hover {
-        background-color: #f5f5f5;
-    }
+        .dropdown-menu span {
+            display: block;
+            padding: 12px 16px;
+            font-weight: bold;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
 
-    .logout-btn {
-        background: none;
-        border: none;
-        color: #333;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: left;
-        padding: 10px 20px;
-        width: 100%;
-    }
+        .dropdown-item {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s;
+        }
 
-    .logout-btn:hover {
-        background-color: #f5f5f5;
-    }
+        .dropdown-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #333;
+            width: 100%;
+            text-align: left;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                right: auto;
+                left: 0;
+                min-width: 100%;
+            }
+        }
+
 
 
         /* Slider section styles */
@@ -459,6 +481,7 @@
     </style>
 </head>
 <body>
+
 <header>
     <div class="container">
         <div class="header-content">
@@ -475,11 +498,18 @@
 
                 <!-- Profile Icon with Dropdown -->
                 <div class="profile-dropdown">
-                    <i class="fas fa-user-circle profile-icon"></i>
-                    <div class="dropdown-menu">
-                        @auth
+                    @auth
+                        @php
+                            $profileUpdate = \App\Models\UserProfileUpdate::where('user_id', Auth::id())->first();
+                        @endphp
+                        @if ($profileUpdate && $profileUpdate->profile_image)
+                            <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="profile-icon">
+                        @else
+                            <i class="fas fa-user-circle profile-icon"></i>
+                        @endif
+                        <div class="dropdown-menu">
                             <span>Welcome, {{ Auth::user()->name }}!</span>
-                            <a href="#" class="dropdown-item">Update Profile</a>
+                            <a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a>
                             <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
                                 @csrf
                                 <button type="submit" class="logout-btn">Logout</button>
@@ -491,18 +521,20 @@
                             @endif
                             <a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a>
                             <a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a>
-                        @endauth
-
-                        @guest
+                        </div>
+                    @else
+                        <i class="fas fa-user-circle profile-icon"></i>
+                        <div class="dropdown-menu">
                             <a href="{{ route('login') }}" class="dropdown-item">Login</a>
                             <a href="{{ route('register') }}" class="dropdown-item">Register</a>
-                        @endguest
-                    </div>
+                        </div>
+                    @endauth
                 </div>
             </div>
         </div>
     </div>
 </header>
+
 
 <section class="slider">
     <div class="container">

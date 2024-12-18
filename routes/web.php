@@ -5,6 +5,8 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SellerServiceController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\ProfileController;
+
 
 
 // Default route
@@ -40,7 +42,7 @@ Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit']
 Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
 
 // Admin routes
-// Keep the routes organized Umair
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/approve-seller/{id}', [AdminController::class, 'approveSeller'])->name('admin.approveSeller');
@@ -54,14 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/login-seller/{id}', [AdminController::class, 'loginAsSeller'])->name('admin.loginSeller');
     Route::post('/admin/return-to-admin', [AdminController::class, 'returnToAdmin'])->name('admin.returnToAdmin');
 
-});
-// // Keep the routes organized Umair
-// Route::middleware(['auth'])->group(function () {
-//     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-//     Route::post('/admin/approve-seller/{id}', [AdminController::class, 'approveSeller'])->name('admin.approveSeller');
-//     Route::post('/admin/reject-seller/{id}', [AdminController::class, 'rejectSeller'])->name('admin.rejectSeller');
-//     Route::get('/admin/pending-services', [AdminController::class, 'viewPendingServices'])->name('admin.pending-services');
-//     Route::post('/admin/approve-service/{id}', [AdminController::class, 'approveService'])->name('admin.approveService');
-//     Route::post('/admin/reject-service/{id}', [AdminController::class, 'rejectService'])->name('admin.rejectService');
+});   
 
-   
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
+Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
