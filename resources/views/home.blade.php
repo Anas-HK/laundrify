@@ -151,6 +151,186 @@
                 min-width: 100%;
             }
         }
+/* Add necessary CSS for the dropdown visibility */
+.notification-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.notification-dropdown {
+    position: relative;
+}
+
+.notification-count {
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    padding: 2px 6px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
+.dropdown-item.unread {
+    font-weight: bold;
+    background-color: #f9f9f9;
+}
+
+.dropdown-item.unread:hover {
+    background-color: #e2e2e2;
+}
+.notification-dropdown .dropdown-menu {
+    max-height: 300px; /* Set the maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.notification-dropdown .notification-list {
+    max-height: 250px; /* Set the maximum height for the list */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.dropdown-item.unread {
+    color: red;
+}
+
+.dropdown-item.read {
+    color: black;
+}
+.mark-read {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    color: blue;
+    cursor: pointer;
+}
+
+.mark-read:hover {
+    text-decoration: underline;
+}
+
+
+.notification-dropdown .fa-bell {
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+/* filepath: /c:/laragon/www/laundrify/public/css/style.css */
+.notification-dropdown .dropdown-menu {
+    max-height: 300px; /* Set the maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.notification-dropdown .dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-dropdown .mark-all-form {
+    margin: 0;
+}
+
+.notification-dropdown .mark-read {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.notification-dropdown .mark-read:hover {
+    background-color: #0056b3;
+}
+
+.notification-dropdown .notification-list {
+    max-height: 250px; /* Set the maximum height for the list */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.dropdown-item.unread {
+    color: red;
+}
+
+.dropdown-item.read {
+    color: black;
+}
+.notification-dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 300px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.notification-dropdown:hover .dropdown-menu {
+    display: block;
+}
+.dropdown-item.unread {
+        color: red;
+    }
+    .dropdown-item.read {
+        color: black;
+    }
+.dropdown-item {
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #333;
+    display: block;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-header {
+    padding: 15px 20px;
+    background-color: #f1f1f1;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-footer {
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.dropdown-footer a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.dropdown-footer a:hover {
+    text-decoration: underline;
+}
 
 
 
@@ -481,7 +661,6 @@
     </style>
 </head>
 <body>
-
 <header>
     <div class="container">
         <div class="header-content">
@@ -495,7 +674,42 @@
                 <a href="#">Services</a>
                 <a href="#">About</a>
                 <a href="#">Contact</a>
-
+<!-- Notification Icon with Dropdown -->
+<!-- Notification Icon with Dropdown -->
+<div class="notification-dropdown">
+    <i class="fas fa-bell"></i>
+    @auth
+        @php
+            $unreadCount = Auth::user()->unreadNotifications->count();
+        @endphp
+        @if($unreadCount > 0)
+            <span class="notification-count">{{ $unreadCount }}</span>
+        @endif
+        <div class="dropdown-menu">
+            <div class="dropdown-header">
+                <span>Notifications</span>
+                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="mark-all-form">
+                    @csrf
+                    <button type="submit" class="mark-read">Mark all as read</button>
+                </form>
+            </div>
+            @php
+                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
+            @endphp
+            <div class="notification-list">
+                @foreach($notifications as $notification)
+                    <div class="dropdown-item {{ is_null($notification->read_at) ? 'unread' : '' }}" data-id="{{ $notification->id }}">
+                        <a href="{{ route('notifications.redirect', $notification->id) }}" class="notification-link">
+                            {{ $notification->data['message'] }}
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @else
+        <div class="dropdown-item">Please login to see notifications.</div>
+    @endauth
+</div>
                 <!-- Profile Icon with Dropdown -->
                 <div class="profile-dropdown">
                     @auth
@@ -534,7 +748,6 @@
         </div>
     </div>
 </header>
-
 
 <section class="slider">
     <div class="container">
@@ -675,4 +888,32 @@
     </div>
 </footer>
 </body>
+
+<script>
+    document.querySelectorAll('.notification-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const notificationId = this.closest('.dropdown-item').dataset.id;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(`/notifications/${notificationId}/mark-as-read`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({ _method: 'PATCH' })
+            }).then(response => {
+                if (response.ok) {
+                    this.closest('.dropdown-item').classList.remove('unread');
+                    this.closest('.dropdown-item').classList.add('read');
+                    const countElement = document.querySelector('.notification-count');
+                    let count = parseInt(countElement.textContent);
+                    countElement.textContent = count - 1;
+                    window.location.href = this.href;
+                }
+            });
+        });
+    });
+</script>
 </html>
