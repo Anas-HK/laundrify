@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -12,26 +13,66 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Insert admin account
+        // Admin User
         DB::table('users')->insert([
             'id' => 1,
-            'sellerType' => 1, // Admin
-            'name' => 'admin',
-            'email' => 'ceo@gmail.com',
-            'password' => Hash::make('laundrify$9999'),
+            'sellerType' => 1,
+            'name' => 'Admin User',
+            'email' => 'admin@laundrify.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('admin123'),
+            'mobile' => $faker->phoneNumber,
+            'address' => $faker->streetAddress,
+            'address2' => $faker->secondaryAddress,
+            'city' => $faker->city,
+            'state' => $faker->state,
+            'zip' => $faker->postcode,
+            'pickup_time' => $faker->randomElement(['morning', 'afternoon', 'evening']),
+            'is_verified' => true,
             'created_at' => now(),
-            'updated_at' => now(),
+            'updated_at' => now()
         ]);
 
-        // Insert 20 random user accounts with random sellerType
-        for ($i = 2; $i <= 21; $i++) {
+        // Create 10 Buyers
+        for ($i = 0; $i < 10; $i++) {
             DB::table('users')->insert([
-                'sellerType' => $faker->randomElement([2, 3]), // Randomly assign Buyer or Seller
+                'sellerType' => 2,
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
+                'email_verified_at' => now(),
                 'password' => Hash::make('password'),
+                'mobile' => $faker->phoneNumber,
+                'address' => $faker->streetAddress,
+                'address2' => $faker->secondaryAddress,
+                'city' => $faker->city,
+                'state' => $faker->state,
+                'zip' => $faker->postcode,
+                'pickup_time' => $faker->randomElement(['morning', 'afternoon', 'evening']),
+                'is_verified' => $faker->boolean,
+                'otp' => $faker->numberBetween(100000, 999999),
                 'created_at' => now(),
-                'updated_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+        // Create 5 Sellers
+        for ($i = 0; $i < 5; $i++) {
+            DB::table('users')->insert([
+                'sellerType' => 3,
+                'name' => $faker->company,
+                'email' => $faker->unique()->companyEmail,
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+                'mobile' => $faker->phoneNumber,
+                'address' => $faker->streetAddress,
+                'address2' => $faker->secondaryAddress,
+                'city' => $faker->city,
+                'state' => $faker->state,
+                'zip' => $faker->postcode,
+                'pickup_time' => null,
+                'is_verified' => true,
+                'created_at' => now(),
+                'updated_at' => now()
             ]);
         }
     }

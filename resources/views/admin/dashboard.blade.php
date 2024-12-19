@@ -263,7 +263,10 @@
 <body>
     <header>
         <div class="logo">Laundrify Admin</div>
-        <a href="{{ route('logout') }}" class="nav-btn">Logout</a>
+        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+            @csrf
+            <button type="submit" class="nav-btn">Logout</button>
+        </form>
     </header>
 
     <div class="sidebar">

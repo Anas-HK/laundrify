@@ -18,20 +18,21 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     // app/Models/User.php
-protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'mobile',
-    'address',
-    'address2',
-    'city',
-    'state',
-    'zip',
-    'pickup_time',
-    'is_verified',
-    'otp', // Ensure this is included
-];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'sellerType',
+        'mobile',
+        'address',
+        'address2',
+        'city',
+        'state',
+        'zip',
+        'pickup_time',
+        'is_verified',
+        'otp'
+    ];
 
     
     /**

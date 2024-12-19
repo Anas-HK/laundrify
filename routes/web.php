@@ -37,10 +37,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/seller/logout', [SellerController::class, 'logout'])->name('logout.seller');
 
 // Seller service routes
-Route::get('/seller/add-service', [SellerServiceController::class, 'showAddServiceForm'])->name('add.service')->middleware('auth:seller');
-Route::post('/seller/add-service', [SellerServiceController::class, 'storeService'])->name('store.service')->middleware('auth:seller');
-Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit'])->name('seller.editService');
-Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
+Route::middleware(['auth:seller'])->group(function () {
+    Route::put('/seller/services/{id}', [SellerServiceController::class, 'update'])->name('seller.updateService');
+    Route::get('/seller/add-service', [SellerServiceController::class, 'showAddServiceForm'])->name('add.service')->middleware('auth:seller');
+    Route::post('/seller/add-service', [SellerServiceController::class, 'storeService'])->name('store.service')->middleware('auth:seller');
+    Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit'])->name('seller.editService');
+    Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
+});
 
 // Admin routes
 

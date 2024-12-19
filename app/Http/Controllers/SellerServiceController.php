@@ -5,6 +5,7 @@ use App\Models\User as AppUser;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Notifications\NewServiceAddedNotification;
+use Illuminate\Support\Facades\Storage;
 
 
 class SellerServiceController extends Controller
@@ -61,7 +62,7 @@ class SellerServiceController extends Controller
     
 
 
-    public function edit($id)
+public function edit($id)
 {
     $service = Service::findOrFail($id);
     // Ensure the seller is the owner of this service
@@ -70,6 +71,43 @@ class SellerServiceController extends Controller
     }
 
     return view('seller.edit-service', compact('service'));
+}
+
+public function update(Request $request, $id)
+{
+    $service = Service::findOrFail($id);
+    
+    // Ensure the seller is the owner of this service
+    if ($service->seller_id != auth()->guard('seller')->id()) {
+        abort(403);
+    }
+
+    $validated = $request->validate([
+        'service_name' => 'required|string|max:255',
+        'service_description' => 'required|string',
+        'seller_city' => 'required|string|max:255',
+        'seller_area' => 'required|string|max:255',
+        'availability' => 'required|string|max:255',
+        'service_delivery_time' => 'required|string|max:255',
+        'seller_contact_no' => 'required|string|max:255',
+        'service_price' => 'required|numeric|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
+
+    // Handle image upload if a new image is provided
+    if ($request->hasFile('image')) {
+        // Delete old image
+        if ($service->image) {
+            Storage::delete('public/' . $service->image);
+        }
+        
+        // Store new image
+        $validated['image'] = $request->file('image')->store('services', 'public');
+    }
+
+    $service->update($validated);
+
+    return redirect()->route('seller.panel')->with('success', 'Service updated successfully');
 }
 
 public function delete($id)

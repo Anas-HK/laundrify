@@ -796,6 +796,7 @@
                                 <h3>{{ $service->service_name }}</h3>
                                 <p>Start Price: {{ $service->service_price }} PKR</p>
                                 <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
+                                {{-- <img src="{{ $service->image }}" alt="{{ $service->service_name }}"> --}}
                                 <p><strong>Description:</strong> {{ $service->service_description }}</p>
                                 <p><strong>City:</strong> {{ $service->seller_city }}</p>
                                 <p><strong>Area:</strong> {{ $service->seller_area }}</p>

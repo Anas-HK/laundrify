@@ -173,7 +173,7 @@
                         <div class="product-card">
                             <h2>{{ $service->service_name }}</h2>
                             <p class="price">Start Price {{ $service->service_price }} PKR</p>
-                            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
+                            <img src="{{ Storage::url($service->image) }}" alt="{{ $service->service_name }}">
                             <div class="button-container">
                                 <a href="{{ route('seller.editService', $service->id) }}" class="edit-service">Edit</a>
                                 <form action="{{ route('seller.deleteService', $service->id) }}" method="POST" style="display: inline;">

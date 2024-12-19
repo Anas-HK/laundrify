@@ -120,86 +120,138 @@ input[type="checkbox"] {
                 </ul>
             </div>
         @endif
-
-        <form action="{{ route('register') }}" method="POST">
+    
+        <form action="{{ route('register') }}" method="POST" id="registrationForm">
             @csrf
             <h3>Buyer Registration</h3>
-
+    
             <!-- Full Name -->
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" class="form-control" required>
+                <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" 
+                    minlength="3" maxlength="255" required>
             </div>
-
+    
             <!-- Email -->
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" class="form-control" required>
+                <input type="email" id="email" name="email" class="form-control" value="{{ old('email') }}" required>
             </div>
-
+    
             <!-- Password -->
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+                <input type="password" id="password" name="password" class="form-control" minlength="8" required>
             </div>
-
+    
             <!-- Confirm Password -->
             <div class="form-group">
                 <label for="password_confirmation">Confirm Password</label>
                 <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
             </div>
-
+    
             <!-- Mobile Number -->
             <div class="form-group">
                 <label for="mobile">Mobile Number</label>
-                <input type="text" id="mobile" name="mobile" class="form-control" required>
+                <input type="tel" id="mobile" name="mobile" class="form-control" value="{{ old('mobile') }}" 
+                    pattern="[0-9]{11}" title="Please enter a valid 10-digit mobile number" required>
             </div>
-
+    
             <!-- Address -->
             <div class="form-group">
                 <label for="address">Address Line 1</label>
-                <input type="text" id="address" name="address" class="form-control" required>
+                <input type="text" id="address" name="address" class="form-control" value="{{ old('address') }}" required>
             </div>
+    
             <div class="form-group">
                 <label for="address2">Address Line 2 (Optional)</label>
-                <input type="text" id="address2" name="address2" class="form-control">
+                <input type="text" id="address2" name="address2" class="form-control" value="{{ old('address2') }}">
             </div>
+    
             <div class="form-group">
                 <label for="city">City</label>
-                <input type="text" id="city" name="city" class="form-control" required>
+                <input type="text" id="city" name="city" class="form-control" value="{{ old('city') }}" required>
             </div>
+    
             <div class="form-group">
                 <label for="state">State</label>
-                <input type="text" id="state" name="state" class="form-control" required>
+                <input type="text" id="state" name="state" class="form-control" value="{{ old('state') }}" required>
             </div>
+    
             <div class="form-group">
                 <label for="zip">Postal Code</label>
-                <input type="text" id="zip" name="zip" class="form-control" required>
+                <input type="text" id="zip" name="zip" class="form-control" value="{{ old('zip') }}" 
+                    pattern="[0-9]{6}" title="Please enter a valid 6-digit postal code" required>
             </div>
-
+    
             <!-- Preferences -->
             <div class="form-group">
                 <label for="pickup_time">Preferred Pickup Time Slot</label>
-                <select id="pickup_time" name="pickup_time" class="form-control">
-                    <option value="morning">Morning</option>
-                    <option value="afternoon">Afternoon</option>
-                    <option value="evening">Evening</option>
+                <select id="pickup_time" name="pickup_time" class="form-control" required>
+                    <option value="">Select a time slot</option>
+                    <option value="morning" {{ old('pickup_time') == 'morning' ? 'selected' : '' }}>Morning</option>
+                    <option value="afternoon" {{ old('pickup_time') == 'afternoon' ? 'selected' : '' }}>Afternoon</option>
+                    <option value="evening" {{ old('pickup_time') == 'evening' ? 'selected' : '' }}>Evening</option>
                 </select>
             </div>
-
+    
             <!-- Terms and Conditions -->
             <div class="form-group">
-                <input type="checkbox" id="terms" name="terms" required>
-                <label for="terms">I agree to the terms and conditions</label>
+                <div class="form-check">
+                    <input type="checkbox" id="terms" name="terms" class="form-check-input" required>
+                    <label class="form-check-label" for="terms">I agree to the terms and conditions</label>
+                </div>
             </div>
-
+    
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </main>
+    
+    <script>
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default submission
+    
+        // Check if all required fields are filled
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+    
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+    
+        // Check password match
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('password_confirmation');
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.classList.add('is-invalid');
+            isValid = false;
+            alert('Passwords do not match');
+            return;
+        }
+    
+        // Submit the form if everything is valid
+        if (isValid) {
+            this.submit();
+        } else {
+            alert('Please fill in all required fields correctly');
+        }
+    });
+    </script>
+    
+    <style>
+    .is-invalid {
+        border-color: red !important;
+    }
+    </style>
 
     <footer>
         <div class="footer-bottom">
-            <p>&copy; 2023 Laundrify. All rights reserved.</p>
+            <p>&copy; 2025 Laundrify. All rights reserved.</p>
         </div>
     </footer>
 </body>
