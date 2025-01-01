@@ -21,4 +21,10 @@ class Service extends Model
         'image',
     ];
     
+    // Service.php
+public function seller()
+{
+    return $this->belongsTo(Seller::class, 'seller_id');
+}
+
 }

@@ -15,7 +15,7 @@
     </header>
     
     <main class="form-page">
-        <form class="auth-form" method="POST" action="{{ route('register.seller') }}">
+        <form class="auth-form" method="POST" action="{{ route('register.seller') }}" enctype="multipart/form-data">
             @csrf
             <h2 class="register-login-heading">Seller Registration</h2>
 
@@ -33,6 +33,9 @@
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
+            <input type="file" name="profile_image" placeholder="Profile Image" required>
+            <input type="text" name="city" placeholder="City" required>
+            <input type="text" name="area" placeholder="Area" required>
             <button type="submit" class="cta-btn">Register as Seller</button>
 
             <p class="register-below-btn">Already have a seller account? <a href="{{ route('login.seller') }}">Login here</a></p>

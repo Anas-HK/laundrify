@@ -122,5 +122,11 @@ public function delete($id)
 
     return redirect()->route('seller.panel')->with('success', 'Service deleted successfully!');
 }
+public function showSellerServices(Seller $seller)
+{
+    $services = $seller->services()->where('is_approved', true)->get();
+    return view('seller-services', compact('seller', 'services'));
+}
+
 
 }

@@ -187,6 +187,54 @@
                 </div>
             @endif
         </div>
+
+
+        <h2>Your Orders</h2>
+@if($orders->isEmpty())
+    <p>No orders found.</p>
+@else
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Buyer Name</th>
+                <th>Services</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($orders as $order)
+                <tr>
+                    <td>{{ $order->id }}</td>
+                    <td>{{ $order->user->name }}</td> <!-- Assuming the user relationship is loaded -->
+                    <td>
+                        <ul>
+                            @foreach($order->items as $item) <!-- Assuming items relationship is loaded -->
+                                <li>{{ $item->service->service_name }} ({{ $item->quantity }} x {{ $item->price }} PKR)</li>
+                            @endforeach
+                        </ul>
+                    </td>
+                    <td>{{ $order->total_amount ?? 'N/A' }} PKR</td> <!-- Ensure total_amount is calculated -->
+                    <td>{{ $order->status }}</td>
+                    <td>
+                        @if($order->status === 'pending')
+                            <form action="{{ route('order.acceptReject', $order) }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" name="status" value="accepted" class="btn btn-success">Accept</button>
+                                <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject</button>
+                            </form>
+                        @else
+                            <a href="{{ route('order.handle', $order) }}" class="btn btn-info">View</a>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endif
+
     </main>
 </body>
 </html>

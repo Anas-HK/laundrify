@@ -18,7 +18,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            /* max-width: 1200px; */
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -77,87 +77,81 @@
         }
         
     /* ...existing styles... */
+    .profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
 
+.profile-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+}
 
-    <style>
-        /* ...existing styles... */
-        .profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 200px;
+}
 
-        .profile-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
+.profile-dropdown:hover .dropdown-menu {
+    display: block;
+}
 
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #fff;
-            min-width: 200px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1;
-            border-radius: 8px;
-            overflow: hidden;
-        }
+.dropdown-menu span {
+    display: block;
+    padding: 12px 16px;
+    font-weight: bold;
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ddd;
+}
 
-        .profile-dropdown:hover .dropdown-menu {
-            display: block;
-        }
+.dropdown-item {
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.3s ease-in-out;
+}
 
-        .dropdown-menu span {
-            display: block;
-            padding: 12px 16px;
-            font-weight: bold;
-            background-color: #f1f1f1;
-            border-bottom: 1px solid #ddd;
-        }
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
 
-        .dropdown-item {
-            display: block;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: #333;
-            transition: background-color 0.3s;
-        }
+.logout-btn {
+    background: none;
+    border: none;
+    color: #333;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
 
-        .dropdown-item:hover {
-            background-color: #f1f1f1;
-        }
+.logout-btn:hover {
+    background-color: #f1f1f1;
+}
 
-        .logout-btn {
-            background: none;
-            border: none;
-            color: #333;
-            width: 100%;
-            text-align: left;
-            padding: 12px 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+@media (max-width: 768px) {
+    .dropdown-menu {
+        right: auto;
+        left: 0;
+        min-width: 100%;
+    }
+}
 
-        .logout-btn:hover {
-            background-color: #f1f1f1;
-        }
-
-        @media (max-width: 768px) {
-            .dropdown-menu {
-                right: auto;
-                left: 0;
-                min-width: 100%;
-            }
-        }
 /* Add necessary CSS for the dropdown visibility */
 .notification-dropdown {
     position: relative;
     display: inline-block;
-}
-.notification-dropdown {
-    position: relative;
 }
 
 .notification-count {
@@ -175,11 +169,13 @@
 .dropdown-item.unread {
     font-weight: bold;
     background-color: #f9f9f9;
+    color: red;
 }
 
 .dropdown-item.unread:hover {
     background-color: #e2e2e2;
 }
+
 .notification-dropdown .dropdown-menu {
     max-height: 300px; /* Set the maximum height */
     overflow-y: auto; /* Enable vertical scrolling */
@@ -195,41 +191,11 @@
     overflow-y: auto; /* Enable vertical scrolling */
 }
 
-.dropdown-item.unread {
-    color: red;
-}
-
-.dropdown-item.read {
-    color: black;
-}
-.mark-read {
-    display: block;
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
-    color: blue;
-    cursor: pointer;
-}
-
-.mark-read:hover {
-    text-decoration: underline;
-}
-
-
 .notification-dropdown .fa-bell {
     font-size: 20px;
     cursor: pointer;
     color: #333;
-}
-/* filepath: /c:/laragon/www/laundrify/public/css/style.css */
-.notification-dropdown .dropdown-menu {
-    max-height: 300px; /* Set the maximum height */
-    overflow-y: auto; /* Enable vertical scrolling */
-    background-color: #fff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 5px;
-    overflow: hidden;
+    margin: 20px;
 }
 
 .notification-dropdown .dropdown-header {
@@ -239,10 +205,6 @@
     padding: 10px 15px;
     background-color: #f1f1f1;
     border-bottom: 1px solid #ddd;
-}
-
-.notification-dropdown .mark-all-form {
-    margin: 0;
 }
 
 .notification-dropdown .mark-read {
@@ -258,18 +220,6 @@
     background-color: #0056b3;
 }
 
-.notification-dropdown .notification-list {
-    max-height: 250px; /* Set the maximum height for the list */
-    overflow-y: auto; /* Enable vertical scrolling */
-}
-
-.dropdown-item.unread {
-    color: red;
-}
-
-.dropdown-item.read {
-    color: black;
-}
 .notification-dropdown .dropdown-menu {
     display: none;
     position: absolute;
@@ -285,12 +235,7 @@
 .notification-dropdown:hover .dropdown-menu {
     display: block;
 }
-.dropdown-item.unread {
-        color: red;
-    }
-    .dropdown-item.read {
-        color: black;
-    }
+
 .dropdown-item {
     padding: 15px 20px;
     text-decoration: none;
@@ -306,13 +251,6 @@
 
 .dropdown-item:last-child {
     border-bottom: none;
-}
-
-.dropdown-header {
-    padding: 15px 20px;
-    background-color: #f1f1f1;
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
 }
 
 .dropdown-footer {
@@ -331,7 +269,6 @@
 .dropdown-footer a:hover {
     text-decoration: underline;
 }
-
 
 
         /* Slider section styles */
@@ -460,6 +397,16 @@
         padding: 50px 0;
         background-color: #f9f9f9;
     }
+
+    .seller-profile {
+    width: 50px !important;  /* Size of the icon */
+    height: 50px !important;
+    border-radius: 50% !important;  /* Makes the image rounded */
+    object-fit: cover !important;   /* Ensures the image fits nicely */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;  /* Optional - adds shadow for a professional look */
+    margin-bottom: 10px !important;
+}
+
 
     .services h2 {
         text-align: center;
@@ -657,6 +604,44 @@
         .logout-btn:hover {
             background-color: #b71c1c;
         }
+        .seller-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.seller-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    width: 200px;
+}
+
+.seller-profile-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.view-services-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.view-services-button:hover {
+    background-color: #0056b3;
+}
+
+
+
 
     </style>
 </head>
@@ -718,12 +703,17 @@
                         @endphp
                         @if ($profileUpdate && $profileUpdate->profile_image)
                             <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="profile-icon">
+
                         @else
                             <i class="fas fa-user-circle profile-icon"></i>
                         @endif
                         <div class="dropdown-menu">
                             <span>Welcome, {{ Auth::user()->name }}!</span>
                             <a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a>
+                            <a href="{{ route('order.all') }}" class="btn btn-primary" style="margin-top: 20px;">
+    View Your Orders
+</a>
+
                             <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
                                 @csrf
                                 <button type="submit" class="logout-btn">Logout</button>
@@ -742,6 +732,7 @@
                             <a href="{{ route('login') }}" class="dropdown-item">Login</a>
                             <a href="{{ route('register') }}" class="dropdown-item">Register</a>
                         </div>
+                        
                     @endauth
                 </div>
             </div>
@@ -781,6 +772,26 @@
         </div>
     </div>
 </section>
+<section class="sellers">
+    <div class="container">
+        <h2>Our Sellers</h2>
+        @auth
+            <div class="seller-cards">
+                @foreach ($sellers as $seller)
+                    <div class="seller-card">
+                        <img src="{{ asset('storage/' . $seller->profile_image) }}" alt="{{ $seller->name }}" class="seller-profile-icon">
+                        <h3>{{ $seller->name }}</h3>
+                        <p><strong>City:</strong> {{ $seller->city }}</p>
+                        <p><strong>Area:</strong> {{ $seller->area }}</p>
+                        <a href="{{ route('seller.services', $seller->id) }}" class="view-services-button">View Services</a>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p>Please <a href="{{ route('login') }}">log in</a> to view our sellers.</p>
+        @endauth
+    </div>
+</section>
 
 <section class="services">
     <div class="container">
@@ -793,13 +804,15 @@
                     @foreach ($services as $service)
                         @if ($service->is_approved)
                             <div class="service-card">
+                                <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}" class="seller-profile">
                                 <h3>{{ $service->service_name }}</h3>
-                                <p>Start Price: {{ $service->service_price }} PKR</p>
-                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">
-                                {{-- <img src="{{ $service->image }}" alt="{{ $service->service_name }}"> --}}
+                                <p><strong>Seller:</strong> {{ $service->seller->name }}</p>
+                                <p><strong>Email:</strong> {{ $service->seller->email }}</p>
+                                <p><strong>City:</strong> {{ $service->seller->city }}</p>
+                                <p><strong>Area:</strong> {{ $service->seller->area }}</p>
+                                <p><strong>Start Price:</strong> {{ $service->service_price }} PKR</p>
+                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">>
                                 <p><strong>Description:</strong> {{ $service->service_description }}</p>
-                                <p><strong>City:</strong> {{ $service->seller_city }}</p>
-                                <p><strong>Area:</strong> {{ $service->seller_area }}</p>
                                 <p><strong>Availability:</strong> {{ $service->availability }}</p>
                                 <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
                                 <p><strong>Contact No:</strong> {{ $service->seller_contact_no }}</p>

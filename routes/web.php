@@ -7,6 +7,9 @@ use App\Http\Controllers\SellerServiceController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 
 
 
@@ -71,8 +74,41 @@ Route::middleware('auth')->group(function () {
     Route::get('notifications/{id}/redirect', 'NotificationController@redirectToService')->name('notifications.redirect');
     Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
+// 
+Route::get('/seller/{seller}', [ServiceController::class, 'showSellerServices'])->name('seller.services');
+Route::get('sellers/{sellerId}/services', [ServiceController::class, 'showSellerServices'])->name('seller.services');
+
+Route::get('services/{id}', [ServiceController::class, 'showService'])->name('service.show');
 
 
 
 // Notification route
 Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+
+
+
+// Routes for cart functionality
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
+// Routes for order placement and tracking (protected by 'auth')
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [OrderController::class, 'showCheckout'])->name('checkout.show');
+    Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('checkout.place');
+    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
+    Route::get('/order/track/{order}', [OrderController::class, 'trackOrder'])->name('order.track');
+    Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
+});
+
+// Add to web.php
+Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])->name('order.handle');
+Route::post('/seller/order/{order}/update-status', [OrderController::class, 'updateOrderStatus'])->name('order.updateStatus');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'allOrders'])->name('order.all');
+    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
+    // Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+});

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +13,11 @@ class Seller extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_image',
+        'city',
+        'area',
         'accountIsApproved',
+        'is_deleted',
     ];
 
     protected $hidden = [
@@ -25,8 +30,15 @@ class Seller extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($password);
     }
+
+    // Relationship with the Service model
     public function services()
+    {
+        return $this->hasMany(Service::class, 'seller_id');
+    }
+    public function orders()
 {
-    return $this->hasMany(Service::class);
+    return $this->hasMany(Order::class);
 }
+
 }
