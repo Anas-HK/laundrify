@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\DatabaseNotification;
 
 class Seller extends Authenticatable
 {
@@ -36,9 +36,14 @@ class Seller extends Authenticatable
     {
         return $this->hasMany(Service::class, 'seller_id');
     }
-    public function orders()
-{
-    return $this->hasMany(Order::class);
-}
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(DatabaseNotification::class, 'notifiable');
+    }
 }

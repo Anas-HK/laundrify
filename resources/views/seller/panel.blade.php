@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Panel - Laundrify</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -133,32 +134,181 @@
         .edit-service:hover, .delete-service:hover {
             background-color: #00796b;
         }
+
+        /* Notification Icon Styling */
+.notification-icon {
+    position: relative;
+    margin-right: 20px;
+    cursor: pointer;
+}
+.fa-bell{
+    color: white !important;
+
+}
+
+.notification-icon i {
+    font-size: 24px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.notification-icon i:hover {
+    color: #007bff; /* Primary theme color */
+}
+
+/* Badge Styling */
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    font-size: 12px;
+    color: #fff;
+    background-color: #dc3545; /* Danger color */
+    border-radius: 50%;
+    padding: 3px 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border: 1px solid #ddd;
+    z-index: 1000;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 10px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f1f1f1;
+    line-height: 1.5;
+}
+
+.dropdown-menu .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f8f9fa; /* Light hover color */
+    border-radius: 4px;
+}
+
+.dropdown-menu p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.dropdown-menu small {
+    color: #666;
+    font-size: 12px;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Show dropdown on hover */
+.notification-icon:hover .dropdown-menu {
+    display: block;
+}
+
+/* Notifications Scrollbar */
+.notifications::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notifications::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 3px;
+}
+
+.notifications::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 3px;
+}
+
+
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <h1>Welcome to the Seller Panel, {{ auth()->guard('seller')->user()->name }}!</h1>
-            <nav class="seller-nav">
-                <a href="{{ route('add.service') }}" class="nav-btn">Add Service</a>
-                <a href="" class="nav-btn">Remove Service</a>
-                <a href="" class="nav-btn">Update Service</a>
-                <a href="" class="nav-btn">Orders</a>
+<header>
+    <div class="header-container">
+        <h1>Welcome to the Seller Panel, {{ auth()->guard('seller')->user()->name }}!</h1>
+        <nav class="seller-nav">
+            <a href="{{ route('add.service') }}" class="nav-btn">Add Service</a>
+            <a href="" class="nav-btn">Remove Service</a>
+            <a href="" class="nav-btn">Update Service</a>
+            <a href="" class="nav-btn">Orders</a>
 
-                @if(session('admin_id'))
-                    <form action="{{ route('admin.returnToAdmin') }}" method="POST" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-danger">Return to Admin Panel</button>
-                    </form>
-                 @endif
-
-                <form id="logout-form" action="{{ route('logout.seller') }}" method="POST" style="display: inline;">
+            @if(session('admin_id'))
+                <form action="{{ route('admin.returnToAdmin') }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit" class="nav-btn logout-btn">Logout</button>
+                    <button type="submit" class="btn btn-danger">Return to Admin Panel</button>
                 </form>
-            </nav>
+            @endif
+
+            <form id="logout-form" action="{{ route('logout.seller') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="nav-btn logout-btn">Logout</button>
+            </form>
+        </nav>
+
+     
+    <div class="header-container">
+        <!-- Notification Icon -->
+        <div class="notification-icon">
+            <i class="fa fa-bell"></i>
+            @if($notifications->isNotEmpty())
+                <span class="badge">{{ $notifications->count() }}</span>
+            @endif
+            <!-- Dropdown Menu -->
+            <div class="dropdown-menu">
+                @if($notifications->isEmpty())
+                    <p>No notifications available.</p>
+                @else
+                    <div class="notifications">
+                        @foreach($notifications as $notification)
+                        <div class="dropdown-item">
+    @if(is_string($notification->data['order_details']))
+        @php
+            $details = json_decode($notification->data['order_details'], true);
+        @endphp
+    @else
+        @php
+            $details = $notification->data['order_details'];
+        @endphp
+    @endif
+
+    <p>
+        <strong>{{ $notification->data['seller_name'] }}</strong><br>
+        Order ID: {{ $notification->data['order_id'] }}<br>
+        @if(is_array($details))
+            @foreach($details as $detail)
+                Service ID: {{ $detail['service_id'] }}, 
+                Quantity: {{ $detail['quantity'] }}, 
+                Price: {{ $detail['price'] }}<br>
+            @endforeach
+        @else
+            {{ $notification->data['order_details'] }}
+        @endif
+    </p>
+</div>
+
+                        @endforeach
+                    </div>
+                @endif
+            </div>
         </div>
-    </header>
+
+    </div>
+</header>
 
     <main>
         <p>This is your dashboard. You can manage your services here.</p>

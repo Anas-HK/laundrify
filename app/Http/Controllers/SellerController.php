@@ -112,7 +112,11 @@ public function sellerPanel()
     // Get the seller's orders with necessary relationships
     $orders = $seller->orders()->with(['user', 'items.service'])->get();
 
-    return view('seller.panel', compact('services', 'orders'));
+    // Get the seller's notifications
+    $notifications = $seller->notifications;
+
+
+    return view('seller.panel', compact('services', 'orders', 'notifications'));
 }
 
 

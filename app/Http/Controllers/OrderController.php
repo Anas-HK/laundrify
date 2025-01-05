@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\NewOrderNotification;
 
 
 
@@ -39,19 +40,23 @@ class OrderController extends Controller
 
 
     }
-   
     public function placeOrder(Request $request)
     {
         // Ensure $service is defined
         $service = $this->getService($request->service_id); // Example function to get service
-
+    
         if (!$service) {
             Log::error('Invalid service_id for order placement', ['service_id' => $request->service_id]);
             return redirect()->route('home')->with('error', 'Invalid service.');
         }
-
+    
         // Check if seller exists
         $cart = session('cart');
+        if (!$cart || !isset($cart[$service->id])) {
+            Log::error('Cart data is invalid or empty for order placement');
+            return redirect()->route('home')->with('error', 'Invalid cart data.');
+        }
+    
         $totalAmount = collect($cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
@@ -60,20 +65,20 @@ class OrderController extends Controller
             Log::error('Invalid seller_id for order placement', ['seller_id' => $cart[$service->id]['seller_id']]);
             return redirect()->route('home')->with('error', 'Invalid seller.');
         }
-
+    
         try {
             Log::info('Attempting to place an order', [
                 'user' => auth()->user(),
                 'cart' => $cart,
             ]);
-
+    
             // Validate inputs
             $request->validate([
                 'service_id' => 'required|exists:services,id',
                 'address' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
             ]);
-
+    
             // Create the order with seller_id
             $order = Order::create([
                 'user_id' => Auth::id(),
@@ -85,12 +90,12 @@ class OrderController extends Controller
                 'updated_at' => now(),
                 'created_at' => now(),
             ]);
-
+    
             if (!$order) {
                 Log::error('Failed to create order', ['data' => $request->all()]);
                 throw new \Exception('Order creation failed.');
             }
-
+    
             // Add order items
             foreach ($cart as $item) {
                 OrderItem::create([
@@ -100,12 +105,14 @@ class OrderController extends Controller
                     'price' => $item['price'],
                 ]);
             }
-
+    
             // Clear the cart
             session()->forget('cart');
-
+            Log::info('Order Details:', ['details' => json_encode($order->details)]);
+            $seller->notify(new \App\Notifications\NewOrderNotification($seller->name, $order->id, json_encode($order->items)));
+            
             return redirect()->route('home')->with('success', 'Order placed successfully.');
-
+    
         } catch (\Exception $e) {
             Log::error('Error occurred during order placement', [
                 'error' => $e->getMessage(),
@@ -114,7 +121,8 @@ class OrderController extends Controller
             return redirect()->route('home')->with('error', 'Order placement failed.');
         }
     }
-
+    
+    
     // Define the getService method
     private function getService($service_id)
     {
