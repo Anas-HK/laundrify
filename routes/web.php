@@ -46,6 +46,8 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::post('/seller/add-service', [SellerServiceController::class, 'storeService'])->name('store.service')->middleware('auth:seller');
     Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit'])->name('seller.editService');
     Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
+    Route::get('/search-services', [ServiceController::class, 'searchServices'])->name('search.services');
+
 });
 
 // Admin routes

@@ -64,5 +64,3 @@ Buyer:
 Browse available laundry services.
 View detailed information about each service.
 Avail of services based on pricing and location.
-
-

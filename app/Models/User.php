@@ -58,9 +58,14 @@ class User extends Authenticatable
         ];
     }
     // In User.php
-public function orders()
-{
-    return $this->hasMany(Order::class);
-}
+        public function orders()
+        {
+            return $this->hasMany(Order::class);
+        }
+
+        public function notifications()
+        {
+            return $this->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable');
+        }
 
 }

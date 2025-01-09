@@ -109,6 +109,7 @@ class OrderController extends Controller
             // Clear the cart
             session()->forget('cart');
             Log::info('Order Details:', ['details' => json_encode($order->details)]);
+            Log::info('Order Items:', ['items' => $order->items]);
             $seller->notify(new \App\Notifications\NewOrderNotification($seller->name, $order->id, json_encode($order->items)));
             
             return redirect()->route('home')->with('success', 'Order placed successfully.');
@@ -130,75 +131,75 @@ class OrderController extends Controller
     }
 
     public function trackOrder(Order $order)
-{
-    if ($order->user_id !== auth()->id()) {
-        abort(403, 'Unauthorized access');
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access');
+        }
+
+        return view('order.track', compact('order'));
     }
 
-    return view('order.track', compact('order'));
-}
+    public function track(Order $order)
+    {
+        // Ensure the authenticated user is the owner of the order
+        $user = auth()->user();
 
-public function track(Order $order)
-{
-    // Ensure the authenticated user is the owner of the order
-    $user = auth()->user();
+        if ($order->user_id !== $user->id) {
+            abort(403, 'Unauthorized action.');
+        }
 
-    if ($order->user_id !== $user->id) {
-        abort(403, 'Unauthorized action.');
+        // Load related order items and other details
+        $order->load('orderItems');
+        $order->load(['user', 'seller', 'items.service']);
+
+
+        return view('order.track', compact('order'));
     }
 
-    // Load related order items and other details
-    $order->load('orderItems');
-    $order->load(['user', 'seller', 'items.service']);
 
+    public function acceptRejectOrder(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|string|in:accepted,rejected',
+        ]);
 
-    return view('order.track', compact('order'));
-}
+        $order->update([
+            'status' => $request->input('status'),
+        ]);
 
-
-public function acceptRejectOrder(Request $request, Order $order)
-{
-    $request->validate([
-        'status' => 'required|string|in:accepted,rejected',
-    ]);
-
-    $order->update([
-        'status' => $request->input('status'),
-    ]);
-
-    return redirect()->route('seller.panel')->with('success', 'Order status updated successfully.');
-}
-
-public function handleOrder(Order $order)
-{
-    // Check if the logged-in seller owns this order
-    $sellerId = auth()->guard('seller')->id();
-    if ($order->seller_id !== $sellerId) {
-        return redirect()->route('seller.panel')->with('error', 'You do not have permission to manage this order.');
+        return redirect()->route('seller.panel')->with('success', 'Order status updated successfully.');
     }
 
-    return view('seller.order-handle', compact('order'));
-}
-public function updateOrderStatus(Request $request, Order $order)
-{
-    $request->validate([
-        'status' => 'required|string|in:accepted,pickup_departed,picked_up,started_washing,ironing,ready_for_delivery,delivered,completed',
-    ]);
+    public function handleOrder(Order $order)
+    {
+        // Check if the logged-in seller owns this order
+        $sellerId = auth()->guard('seller')->id();
+        if ($order->seller_id !== $sellerId) {
+            return redirect()->route('seller.panel')->with('error', 'You do not have permission to manage this order.');
+        }
 
-    // Check if the logged-in seller owns this order
-    $sellerId = auth()->guard('seller')->id();
-    if ($order->seller_id !== $sellerId) {
-        return redirect()->route('seller.panel')->with('error', 'You do not have permission to update this order.');
+        return view('seller.order-handle', compact('order'));
     }
 
-    $order->update(['status' => $request->status]);
+    public function updateOrderStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|string|in:accepted,pickup_departed,picked_up,started_washing,ironing,ready_for_delivery,delivered,completed',
+        ]);
 
-    return redirect()->route('order.handle', $order)->with('success', 'Order status updated successfully!');
-}
-public function showOrderHandling(Order $order)
-{
-    return view('seller.order-handle', compact('order'));
-}
+        // Check if the logged-in seller owns this order
+        $sellerId = auth()->guard('seller')->id();
+        if ($order->seller_id !== $sellerId) {
+            return redirect()->route('seller.panel')->with('error', 'You do not have permission to update this order.');
+        }
 
+        $order->update(['status' => $request->status]);
 
+        return redirect()->route('order.handle', $order)->with('success', 'Order status updated successfully!');
+    }
+
+    public function showOrderHandling(Order $order)
+    {
+        return view('seller.order-handle', compact('order'));
+    }
 }

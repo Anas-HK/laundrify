@@ -20,3 +20,6 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+laravel_indexer.php
+LARAVEL_INDEX.md
+README.md

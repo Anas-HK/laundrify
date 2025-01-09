@@ -1,0 +1,16 @@
+Details For Order Packing and Tracking
+
+Like: user will come on home page where lots of services will be shown to user
+of different sellers user will select an order then it will goes to service
+detail page then user will click to buy then it will goes to and form where
+user will fill some important detail for delivery then order will be placed
+and goes to seller seller will confirm the order when seller confirm the
+order user will see on order tracking page that order has been confirm by
+seller then order confirmation icon will be colored, then seller will send
+the delivery boy and will confirm that delivery boy departed and user will
+see on order tracking page that icon of delivery boy departed is colored then 
+delivery boy will pickup the laundry and goes towards the seller and seller
+then update to user and on user order tracking page icon of order pickup 
+successfully will be colored and same will be like seller will update that 
+laundry washing stared, laundry is drying , order is packing , and order on 
+the way to deliver and user will see that icons are being colered as seller updating.

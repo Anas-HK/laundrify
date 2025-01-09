@@ -2,648 +2,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laundrify - Your Laundry Service Solution</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .container {
-            /* max-width: 1200px; */
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header styles */
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #3498db;
-        }
-
-        .search-bar {
-            flex-grow: 1;
-            margin: 0 20px;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .nav-icons {
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-icons a {
-            margin-left: 15px;
-            color: #333;
-            text-decoration: none;
-        }
-
-        .profile-icon {
-            margin-left: 15px;
-            color: #333;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-    /* ...existing styles... */
-    .profile-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.profile-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 8px;
-    overflow: hidden;
-    min-width: 200px;
-}
-
-.profile-dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-.dropdown-menu span {
-    display: block;
-    padding: 12px 16px;
-    font-weight: bold;
-    background-color: #f1f1f1;
-    border-bottom: 1px solid #ddd;
-}
-
-.dropdown-item {
-    display: block;
-    padding: 12px 16px;
-    text-decoration: none;
-    color: #333;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.dropdown-item:hover {
-    background-color: #f1f1f1;
-}
-
-.logout-btn {
-    background: none;
-    border: none;
-    color: #333;
-    width: 100%;
-    text-align: left;
-    padding: 12px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.logout-btn:hover {
-    background-color: #f1f1f1;
-}
-
-@media (max-width: 768px) {
-    .dropdown-menu {
-        right: auto;
-        left: 0;
-        min-width: 100%;
-    }
-}
-
-/* Add necessary CSS for the dropdown visibility */
-.notification-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.notification-count {
-    background-color: red;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 50%;
-    padding: 2px 6px;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-}
-
-.dropdown-item.unread {
-    font-weight: bold;
-    background-color: #f9f9f9;
-    color: red;
-}
-
-.dropdown-item.unread:hover {
-    background-color: #e2e2e2;
-}
-
-.notification-dropdown .dropdown-menu {
-    max-height: 300px; /* Set the maximum height */
-    overflow-y: auto; /* Enable vertical scrolling */
-    background-color: #fff;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.notification-dropdown .notification-list {
-    max-height: 250px; /* Set the maximum height for the list */
-    overflow-y: auto; /* Enable vertical scrolling */
-}
-
-.notification-dropdown .fa-bell {
-    font-size: 20px;
-    cursor: pointer;
-    color: #333;
-    margin: 20px;
-}
-
-.notification-dropdown .dropdown-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    background-color: #f1f1f1;
-    border-bottom: 1px solid #ddd;
-}
-
-.notification-dropdown .mark-read {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-.notification-dropdown .mark-read:hover {
-    background-color: #0056b3;
-}
-
-.notification-dropdown .dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    min-width: 300px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.notification-dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-.dropdown-item {
-    padding: 15px 20px;
-    text-decoration: none;
-    color: #333;
-    display: block;
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s ease;
-}
-
-.dropdown-item:hover {
-    background-color: #f5f5f5;
-}
-
-.dropdown-item:last-child {
-    border-bottom: none;
-}
-
-.dropdown-footer {
-    padding: 10px 20px;
-    background-color: #f1f1f1;
-    text-align: center;
-    border-top: 1px solid #ddd;
-}
-
-.dropdown-footer a {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: bold;
-}
-
-.dropdown-footer a:hover {
-    text-decoration: underline;
-}
-
-
-        /* Slider section styles */
-        .slider {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .slider .container {
-            position: relative;
-            height: 100%;
-        }
-
-        .slider-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #ffffff;
-            z-index: 2;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        .slider-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .slider-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .slider-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-
-        .slider h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .slider p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .slider .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #3498db;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .slider .btn:hover {
-            background-color: #2980b9;
-        }
-
-        @media (max-width: 768px) {
-            .slider h1 {
-                font-size: 2rem;
-            }
-
-            .slider p {
-                font-size: 1rem;
-            }
-
-            .slider .btn {
-                padding: 10px 20px;
-                font-size: 1rem;
-            }
-        }
-
-        /* USP section styles */
-        .usp {
-            padding: 50px 0;
-            text-align: center;
-        }
-
-        .usp h2 {
-            margin-bottom: 30px;
-        }
-
-        .usp-cards {
-            display: flex;
-            justify-content: space-between;
-            gap: 30px;
-        }
-
-        .usp-card {
-            flex: 1;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .usp-card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Services section styles */
-        .services {
-        padding: 50px 0;
-        background-color: #f9f9f9;
-    }
-
-    .seller-profile {
-    width: 50px !important;  /* Size of the icon */
-    height: 50px !important;
-    border-radius: 50% !important;  /* Makes the image rounded */
-    object-fit: cover !important;   /* Ensures the image fits nicely */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;  /* Optional - adds shadow for a professional look */
-    margin-bottom: 10px !important;
-}
-
-
-    .services h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 2.5rem;
-        color: #333;
-    }
-
-    .service-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
-    .service-card {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .service-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .service-card h3 {
-        font-size: 1.5rem;
-        color: #007bff;
-        margin-bottom: 10px;
-    }
-
-    .service-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 15px;
-    }
-
-    .service-card p {
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 10px;
-    }
-
-    .service-card p strong {
-        color: #333;
-    }
-
-    .button-container {
-        margin-top: 15px;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .buy-now,
-    .see-more {
-        display: inline-block;
-        text-decoration: none;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 15px;
-        font-size: 1rem;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-        cursor: pointer;
-    }
-
-    .buy-now:hover,
-    .see-more:hover {
-        background-color: #0056b3;
-    }
-
-    .buy-now {
-        background-color: #28a745;
-    }
-
-    .buy-now:hover {
-        background-color: #218838;
-    }
-
-
-        /* Feedback section styles */
-        .feedback {
-            padding: 50px 0;
-        }
-
-        .feedback h2 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .feedback-cards {
-            display: flex;
-            justify-content: space-between;
-            gap: 30px;
-        }
-
-        .feedback-card {
-            flex: 1;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* About section styles */
-        .about {
-            background-color: #f9f9f9;
-            padding: 50px 0;
-        }
-
-        .about-content {
-            display: flex;
-            align-items: center;
-            gap: 50px;
-        }
-
-        .about-text {
-            flex: 1;
-        }
-
-        .about-image {
-            flex: 1;
-        }
-
-        .about-image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        /* Footer styles */
-        footer {
-            background-color: #333;
-            color: #fff;
-            padding: 30px 0;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .footer-section {
-            flex: 1;
-            margin-right: 30px;
-        }
-
-        .footer-section h3 {
-            margin-bottom: 15px;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 10px;
-        }
-
-        .footer-section ul li a {
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid #555;
-        }
-        .nav-btn {
-            margin-left: 10px;
-            padding: 8px 12px;
-            color: #fff;
-            background-color: #00796b;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .nav-btn:hover {
-            background-color: #004d40;
-        }
-
-        .logout-btn {
-            background-color: #e53935;
-        }
-
-        .logout-btn:hover {
-            background-color: #b71c1c;
-        }
-        .seller-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.seller-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    text-align: center;
-    border-radius: 8px;
-    width: 200px;
-}
-
-.seller-profile-icon {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.view-services-button {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
-.view-services-button:hover {
-    background-color: #0056b3;
-}
-
-
-
-
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
 </head>
 <body>
 <header>
@@ -651,96 +13,118 @@
         <div class="header-content">
             <div class="logo">Laundrify</div>
             <div class="search-bar">
-                <input type="text" placeholder="Search for services...">
+                <input 
+                    type="text" 
+                    id="serviceSearch" 
+                    placeholder="Search for services..." 
+                    onkeyup="searchServices()" 
+                    onclick="toggleSearchResults()"
+                />
+                <div id="searchResults" class="search-results" style="display: none;"></div>
             </div>
+            
             <div class="nav-icons">
                 <!-- Static Navigation Links -->
-                <a href="#">Home</a>
-                <a href="#">Services</a>
-                <a href="#">About</a>
-                <a href="#">Contact</a>
-<!-- Notification Icon with Dropdown -->
-<!-- Notification Icon with Dropdown -->
-<div class="notification-dropdown">
-    <i class="fas fa-bell"></i>
-    @auth
-        @php
-            $unreadCount = Auth::user()->unreadNotifications->count();
-        @endphp
-        @if($unreadCount > 0)
-            <span class="notification-count">{{ $unreadCount }}</span>
-        @endif
-        <div class="dropdown-menu">
-            <div class="dropdown-header">
-                <span>Notifications</span>
-                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="mark-all-form">
-                    @csrf
-                    <button type="submit" class="mark-read">Mark all as read</button>
-                </form>
-            </div>
-            @php
-                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
-            @endphp
-            <div class="notification-list">
-                @foreach($notifications as $notification)
-                    <div class="dropdown-item {{ is_null($notification->read_at) ? 'unread' : '' }}" data-id="{{ $notification->id }}">
-                        <a href="{{ route('notifications.redirect', $notification->id) }}" class="notification-link">
-                            {{ $notification->data['message'] }}
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @else
-        <div class="dropdown-item">Please login to see notifications.</div>
-    @endauth
-</div>
+                <a href="#home">Home</a>
+                <a href="#sellers">Sellers</a>
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+
+                <!-- Notification Icon with Dropdown -->
+                <div class="notification-dropdown dropdown">
+                    <button class="btn btn-link dropdown-toggle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        @auth
+                            @php
+                                $unreadCount = Auth::user()->unreadNotifications->count();
+                            @endphp
+
+                            @if($unreadCount > 0)
+                                <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 translate-middle" style="font-size: 0.75rem;">{{ $unreadCount }}</span>
+                            @endif
+                        @endauth
+                    </button>
+
+                    <ul class="dropdown-menu" aria-labelledby="notificationDropdown">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span>Notifications</span>
+                            @auth
+                                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="d-inline-block">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link btn-sm text-muted">Mark all as read</button>
+                                </form>
+                            @endauth
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @auth
+                            @php
+                                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
+                            @endphp
+                            @forelse($notifications as $notification)
+                                <li class="dropdown-item {{ is_null($notification->read_at) ? 'bg-light' : '' }}" data-id="{{ $notification->id }}">
+                                    <a href="{{ route('notifications.redirect', $notification->id) }}" class="text-dark">
+                                        {{ $notification->data['message'] ?? 'No message available' }}
+                                    </a>
+                                </li>
+                            @empty
+                                <li class="dropdown-item text-muted">No notifications available</li>
+                            @endforelse
+                        @else
+                            <li class="dropdown-item text-muted">Please login to see notifications.</li>
+                        @endauth
+                    </ul>
+                </div>
+
                 <!-- Profile Icon with Dropdown -->
-                <div class="profile-dropdown">
+                <div class="dropdown">
                     @auth
                         @php
                             $profileUpdate = \App\Models\UserProfileUpdate::where('user_id', Auth::id())->first();
                         @endphp
-                        @if ($profileUpdate && $profileUpdate->profile_image)
-                            <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="profile-icon">
-
-                        @else
-                            <i class="fas fa-user-circle profile-icon"></i>
-                        @endif
-                        <div class="dropdown-menu">
-                            <span>Welcome, {{ Auth::user()->name }}!</span>
-                            <a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a>
-                            <a href="{{ route('order.all') }}" class="btn btn-primary" style="margin-top: 20px;">
-    View Your Orders
-</a>
-
-                            <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
-                                @csrf
-                                <button type="submit" class="logout-btn">Logout</button>
-                            </form>
-                            @if(Auth::user()->sellerType == 1)
-                                <a href="{{ route('admin.dashboard') }}" class="dropdown-item">Admin Dashboard</a>
-                            @elseif(Auth::user()->sellerType == 3)
-                                <a href="{{ route('seller.panel') }}" class="dropdown-item">Seller Panel</a>
+                        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            @if ($profileUpdate && $profileUpdate->profile_image)
+                                <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="rounded-circle" style="width: 30px; height: 30px;">
+                            @else
+                                <i class="fas fa-user-circle" style="font-size: 30px;"></i>
                             @endif
-                            <a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a>
-                            <a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a>
-                        </div>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <li><span class="dropdown-item">Welcome, {{ Auth::user()->name }}!</span></li>
+                            <li><a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a></li>
+                            <li><a href="{{ route('order.all') }}" class="dropdown-item">View Your Orders</a></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
+                                </form>
+                            </li>
+                            @if(Auth::user()->sellerType == 1)
+                                <li><a href="{{ route('admin.dashboard') }}" class="dropdown-item">Admin Dashboard</a></li>
+                            @elseif(Auth::user()->sellerType == 3)
+                                <li><a href="{{ route('seller.panel') }}" class="dropdown-item">Seller Panel</a></li>
+                            @endif
+                            <li><a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a></li>
+                            <li><a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a></li>
+                        </ul>
                     @else
-                        <i class="fas fa-user-circle profile-icon"></i>
-                        <div class="dropdown-menu">
-                            <a href="{{ route('login') }}" class="dropdown-item">Login</a>
-                            <a href="{{ route('register') }}" class="dropdown-item">Register</a>
-                        </div>
-                        
+                        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle" style="font-size: 30px;"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <li><a href="{{ route('login') }}" class="dropdown-item">Login</a></li>
+                            <li><a href="{{ route('register') }}" class="dropdown-item">Register</a></li>
+                        </ul>
                     @endauth
                 </div>
+                
             </div>
         </div>
     </div>
 </header>
 
-<section class="slider">
+<section class="slider" id="home">
     <div class="container">
         <div class="slider-content">
             <h1>Welcome to Laundrify</h1>
@@ -772,18 +156,31 @@
         </div>
     </div>
 </section>
-<section class="sellers">
+<section class="sellers" id="sellers">
     <div class="container">
-        <h2>Our Sellers</h2>
+        <div class='text-center'>
+            <h2 class="my-4" style="font-size: 40px">Our Sellers</h2>
+        </div>
         @auth
-            <div class="seller-cards">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 @foreach ($sellers as $seller)
-                    <div class="seller-card">
-                        <img src="{{ asset('storage/' . $seller->profile_image) }}" alt="{{ $seller->name }}" class="seller-profile-icon">
-                        <h3>{{ $seller->name }}</h3>
-                        <p><strong>City:</strong> {{ $seller->city }}</p>
-                        <p><strong>Area:</strong> {{ $seller->area }}</p>
-                        <a href="{{ route('seller.services', $seller->id) }}" class="view-services-button">View Services</a>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-img-top d-flex justify-content-center align-items-center" 
+                                style="width: 120px; height: 120px; background-color: #f0f0f0; border-radius: 50%; overflow: hidden; margin: 0 auto;">
+                                @if ($seller->profile_image && file_exists(public_path('storage/' . $seller->profile_image)))
+                                    <img src="{{ asset('storage/' . $seller->profile_image) }}" alt="{{ $seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                @else
+                                    <i class="fas fa-user" style="font-size: 70px; color: #aaa;"></i>
+                                @endif
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ $seller->name }}</h5>
+                                <p class="card-text"><strong>City:</strong> {{ $seller->city }}</p>
+                                <p class="card-text"><strong>Area:</strong> {{ $seller->area }}</p>
+                                <a href="{{ route('seller.services', $seller->id) }}" class="btn btn-primary">View Services</a>
+                            </div>
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -793,39 +190,69 @@
     </div>
 </section>
 
-<section class="services">
+<section class="services" id="services">
     <div class="container">
-        <h2>Our Services</h2>
-        <div class="service-cards">
+        <h2 class="my-4">Our Services</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             @auth
                 @if ($services->isEmpty())
                     <p>No services available.</p>
                 @else
                     @foreach ($services as $service)
                         @if ($service->is_approved)
-                            <div class="service-card">
-                                <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}" class="seller-profile">
-                                <h3>{{ $service->service_name }}</h3>
-                                <p><strong>Seller:</strong> {{ $service->seller->name }}</p>
-                                <p><strong>Email:</strong> {{ $service->seller->email }}</p>
-                                <p><strong>City:</strong> {{ $service->seller->city }}</p>
-                                <p><strong>Area:</strong> {{ $service->seller->area }}</p>
-                                <p><strong>Start Price:</strong> {{ $service->service_price }} PKR</p>
-                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}">>
-                                <p><strong>Description:</strong> {{ $service->service_description }}</p>
-                                <p><strong>Availability:</strong> {{ $service->availability }}</p>
-                                <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
-                                <p><strong>Contact No:</strong> {{ $service->seller_contact_no }}</p>
-                                <div class="button-container">
-                                    <button class="buy-now">Avail</button>
-                                    <a href="#" class="see-more">See More</a>
+                            <div class="col">
+                                <div class="card h-100">
+                                    <!-- Seller Profile Image -->
+                                    <div class="card-img-top d-flex justify-content-center align-items-center" style="width: 120px; height: 120px; background-color: #f0f0f0; border-radius: 50%; overflow: hidden; margin: 0 auto;">
+                                        @if ($service->seller->profile_image && file_exists(public_path('storage/' . $service->seller->profile_image)))
+                                            <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                        @else
+                                            <i class="fas fa-user" style="font-size: 70px; color: #aaa;"></i>
+                                        @endif
+                                    </div>
+
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title text-center">{{ $service->service_name }}</h5>
+
+                                        <div class="service-details">
+                                            <p><strong>Seller:</strong> {{ $service->seller->name }}</p>
+                                            <p><strong>Email:</strong> {{ $service->seller->email }}</p>
+                                            <p><strong>City:</strong> {{ $service->seller->city }}</p>
+                                            <p><strong>Area:</strong> {{ $service->seller->area }}</p>
+                                            <p><strong>Start Price:</strong> {{ $service->service_price }} PKR</p>
+                                        </div>
+
+                                        <!-- Service Image with Font Awesome Icon as Placeholder -->
+                                        <div class="d-flex justify-content-center" style="width: 100%; height: 200px; background-color: #f0f0f0; align-items: center; justify-content: center;">
+                                            @if ($service->image && file_exists(public_path('storage/' . $service->image)))
+                                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                            @else
+                                                <i class="fas fa-image" style="font-size: 70px; color: #aaa;"></i>
+                                            @endif
+                                        </div>
+
+                                        <!-- Description (Limited to 3-4 lines) -->
+                                        <p class="card-text description-line-clamp">
+                                            <strong>Description:</strong> {{ $service->service_description }}
+                                        </p>
+
+                                        <div class="service-meta d-flex justify-content-between">
+                                            <p><strong>Availability:</strong> {{ $service->availability }}</p>
+                                            <p><strong>Delivery Time:</strong> {{ $service->service_delivery_time }}</p>
+                                        </div>
+
+                                        <div class="button-container d-flex justify-content-between mt-auto">
+                                            <button class="btn btn-primary">Avail</button>
+                                            <a href="#" class="btn btn-outline-secondary">See More</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endif
                     @endforeach
                 @endif
             @else
-                <p>Please log in to see the services.</p>
+                <p>Please <a href="{{ route('login') }}">log in</a> to see the services.</p>
             @endauth
         </div>
     </div>
@@ -833,7 +260,7 @@
 
 <section class="feedback">
     <div class="container">
-        <h2>What Our Customers Say</h2>
+        <h2 style="font-size: 40px">What Our Customers Say</h2>
         <div class="feedback-cards">
             <div class="feedback-card">
                 <p>"Laundrify has made my life so much easier. Their service is fast, reliable, and my clothes always come back perfectly clean!"</p>
@@ -851,7 +278,7 @@
     </div>
 </section>
 
-<section class="about">
+<section class="about" id="about">
     <div class="container">
         <div class="about-content">
             <div class="about-text">
@@ -866,42 +293,131 @@
     </div>
 </section>
 
-<footer>
+<footer class="bg-dark text-light py-5">
     <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact</a></li>
+        <div class="row">
+            <!-- About Laundrify Section -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase mb-4">About Laundrify</h5>
+                <p>
+                    Laundrify is your one-stop solution for hassle-free laundry services. From pickup to delivery, we ensure your clothes are handled with care, giving you more time for the things that matter.
+                </p>
+                <p>Because fresh, clean clothes make a difference!</p>
+            </div>
+
+            <!-- Tips & Tricks Section -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase mb-4">Laundry Tips & Tricks</h5>
+                <ul class="list-unstyled">
+                    <li>✔️ Separate whites and colors to avoid bleeding.</li>
+                    <li>✔️ Use cold water to preserve fabric quality.</li>
+                    <li>✔️ Turn clothes inside out to reduce wear and tear.</li>
+                    <li>✔️ Don’t overload your washing machine for better results.</li>
                 </ul>
             </div>
-            <div class="footer-section">
-                <h3>Services</h3>
-                <ul>
-                    <li><a href="#">Wash & Fold</a></li>
-                    <li><a href="#">Dry Cleaning</a></li>
-                    <li><a href="#">Alterations</a></li>
-                    <li><a href="#">Shoe Cleaning</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <ul>
-                    <li>123 Laundry Street, City, Country</li>
-                    <li>Phone: (123) 456-7890</li>
-                    <li>Email: info@laundrify.com</li>
-                </ul>
+
+            <!-- Subscribe Section -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase mb-4">Stay Connected</h5>
+                <p>Join our newsletter to get updates and exclusive discounts.</p>
+                <form action="#" method="POST" class="input-group">
+                    <input type="email" class="form-control" placeholder="Enter your email" required>
+                    <button class="btn btn-primary" type="submit">Subscribe</button>
+                </form>
+                <div class="mt-3">
+                    <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-linkedin-in"></i></a>
+                </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Laundrify. All rights reserved.</p>
+
+        <!-- Footer Bottom -->
+        <div class="text-center mt-4">
+            <p class="mb-0">&copy; 2025 Laundrify. All rights reserved.</p>
+            <p class="mb-0">Designed with ❤️ by the Laundrify Team.</p>
         </div>
     </div>
 </footer>
+
+<!-- Font Awesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
 </body>
+
+<script>
+    document.querySelector('.fas.fa-bell').addEventListener('click', function() {
+        document.querySelector('.dropdown-menu').classList.toggle('show');
+    });
+</script>
+
+<script>
+// Function to search for services
+function searchServices() {
+    let searchTerm = document.getElementById('serviceSearch').value;
+    let resultContainer = document.getElementById('searchResults');
+
+    if (searchTerm.length >= 3) {
+        fetch(`/search-services?q=${searchTerm}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                let results = data.services || [];
+                resultContainer.innerHTML = '';
+
+                if (results.length > 0) {
+                    resultContainer.style.display = 'block';  // Show results container
+                    results.forEach(service => {
+                        let name = service.service_name || "Unnamed Service";
+                        let description = service.service_description || "No description available";
+
+                        resultContainer.innerHTML += `
+                            <div class="service-item">
+                                <h5>${name}</h5>
+                                <p>${description}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    resultContainer.style.display = 'none';  // Hide results if no services found
+                    resultContainer.innerHTML = '<p>No services found.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+                resultContainer.style.display = 'none';  // Hide results in case of error
+                resultContainer.innerHTML = '<p>An error occurred while searching. Please try again.</p>';
+            });
+    } else {
+        resultContainer.style.display = 'none';  // Hide results if search term is too short
+        resultContainer.innerHTML = '';
+    }
+}
+
+// Function to toggle the visibility of search results
+function toggleSearchResults() {
+    let resultContainer = document.getElementById('searchResults');
+    resultContainer.style.display = 'block';  // Always show when clicking on the search input
+}
+
+// Function to handle click outside of search bar
+document.addEventListener('click', function(event) {
+    const searchBar = document.getElementById('serviceSearch');
+    const resultContainer = document.getElementById('searchResults');
+
+    // Hide results if clicked outside search bar and results container
+    if (!searchBar.contains(event.target) && !resultContainer.contains(event.target)) {
+        resultContainer.style.display = 'none';
+    }
+});
+
+</script>
+
 
 <script>
     document.querySelectorAll('.notification-link').forEach(link => {

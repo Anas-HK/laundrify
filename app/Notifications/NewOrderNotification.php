@@ -26,6 +26,7 @@ class NewOrderNotification extends Notification
             'seller_name' => $this->sellerName,
             'order_id' => $this->orderId,
             'order_details' => $this->orderDetails,
+            'message' => "Order #{$this->orderId} has been placed by {$this->sellerName}.",
         ];
     }
 

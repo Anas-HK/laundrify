@@ -15,4 +15,10 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Service::class);
     }
+
+    // Define relationship with Order
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

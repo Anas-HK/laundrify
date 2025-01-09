@@ -19,23 +19,25 @@ class ServiceController extends Controller
         }
     }
 
-//     public function showSellerServices($sellerId)
-// {
-//     $seller = Seller::find($sellerId);
-//     $services = Service::where('seller_id', $sellerId)->get();
-//     return view('seller-services', compact('seller', 'services'));
-// }
 
-// Controller Method
+    public function showSellerServices($sellerId)
+    {
+        $seller = Seller::find($sellerId);
+        $services = $seller->services()->where('is_approved', true)->get(); // Filter services where is_approved is true
 
-public function showSellerServices($sellerId)
+        return view('seller-services', compact('seller', 'services'));
+    }
+
+public function searchServices(Request $request)
 {
-    $seller = Seller::find($sellerId);
-    $services = $seller->services()->where('is_approved', true)->get(); // Filter services where is_approved is true
+    $query = $request->get('q');
 
-    return view('seller-services', compact('seller', 'services'));
+    $services = Service::where('service_name', 'like', '%' . $query . '%')
+        ->orWhere('service_description', 'like', '%' . $query . '%')
+        ->get(['id', 'service_name', 'service_description']); // Return only necessary fields
+
+    return response()->json(['services' => $services]);
 }
-
 
 
 }

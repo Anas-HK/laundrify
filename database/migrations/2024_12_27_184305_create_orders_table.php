@@ -2,6 +2,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Seller;
 
 return new class extends Migration
 {
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone');
             $table->string('status')->default('pending'); // pending, accepted, etc.
+            $table->integer('total_amount');
             $table->timestamps();
         });
     }
@@ -29,9 +31,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('orders');
     }
-    public function seller()
-{
-    return $this->belongsTo(Seller::class);
-}
+//     public function seller()
+// {
+//     return $this->belongsTo(Seller::class);
+// }
 
 };
