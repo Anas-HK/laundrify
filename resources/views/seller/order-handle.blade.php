@@ -56,15 +56,16 @@
         <div class="mb-3">
             <label for="status" class="form-label"><strong>Update Status:</strong></label>
             <select name="status" id="status" class="form-select" {{ $order->status == 'rejected' ? 'disabled' : '' }} required>
-                <option value="accepted" {{ $order->status === 'accepted' ? 'selected' : '' }}>Accepted</option>
-                <option value="pickup_departed" {{ $order->status === 'pickup_departed' ? 'selected' : '' }}>Delivery Boy Departed</option>
-                <option value="picked_up" {{ $order->status === 'picked_up' ? 'selected' : '' }}>Laundry Picked Up</option>
-                <option value="started_washing" {{ $order->status === 'started_washing' ? 'selected' : '' }}>Started Washing</option>
-                <option value="ironing" {{ $order->status === 'ironing' ? 'selected' : '' }}>Ironing</option>
-                <option value="ready_for_delivery" {{ $order->status === 'ready_for_delivery' ? 'selected' : '' }}>Ready for Delivery</option>
-                <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Laundry Delivered</option>
-                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Order Completed</option>
-                <option value="rejected" {{ $order->status === 'rejected' ? 'selected' : 'selected' }}>Rejected</option> <!-- Default is 'rejected' -->
+                @if($order->status !== 'rejected')
+                    <option value="accepted" {{ $order->status === 'accepted' ? 'selected' : '' }}>Accepted</option>
+                    <option value="pickup_departed" {{ $order->status === 'pickup_departed' ? 'selected' : '' }}>Delivery Boy Departed</option>
+                    <option value="picked_up" {{ $order->status === 'picked_up' ? 'selected' : '' }}>Laundry Picked Up</option>
+                    <option value="started_washing" {{ $order->status === 'started_washing' ? 'selected' : '' }}>Started Washing</option>
+                    <option value="ironing" {{ $order->status === 'ironing' ? 'selected' : '' }}>Ironing</option>
+                    <option value="ready_for_delivery" {{ $order->status === 'ready_for_delivery' ? 'selected' : '' }}>Ready for Delivery</option>
+                    <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Laundry Delivered</option>
+                    <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Order Completed</option>
+                @endif
             </select>
         </div>
         @if($order->status !== 'rejected')

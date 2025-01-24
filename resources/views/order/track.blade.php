@@ -5,11 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Tracking</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .status-tracker {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .status-tracker::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #dee2e6;
+            z-index: 1;
+        }
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex-grow: 1;
+            z-index: 2;
+        }
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #dee2e6;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+        .status-icon.completed {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-text {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Order Tracking</h2>
-        
+        @php
+            // Define statuses in order
+            $statuses = [
+                'accepted' => 'bi-check-circle',
+                'pickup_departed' => 'bi-truck',
+                'picked_up' => 'bi-basket',
+                'started_washing' => 'bi-water',
+                'ironing' => 'bi-crop',
+                'ready_for_delivery' => 'bi-box-seam',
+                'delivered' => 'bi-truck',
+                'completed' => 'bi-check-circle-fill'
+            ];
+
+            // Determine the current status index
+            $currentStatusIndex = array_search($order->status, array_keys($statuses));
+        @endphp
+
+        {{-- Status Tracker Section --}}
+        @if ($order->status == 'pending')
+            <div class="alert alert-warning text-center">
+                Order is Pending
+            </div>
+        @elseif ($order->status == 'rejected')
+            <div class="alert alert-danger text-center">
+                Order Rejected
+            </div>
+        @else
+            <div class="status-tracker">
+                @foreach ($statuses as $statusKey => $iconClass)
+                    @php
+                        // Determine if this status should be marked as completed
+                        $isCompleted = array_search($statusKey, array_keys($statuses)) <= $currentStatusIndex;
+                    @endphp
+                    <div class="status-item">
+                        <div class="status-icon {{ $isCompleted ? 'completed' : '' }}">
+                            <i class="bi {{ $iconClass }} fs-4"></i>
+                        </div>
+                        <div class="status-text">
+                            {{ ucwords(str_replace('_', ' ', $statusKey)) }}
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        {{-- Rest of your existing HTML --}}
         <div class="mb-4">
             <p><strong>Status:</strong> 
                 <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'completed' ? 'success' : ($order->status == 'rejected' ? 'danger' : 'info')) }}">
@@ -18,38 +110,12 @@
             </p>
         </div>
 
+        {{-- Remaining code from your original template --}}
         <h3>Order Details</h3>
         <ul class="list-group mb-4">
             <li class="list-group-item"><strong>Order ID:</strong> {{ $order->id }}</li>
             <li class="list-group-item"><strong>Order Date:</strong> {{ $order->created_at->format('d M Y, h:i A') }}</li>
             <li class="list-group-item"><strong>Total Amount:</strong> {{ $order->total_amount }} PKR</li>
-        </ul>
-
-        <h3>Customer Details</h3>
-        <ul class="list-group mb-4">
-            <li class="list-group-item"><strong>Name:</strong> {{ $order->user->name }}</li>
-            <li class="list-group-item"><strong>Email:</strong> {{ $order->user->email }}</li>
-            <li class="list-group-item"><strong>Address:</strong> {{ $order->user->address }}, {{ $order->user->city }}, {{ $order->user->state }}</li>
-            <li class="list-group-item"><strong>Mobile:</strong> {{ $order->user->mobile }}</li>
-        </ul>
-
-        <h3>Seller Details</h3>
-        <ul class="list-group mb-4">
-            <li class="list-group-item"><strong>Name:</strong> {{ $order->seller->name }}</li>
-            <li class="list-group-item"><strong>Email:</strong> {{ $order->seller->email }}</li>
-            <li class="list-group-item"><strong>Contact:</strong> {{ $order->seller->contact }}</li>
-        </ul>
-
-        <h3>Order Items:</h3>
-        <ul class="list-group">
-            @foreach ($order->items as $item)
-                <li class="list-group-item">
-                    <strong>Service:</strong> {{ $item->service->service_name }} <br>
-                    <strong>Quantity:</strong> {{ $item->quantity }} <br>
-                    <strong>Price:</strong> {{ $item->price }} PKR <br>
-                    <strong>Description:</strong> {{ $item->service->description ?? 'No description available' }}
-                </li>
-            @endforeach
         </ul>
     </div>
 
