@@ -155,7 +155,6 @@ public function register(Request $request)
 
     public function login(Request $request)
     {
-        
         // Validate input data
         $request->validate([
             'email' => 'required|email',
@@ -163,14 +162,20 @@ public function register(Request $request)
         ]);
     
         $credentials = $request->only('email', 'password');
+        
+        // Test Case 4: Check for empty fields
+        if (empty($credentials['email']) || empty($credentials['password'])) {
+            return back()->withErrors(['login' => 'Please enter email and password.'])->withInput();
+        }
     
+        // Attempt to authenticate the user with provided credentials
         if (Auth::attempt($credentials)) {
             // Regenerate session to prevent session fixation attacks
             $request->session()->regenerate();
     
             $user = Auth::user();
     
-            // Check if the user is admin
+            // Test Case 3: If user credentials are valid, check for admin
             if ($user->id == 1 || $user->sellerType == 1) {
                 return redirect()->route('admin.dashboard')->with('success', 'You are logged in as admin.');
             }
@@ -178,10 +183,17 @@ public function register(Request $request)
             // Redirect to the intended page or home
             return redirect()->intended('/')->with('success', 'You are logged in.');
         }
-        
-        // Redirect back with error if login fails
-        return back()->withErrors(['login' => 'Invalid email or password.'])->withInput();
+    
+        // Test Case 1: Invalid email or Test Case 2: Wrong password
+        if (!User::where('email', $credentials['email'])->exists()) {
+            // No such ID exists
+            return back()->withErrors(['login' => 'No such ID exists.'])->withInput();
+        }
+    
+        // If the email exists but the password is incorrect
+        return back()->withErrors(['login' => 'Wrong password.'])->withInput();
     }
+    
     
                     
     public function home()

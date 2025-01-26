@@ -234,10 +234,20 @@
     border-radius: 3px;
 }
 
+.success-message {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
 
     </style>
 </head>
 <body>
+
 <header>
     <div class="header-container">
         <h1>Welcome to the Seller Panel, {{ auth()->guard('seller')->user()->name }}!</h1>
@@ -311,6 +321,9 @@
 </header>
 
     <main>
+        @if (session('success'))
+        <div class="success-message">{{ session('success') }}</div>
+    @endif
         <p>This is your dashboard. You can manage your services here.</p>
 
         <!-- Display services -->

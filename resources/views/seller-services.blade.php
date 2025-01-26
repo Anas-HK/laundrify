@@ -117,7 +117,9 @@
 <!-- Cart Icon with Count -->
 <a href="{{ route('cart.view') }}" class="cart-icon">
     <span class="icon">🛒</span>
-    <span class="count">{{ Session::get('cart') ? count(Session::get('cart')) : 0 }}</span>
+    <span class="count">
+        {{ Session::get('cart') ? array_sum(array_column(Session::get('cart'), 'quantity')) : 0 }}
+    </span>
 </a>
 
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>

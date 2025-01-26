@@ -40,6 +40,9 @@
         .btn-place-order:focus {
             box-shadow: none;
         }
+        .invalid-feedback {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -48,15 +51,17 @@
     <div class="container">
         <h2 class="text-center mb-4">Checkout</h2>
 
-        <form action="{{ route('checkout.place') }}" method="POST" class="row">
+        <form action="{{ route('checkout.place') }}" method="POST"  id="checkout-form" class="row">
             @csrf
             <div class="col-md-6 mb-4">
                 <label for="address" class="form-label">Address</label>
-                <input type="text" name="address" id="address" class="form-control" required>
+                <input type="text" name="address" id="address" class="form-control">
+                <div class="invalid-feedback" id="address-error">Address is required.</div>
             </div>
             <div class="col-md-6 mb-4">
                 <label for="phone" class="form-label">Phone</label>
-                <input type="text" name="phone" id="phone" class="form-control" required>
+                <input type="text" name="phone" id="phone" class="form-control">
+                <div class="invalid-feedback" id="phone-error">Phone number is required.</div>
             </div>
 
             <div class="col-12">
@@ -86,6 +91,39 @@
         </form>
     </div>
 </section>
+
+<script>
+    // Listen for form submission
+    document.getElementById('checkout-form').addEventListener('submit', function (e) {
+        e.preventDefault();  // Prevent form from submitting to handle validation
+
+        // Get form fields
+        const address = document.getElementById('address');
+        const phone = document.getElementById('phone');
+        let isValid = true;
+
+        // Reset previous error messages
+        document.getElementById('address-error').style.display = 'none';
+        document.getElementById('phone-error').style.display = 'none';
+
+        // Check if address is empty
+        if (address.value.trim() === '') {
+            document.getElementById('address-error').style.display = 'block';
+            isValid = false;
+        }
+
+        // Check if phone is empty
+        if (phone.value.trim() === '') {
+            document.getElementById('phone-error').style.display = 'block';
+            isValid = false;
+        }
+
+        // If the form is valid, submit it
+        if (isValid) {
+            this.submit(); // Manually submit the form
+        }
+    });
+</script>
 
 </body>
 </html>

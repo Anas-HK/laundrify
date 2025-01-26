@@ -68,7 +68,11 @@ class SellerController extends Controller
 
 
         if ($seller->accountIsApproved==0) {
-            return back()->withErrors(['email' => 'Kindly await account confirmation.']);
+            return back()->withErrors(['email' => 'Your 
+account is 
+pending approval. 
+Please wait for 
+admin approval.']);
         }
         $credentials = $request->only('email', 'password');
 
