@@ -6,7 +6,6 @@
     <title>Login - Laundrify</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('css/buyer.css') }}">
-    <!-- Add Bootstrap CDN for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -21,9 +20,7 @@
         <form class="auth-form" method="POST" action="{{ route('login') }}" onsubmit="return validateForm()">
             @csrf
             <h2 class="register-login-heading">Login to Laundrify</h2>
-        
-            <!-- Display Error Alert -->
-            @if($errors->has('login'))
+                    @if($errors->has('login'))
                 <div class="alert alert-danger">
                     <p>{{ $errors->first('login') }}</p>
                 </div>
@@ -54,7 +51,7 @@
             if (email.value === "" || password.value === "") {
                 // Custom validation message
                 alert("Email and Password are required.");
-                return false; // Prevent form submission
+                return false; 
             }
     
             return true; // Allow form submission if no error

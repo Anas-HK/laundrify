@@ -50,11 +50,12 @@ class SellerServiceController extends Controller
             'is_approved' => false,
         ]);
     
-        // Notify admin or all users (depending on your requirements)
         $sellerName = auth()->guard('seller')->user()->name;
-        $users = AppUser::all(); // Notify all users (you can change this to specific users)
+        $sellerId = auth()->guard('seller')->user()->id;
+        $serviceId = $service->id;
+        $users = AppUser::all(); 
         foreach ($users as $user) {
-            $user->notify(new NewServiceAddedNotification($sellerName, $service->service_name));
+            $user->notify(new NewServiceAddedNotification($sellerName, $service->service_name, $sellerId, $serviceId));
         }
     
         return redirect()->route('seller.panel')->with('success', 'Service added successfully and is awaiting admin approval.');
@@ -77,7 +78,7 @@ public function update(Request $request, $id)
 {
     $service = Service::findOrFail($id);
     
-    // Ensure the seller is the owner of this service
+    //seller is the owner of this service
     if ($service->seller_id != auth()->guard('seller')->id()) {
         abort(403);
     }
@@ -94,14 +95,11 @@ public function update(Request $request, $id)
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
 
-    // Handle image upload if a new image is provided
     if ($request->hasFile('image')) {
-        // Delete old image
         if ($service->image) {
             Storage::delete('public/' . $service->image);
         }
         
-        // Store new image
         $validated['image'] = $request->file('image')->store('services', 'public');
     }
 
@@ -113,7 +111,7 @@ public function update(Request $request, $id)
 public function delete($id)
 {
     $service = Service::findOrFail($id);
-    // Ensure the seller is the owner of this service
+    //seller is the owner of this service
     if ($service->seller_id != auth()->guard('seller')->id()) {
         abort(403);
     }

@@ -32,7 +32,7 @@ class NewOrderNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'mail']; // Sending via database and email
+        return ['database', 'mail']; 
     }
 
     public function toDatabase($notifiable)

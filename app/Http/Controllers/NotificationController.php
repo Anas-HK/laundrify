@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Add this line
+use Illuminate\Support\Facades\Auth; 
 
 
 class NotificationController extends Controller
@@ -19,16 +19,16 @@ class NotificationController extends Controller
     public function markAsRead(Request $request)
     {
         $user = auth()->user();
-        $user->unreadNotifications->markAsRead(); // Mark all unread as read
+        $user->unreadNotifications->markAsRead(); 
 
-        return redirect()->back(); // Refresh the page or redirect to the same page
+        return redirect()->back(); 
     }
     public function redirectToService($id)
     {
         $notification = Auth::user()->notifications()->findOrFail($id);
         $notification->markAsRead();
 
-        $serviceUrl = $notification->data['service_url']; // Assuming the service URL is stored in the notification data
+        $serviceUrl = $notification->data['service_url']; 
 
         return redirect($serviceUrl);
     }

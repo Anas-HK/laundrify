@@ -51,8 +51,8 @@
         </ul>
         <p>Click the button below to view the order:</p>
         <p>
-            <a href="{{ url('/seller/orders/' . $orderId) }}" 
-               style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+        <a href="{{ url('/seller/order/' . $orderId . '/handle') }}" 
+        style="background-color: #007bff; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
                 View Order
             </a>
         </p>

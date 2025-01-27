@@ -36,8 +36,8 @@
             }).then(response => {
                 if (response.ok) {
                     const notificationItem = this.closest('.notification-item');
-                    notificationItem.classList.remove('unread'); // Update UI
-                    notificationItem.remove(); // Optionally remove the item if no longer needed
+                    notificationItem.classList.remove('unread'); 
+                    notificationItem.remove(); 
                 } else {
                     console.error('Failed to mark as read');
                 }
