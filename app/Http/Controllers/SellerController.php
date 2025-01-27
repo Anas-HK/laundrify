@@ -1,7 +1,4 @@
 <?php
-
-/// SellerController.php
-
 namespace App\Http\Controllers;
 
 use App\Models\Seller;
@@ -25,14 +22,12 @@ class SellerController extends Controller
             'area' => 'nullable|string|max:255',
         ]);
     
-        // Handle the uploaded profile image
         if ($request->hasFile('profile_image')) {
             $imagePath = $request->file('profile_image')->store('profile_images', 'public');
         } else {
             $imagePath = null;
         }
     
-        // Create a new seller
         $seller = Seller::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -43,7 +38,6 @@ class SellerController extends Controller
             'accountIsApproved' => 0,
         ]);
     
-        // Log the seller in and redirect to the seller panel
         Auth::guard('seller')->login($seller);
         return redirect()->route('home');
     }
@@ -68,11 +62,7 @@ class SellerController extends Controller
 
 
         if ($seller->accountIsApproved==0) {
-            return back()->withErrors(['email' => 'Your 
-account is 
-pending approval. 
-Please wait for 
-admin approval.']);
+            return back()->withErrors(['email' => 'Your account is pending approval.Please wait for admin approval.']);
         }
         $credentials = $request->only('email', 'password');
 
@@ -82,43 +72,23 @@ admin approval.']);
 
         return back()->withErrors(['email' => 'Invalid credentials.']);
     }
-
-// In SellerController.php
-
-// public function sellerPanel()
-// {
-//     // Get the logged-in seller and their services
-//     $seller = auth()->guard('seller')->user();
-//     $services = $seller->services; // Only fetch services associated with the logged-in seller
-//     return view('seller.panel', compact('services'));
-// }
-
-// public function sellerPanel()
-// {
-//     // Get the logged-in seller and their services
-//     $seller = auth()->guard('seller')->user();
-//     $services = $seller->services; // Only fetch services associated with the logged-in seller
-
-//     // Get the logged-in seller's orders
-//     $orders = Auth::guard('seller')->user()->orders; // Assuming a relationship with orders
-
-//     return view('seller.panel', compact('services', 'orders'));
-// }
-
+ 
+    
+    public function showServices($seller_id)
+    {
+        $seller = User::findOrFail($seller_id); 
+        $services = Service::where('seller_id', $seller_id)->get();
+    
+        return view('seller-service', compact('seller', 'services')); 
+    }
+    
 public function sellerPanel()
 {
-    // Get the logged-in seller
     $seller = auth()->guard('seller')->user();
 
-    // Get the seller's services
-    $services = $seller->services; // Fetch services associated with the logged-in seller
-
-    // Get the seller's orders with necessary relationships
+    $services = $seller->services; 
     $orders = $seller->orders()->with(['user', 'items.service'])->get();
-
-    // Get the seller's notifications
     $notifications = $seller->notifications;
-
 
     return view('seller.panel', compact('services', 'orders', 'notifications'));
 }
@@ -130,8 +100,6 @@ public function sellerPanel()
     Auth::guard('seller')->logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-
-    // Redirect to the seller login page
     return redirect()->route('login.seller');
 }
 }

@@ -71,11 +71,9 @@
                 @foreach ($services as $service)
                     <div class="col">
                         <div class="card shadow-sm h-100">
-                            <!-- Service Image -->
                             <div class="card-img-top d-flex justify-content-center align-items-center" style="height: 200px; background-color: #f0f0f0;">
                                 @if($service->image)
-                                    {{-- <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="service-img w-100"> --}}
-                                    <img src={{ $service->image }} alt="{{ $service->service_name }}" class="service-img w-100">
+                                    <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="service-img w-100">
                                 @else
                                     <i class="fas fa-image" style="font-size: 50px; color: #aaa;"></i>
                                 @endif
@@ -86,9 +84,7 @@
                                 <p class="card-text">
                                     <strong>Start Price:</strong> {{ $service->service_price }} PKR
                                 </p>
-                                
-                                <!-- Description (Limited) -->
-                                <p class="card-text description-line-clamp">
+                                    <p class="card-text description-line-clamp">
                                     <strong>Description:</strong> {{ Str::limit($service->service_description, 100) }}
                                 </p>
 
@@ -114,7 +110,6 @@
     </div>
 </section>
 
-<!-- Cart Icon with Count -->
 <a href="{{ route('cart.view') }}" class="cart-icon">
     <span class="icon">🛒</span>
     <span class="count">

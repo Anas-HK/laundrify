@@ -77,12 +77,10 @@ Route::middleware('auth')->group(function () {
     Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 // 
-Route::get('/seller/{seller}', [ServiceController::class, 'showSellerServices'])->name('seller.services');
-Route::get('sellers/{sellerId}/services', [ServiceController::class, 'showSellerServices'])->name('seller.services');
+Route::get('/sellers/{seller}', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
+Route::get('sellers/{sellerId}/services', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
 
 Route::get('services/{id}', [ServiceController::class, 'showService'])->name('service.show');
-
-
 
 // Notification route
 Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -114,3 +112,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
     // Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
 });
+
+Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServices'])->name('seller.services');

@@ -1,35 +1,44 @@
 <?php
 namespace App\Notifications;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewServiceAddedNotification extends Notification
 {
-    private $sellerName;
-    private $serviceName;
+    use Queueable;
 
-    public function __construct($sellerName, $serviceName)
+    private $serviceName;
+    private $sellerName;
+    private $sellerId;
+    private $serviceId;
+
+    public function __construct($serviceName, $sellerName, $sellerId, $serviceId)
     {
-        $this->sellerName = $sellerName;
         $this->serviceName = $serviceName;
+        $this->sellerName = $sellerName;
+        $this->sellerId = $sellerId;
+        $this->serviceId = $serviceId;
     }
 
     public function via($notifiable)
     {
-        return ['database', 'mail']; // Specify the channels here
+        return ['database', 'mail'];
     }
 
     public function toArray($notifiable)
     {
         return [
-            'message' => "New service '{$this->serviceName}' added by {$this->sellerName}."
+            'message' => "New service '{$this->serviceName}' added by {$this->sellerName}.",
+            'service_url' => url("/sellers/{$this->sellerId}/services")
         ];
     }
 
     public function toMail($notifiable)
     {
-        return (new \Illuminate\Notifications\Messages\MailMessage)
+        return (new MailMessage)
             ->line("New service '{$this->serviceName}' added by {$this->sellerName}.")
-            ->action('View Service', url('/services'));
+            ->action('View Service', url("/sellers/{$this->sellerId}/services"));
     }
 }

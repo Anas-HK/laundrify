@@ -40,60 +40,56 @@
             </div>
             
             <div class="nav-icons">
-                <!-- Static Navigation Links -->
                 <a href="#home">Home</a>
                 <a href="#sellers">Sellers</a>
                 <a href="#services">Services</a>
                 <a href="#about">About</a>
 
-                <!-- Notification Icon with Dropdown -->
                 <div class="notification-dropdown dropdown">
-                    <button class="btn btn-link dropdown-toggle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-bell"></i>
-                        @auth
-                            @php
-                                $unreadCount = Auth::user()->unreadNotifications->count();
-                            @endphp
+    <button class="btn btn-link dropdown-toggle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-bell"></i>
+        @auth
+            @php
+                $unreadCount = Auth::user()->unreadNotifications->count();
+            @endphp
 
-                            @if($unreadCount > 0)
-                                <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 translate-middle" style="font-size: 0.75rem;">{{ $unreadCount }}</span>
-                            @endif
-                        @endauth
-                    </button>
+            @if($unreadCount > 0)
+                <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 translate-middle" style="font-size: 0.75rem;">{{ $unreadCount }}</span>
+            @endif
+        @endauth
+    </button>
 
-                    <ul class="dropdown-menu" aria-labelledby="notificationDropdown">
-                        <li class="dropdown-header d-flex justify-content-between align-items-center">
-                            <span>Notifications</span>
-                            @auth
-                                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="d-inline-block">
-                                    @csrf
-                                    <button type="submit" class="btn btn-link btn-sm text-muted">Mark all as read</button>
-                                </form>
-                            @endauth
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        @auth
-                            @php
-                                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
-                            @endphp
-                            @forelse($notifications as $notification)
-                                <li class="dropdown-item {{ is_null($notification->read_at) ? 'bg-light' : '' }}" data-id="{{ $notification->id }}">
-                                    <a href="{{ route('notifications.redirect', $notification->id) }}" class="text-dark">
-                                        {{ $notification->data['message'] ?? 'No message available' }}
-                                    </a>
-                                </li>
-                            @empty
-                                <li class="dropdown-item text-muted">No notifications available</li>
-                            @endforelse
-                        @else
-                            <li class="dropdown-item text-muted">Please login to see notifications.</li>
-                        @endauth
-                    </ul>
-                </div>
+    <ul class="dropdown-menu" aria-labelledby="notificationDropdown">
+        <li class="dropdown-header d-flex justify-content-between align-items-center">
+            <span>Notifications</span>
+            @auth
+                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="d-inline-block">
+                    @csrf
+                    <button type="submit" class="btn btn-link btn-sm text-muted">Mark all as read</button>
+                </form>
+            @endauth
+        </li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+        @auth
+            @php
+                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
+            @endphp
+            @foreach($notifications as $notification)
+    <li class="dropdown-item {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
+        <a href="{{ $notification->data['service_url'] ?? '#' }}" class="text-dark">
+            {{ $notification->data['message'] ?? 'No message available' }}
+        </a>
+    </li>
+@endforeach
+        @else
+            <li class="dropdown-item text-muted">Please login to see notifications.</li>
+        @endauth
+    </ul>
+</div>
 
-                <!-- Profile Icon with Dropdown -->
+
                 <div class="dropdown">
                     @auth
                         @php
@@ -194,7 +190,7 @@
                                 <h5 class="card-title">{{ $seller->name }}</h5>
                                 <p class="card-text"><strong>City:</strong> {{ $seller->city }}</p>
                                 <p class="card-text"><strong>Area:</strong> {{ $seller->area }}</p>
-                                <a href="{{ route('seller.services', $seller->id) }}" class="btn btn-primary">View Services</a>
+                                <a href="{{ route('sellers.services', $seller->id) }}" class="btn btn-primary">View Services</a>
                             </div>
                         </div>
                     </div>
@@ -218,7 +214,6 @@
                         @if ($service->is_approved)
                             <div class="col">
                                 <div class="card h-100">
-                                    <!-- Seller Profile Image -->
                                     <div class="card-img-top d-flex justify-content-center align-items-center" style="width: 120px; height: 120px; background-color: #f0f0f0; border-radius: 50%; overflow: hidden; margin: 0 auto;">
                                         @if ($service->seller->profile_image && file_exists(public_path('storage/' . $service->seller->profile_image)))
                                             <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
@@ -238,7 +233,6 @@
                                             <p><strong>Start Price:</strong> {{ $service->service_price }} PKR</p>
                                         </div>
 
-                                        <!-- Service Image with Font Awesome Icon as Placeholder -->
                                         <div class="d-flex justify-content-center" style="width: 100%; height: 200px; background-color: #f0f0f0; align-items: center; justify-content: center;">
                                             @if ($service->image && file_exists(public_path('storage/' . $service->image)))
                                                 <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
@@ -247,7 +241,6 @@
                                             @endif
                                         </div>
 
-                                        <!-- Description (Limited to 3-4 lines) -->
                                         <p class="card-text description-line-clamp">
                                             <strong>Description:</strong> {{ $service->service_description }}
                                         </p>
@@ -258,8 +251,7 @@
                                         </div>
 
                                         <div class="button-container d-flex justify-content-between mt-auto">
-                                            <button class="btn btn-primary">Avail</button>
-                                            <a href="#" class="btn btn-outline-secondary">See More</a>
+                                        <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
                                         </div>
                                     </div>
                                 </div>
