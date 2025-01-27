@@ -10,6 +10,22 @@
         body {
             background-color: #f4f6f9;
         }
+        nav {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+        }
+        .navbar-brand{
+            color: white;
+            font-weight: bold;
+        }
+        footer {
+            color:white;
+            background-color: #007bff !important;
+        }
+        .footer-text {
+            color: white;
+        }
         .registration-container {
             background-color: white;
             border-radius: 10px;
@@ -29,7 +45,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg  ">
         <div class="container">
             <a class="navbar-brand" href="#">Laundrify</a>
             <a href="{{ route('home') }}" class="btn btn-outline-primary">Home</a>
@@ -154,9 +170,9 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer mt-auto py-3 bg-light text-center">
+    <footer class="footer mt-auto py-3  text-center">
         <div class="container">
-            <span class="text-muted">&copy; 2025 Laundrify. All rights reserved.</span>
+            <span class="footer-text" class="text-muted">&copy; 2025 Laundrify. All rights reserved.</span>
         </div>
     </footer>
 

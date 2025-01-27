@@ -9,8 +9,7 @@
 <body>
     <div class="container mt-5">
         <h1>Settings</h1>
-        <p>Here you can manage the settings of the Laundrify platform.</p>
-        <!-- Add your settings form or content here -->
+        <p>Here we will manage the settings of the Laundrify platform in future or fyp2</p>
     </div>
 </body>
 </html>

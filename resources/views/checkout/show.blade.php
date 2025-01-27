@@ -93,34 +93,27 @@
 </section>
 
 <script>
-    // Listen for form submission
     document.getElementById('checkout-form').addEventListener('submit', function (e) {
-        e.preventDefault();  // Prevent form from submitting to handle validation
-
-        // Get form fields
+        e.preventDefault(); 
         const address = document.getElementById('address');
         const phone = document.getElementById('phone');
         let isValid = true;
 
-        // Reset previous error messages
         document.getElementById('address-error').style.display = 'none';
         document.getElementById('phone-error').style.display = 'none';
 
-        // Check if address is empty
         if (address.value.trim() === '') {
             document.getElementById('address-error').style.display = 'block';
             isValid = false;
         }
 
-        // Check if phone is empty
         if (phone.value.trim() === '') {
             document.getElementById('phone-error').style.display = 'block';
             isValid = false;
         }
 
-        // If the form is valid, submit it
         if (isValid) {
-            this.submit(); // Manually submit the form
+            this.submit(); 
         }
     });
 </script>

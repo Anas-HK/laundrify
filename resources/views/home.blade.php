@@ -89,7 +89,6 @@
     </ul>
 </div>
 
-
                 <div class="dropdown">
                     @auth
                         @php
@@ -168,6 +167,7 @@
         </div>
     </div>
 </section>
+
 <section class="sellers" id="sellers">
     <div class="container">
         <div class='text-center'>

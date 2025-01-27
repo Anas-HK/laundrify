@@ -15,7 +15,6 @@ class AuthController extends Controller
     {
         Auth::logout();
     
-        // Invalidate the session and regenerate CSRF token
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -32,16 +31,13 @@ public function showOtpForm()
 
 public function verifyOtp(Request $request)
 {
-    // Validate the OTP input
     $request->validate([
         'otp' => 'required|numeric',
     ]);
 
-    // Retrieve the email from the session
     $email = session('email');
 
     if (!$email) {
-        // Handle expired or missing session
         return redirect()->route('register')->withErrors(['otp' => 'Session expired. Please register again.']);
     }
 
@@ -56,14 +52,11 @@ public function verifyOtp(Request $request)
     logger('Entered OTP: ' . $request->otp);
     logger('Database OTP: ' . $user->otp);
 
-    // Check if the OTP matches
     if ($user->otp == $request->otp) {
-        // Mark the user as verified
         $user->is_verified = true;
-        $user->otp = null; // Clear the OTP after verification
+        $user->otp = null;
         $user->save();
 
-        // Clear the email from the session
         session()->forget('email');
 
         // Redirect to the login page with a success message
@@ -77,10 +70,8 @@ public function verifyOtp(Request $request)
 public function register(Request $request) 
 {
     try {
-        // Add debugging
         Log::info('Registration attempt:', $request->all());
 
-        // Validate with error handling
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -97,11 +88,10 @@ public function register(Request $request)
 
         Log::info('Validation passed');
 
-        // Generate OTP
+        // Generating OTP
         $otp = rand(100000, 999999);
         Log::info('Generated OTP: ' . $otp);
 
-        // Create user first
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,

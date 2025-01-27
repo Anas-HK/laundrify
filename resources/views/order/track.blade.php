@@ -57,7 +57,6 @@
 <body>
     <div class="container mt-5">
         @php
-            // Define statuses in order
             $statuses = [
                 'accepted' => 'bi-check-circle',
                 'pickup_departed' => 'bi-truck',
@@ -69,11 +68,9 @@
                 'completed' => 'bi-check-circle-fill'
             ];
 
-            // Determine the current status index
             $currentStatusIndex = array_search($order->status, array_keys($statuses));
         @endphp
 
-        {{-- Status Tracker Section --}}
         @if ($order->status == 'pending')
             <div class="alert alert-warning text-center">
                 Order is Pending
@@ -86,7 +83,6 @@
             <div class="status-tracker">
                 @foreach ($statuses as $statusKey => $iconClass)
                     @php
-                        // Determine if this status should be marked as completed
                         $isCompleted = array_search($statusKey, array_keys($statuses)) <= $currentStatusIndex;
                     @endphp
                     <div class="status-item">
@@ -101,7 +97,6 @@
             </div>
         @endif
 
-        {{-- Rest of your existing HTML --}}
         <div class="mb-4">
             <p><strong>Status:</strong> 
                 <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'completed' ? 'success' : ($order->status == 'rejected' ? 'danger' : 'info')) }}">
@@ -110,7 +105,6 @@
             </p>
         </div>
 
-        {{-- Remaining code from your original template --}}
         <h3>Order Details</h3>
         <ul class="list-group mb-4">
             <li class="list-group-item"><strong>Order ID:</strong> {{ $order->id }}</li>

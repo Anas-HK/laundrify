@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        /* Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -163,7 +162,7 @@
     right: -10px;
     font-size: 12px;
     color: #fff;
-    background-color: #dc3545; /* Danger color */
+    background-color: #dc3545; 
     border-radius: 50%;
     padding: 3px 6px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -351,7 +350,6 @@
             @endif
         </div>
 
-
         <h2>Your Orders</h2>
 @if($orders->isEmpty())
     <p>No orders found.</p>
@@ -374,12 +372,12 @@
                     <td>{{ $order->user->name }}</td> <!-- Assuming the user relationship is loaded -->
                     <td>
                         <ul>
-                            @foreach($order->items as $item) <!-- Assuming items relationship is loaded -->
+                            @foreach($order->items as $item) 
                                 <li>{{ $item->service->service_name }} ({{ $item->quantity }} x {{ $item->price }} PKR)</li>
                             @endforeach
                         </ul>
                     </td>
-                    <td>{{ $order->total_amount ?? 'N/A' }} PKR</td> <!-- Ensure total_amount is calculated -->
+                    <td>{{ $order->total_amount ?? 'N/A' }} PKR</td> 
                     <td>{{ $order->status }}</td>
                     <td>
                         @if($order->status === 'pending')

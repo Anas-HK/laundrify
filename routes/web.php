@@ -71,12 +71,12 @@ Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')
 Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-    Route::get('notifications/{id}/redirect', 'NotificationController@redirectToService')->name('notifications.redirect');
-    Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::get('notifications/{id}/redirect', 'NotificationController@redirectToService')->name('notifications.redirect');
+Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
-// 
+
 Route::get('/sellers/{seller}', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
 Route::get('sellers/{sellerId}/services', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
 

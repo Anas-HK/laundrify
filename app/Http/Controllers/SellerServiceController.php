@@ -12,7 +12,7 @@ class SellerServiceController extends Controller
 {
     public function showAddServiceForm()
     {
-        $seller = auth()->guard('seller')->user(); // Get the logged-in seller
+        $seller = auth()->guard('seller')->user(); 
         return view('seller.add-service', compact('seller'));
     }
 
@@ -66,7 +66,6 @@ class SellerServiceController extends Controller
 public function edit($id)
 {
     $service = Service::findOrFail($id);
-    // Ensure the seller is the owner of this service
     if ($service->seller_id != auth()->guard('seller')->id()) {
         abort(403);
     }
@@ -78,7 +77,6 @@ public function update(Request $request, $id)
 {
     $service = Service::findOrFail($id);
     
-    //seller is the owner of this service
     if ($service->seller_id != auth()->guard('seller')->id()) {
         abort(403);
     }
@@ -111,7 +109,6 @@ public function update(Request $request, $id)
 public function delete($id)
 {
     $service = Service::findOrFail($id);
-    //seller is the owner of this service
     if ($service->seller_id != auth()->guard('seller')->id()) {
         abort(403);
     }

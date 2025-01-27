@@ -6,7 +6,6 @@
     <title>Add Service - Seller Panel</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
-        /* Global Styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f5f5f5;

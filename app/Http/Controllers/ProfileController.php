@@ -38,7 +38,7 @@ class ProfileController extends Controller
             $profileUpdate = UserProfileUpdate::firstOrNew(['user_id' => $user->id]);
     
             if ($profileUpdate->profile_image) {
-                Storage::disk('public')->delete($profileUpdate->profile_image); // Delete old image
+                Storage::disk('public')->delete($profileUpdate->profile_image); 
             }
     
             $path = $request->file('profile_image')->store('profile_images', 'public');

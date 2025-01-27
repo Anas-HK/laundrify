@@ -20,7 +20,6 @@ class CartController extends Controller
     // Fetch the service
     $service = Service::findOrFail($request->service_id);
 
-    // Get the cart from session or initialize a new one
     $cart = Session::get('cart', []);
 
     // Add the service to the cart (or update quantity if already exists)

@@ -8,13 +8,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        body {
+            background-color: #f9f9f9;
+        }
         .card-body {
             padding: 1.5rem;
         }
         .card-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #333;
+            text-transform: capitalize;
         }
         .card-text {
             font-size: 1rem;
@@ -23,33 +27,55 @@
         .service-img {
             height: 200px;
             object-fit: cover;
+            border-radius: 8px;
         }
         .see-more {
             text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
         }
         .card-footer {
-            background-color: transparent;
+            background-color: #fafafa;
+            border-top: 1px solid #ddd;
         }
         .cart-icon {
             font-size: 2rem;
             color: #ffffff;
             background-color: #007bff;
-            padding: 10px;
+            padding: 12px;
             border-radius: 50%;
             position: fixed;
             bottom: 10px;
             right: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10;
         }
         .cart-icon .count {
             font-size: 1.2rem;
             position: absolute;
-            top: 0;
+            top: -5px;
             left: 12px;
             background-color: red;
             color: white;
             border-radius: 50%;
-            padding: 3px 8px;
+            padding: 4px 9px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
         }
     </style>
 </head>
@@ -94,7 +120,6 @@
                                         <input type="hidden" name="service_id" value="{{ $service->id }}">
                                         <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
                                     </form>
-                                    <a href="#" class="btn btn-outline-secondary btn-sm see-more">See More</a>
                                 </div>
                             </div>
 

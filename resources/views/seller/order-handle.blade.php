@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Handle</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -82,7 +81,6 @@
     </div>
 </div>
 
-<!-- Bootstrap JS (Optional but recommended for components like dropdowns and modals) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0DWq69bWWVbq00+L8f6cIN8p+5BvhTtG5J9k3ZGzCqgkzMGG" crossorigin="anonymous"></script>
 </body>
 </html>

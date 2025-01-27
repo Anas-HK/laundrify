@@ -19,7 +19,6 @@ class OrderController extends Controller
 
     public function allOrders()
 {
-    // Assuming there's an authenticated user
     $user = auth()->user();
 
     // Fetch all orders for the authenticated user or return an empty collection
@@ -42,8 +41,7 @@ class OrderController extends Controller
     }
     public function placeOrder(Request $request)
     {
-        // Ensure $service is defined
-        $service = $this->getService($request->service_id); // Example function to get service
+        $service = $this->getService($request->service_id); 
     
         if (!$service) {
             Log::error('Invalid service_id for order placement', ['service_id' => $request->service_id]);
@@ -124,7 +122,6 @@ class OrderController extends Controller
     }
     
     
-    // Define the getService method
     private function getService($service_id)
     {
         return Service::find($service_id);
@@ -141,14 +138,12 @@ class OrderController extends Controller
 
     public function track(Order $order)
     {
-        // Ensure the authenticated user is the owner of the order
         $user = auth()->user();
 
         if ($order->user_id !== $user->id) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Load related order items and other details
         $order->load('orderItems');
         $order->load(['user', 'seller', 'items.service']);
 
@@ -172,7 +167,6 @@ class OrderController extends Controller
 
     public function handleOrder(Order $order)
     {
-        // Check if the logged-in seller owns this order
         $sellerId = auth()->guard('seller')->id();
         if ($order->seller_id !== $sellerId) {
             return redirect()->route('seller.panel')->with('error', 'You do not have permission to manage this order.');
@@ -187,7 +181,6 @@ class OrderController extends Controller
             'status' => 'required|string|in:accepted,pickup_departed,picked_up,started_washing,ironing,ready_for_delivery,delivered,completed',
         ]);
 
-        // Check if the logged-in seller owns this order
         $sellerId = auth()->guard('seller')->id();
         if ($order->seller_id !== $sellerId) {
             return redirect()->route('seller.panel')->with('error', 'You do not have permission to update this order.');

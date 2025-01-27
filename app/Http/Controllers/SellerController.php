@@ -15,7 +15,7 @@ class SellerController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:sellers', // unique in sellers table
+            'email' => 'required|string|email|max:255|unique:sellers',
             'password' => 'required|string|min:8|confirmed',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'city' => 'nullable|string|max:255',

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('cascade');
             $table->string('address');
             $table->string('phone');
-            $table->string('status')->default('pending'); // pending, accepted, etc.
+            $table->string('status')->default('pending'); 
             $table->integer('total_amount');
             $table->timestamps();
         });
@@ -31,9 +31,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('orders');
     }
-//     public function seller()
-// {
-//     return $this->belongsTo(Seller::class);
-// }
+
 
 };

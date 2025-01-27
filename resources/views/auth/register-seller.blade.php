@@ -5,35 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Registration - Laundrify</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('.auth-form');
-
-            form.addEventListener('submit', function(event) {
-                let isValid = true;
-
-                // Check if all fields are filled
-                const inputs = form.querySelectorAll('input[required]');
-                inputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        isValid = false;
-                        input.style.borderColor = 'red'; // Add red border to empty fields
-                    } else {
-                        input.style.borderColor = ''; // Remove red border if filled
-                    }
-                });
-
-                // If form is invalid, prevent submission
-                if (!isValid) {
-                    event.preventDefault();
-                    alert('Please fill in all required fields.');
-                } else {
-                    // Display success message on successful form submission
-                    alert('Registration in processk, please wait for admin approval.');
-                }
-            });
-        });
-    </script>
 </head>
 <body>
     <header>
@@ -77,4 +48,33 @@
         </div>
     </footer>
 </body>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.auth-form');
+
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+
+                // Check if all fields are filled
+                const inputs = form.querySelectorAll('input[required]');
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.style.borderColor = 'red'; 
+                    } else {
+                        input.style.borderColor = ''; 
+                    }
+                });
+
+                // If form is invalid, prevent submission
+                if (!isValid) {
+                    event.preventDefault();
+                    alert('Please fill in all required fields.');
+                } else {
+                    // Display success message on successful form submission
+                    alert('Registration in processk, please wait for admin approval.');
+                }
+            });
+        });
+    </script>
 </html>

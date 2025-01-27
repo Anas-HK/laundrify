@@ -34,7 +34,7 @@ public function searchServices(Request $request)
 
     $services = Service::where('service_name', 'like', '%' . $query . '%')
         ->orWhere('service_description', 'like', '%' . $query . '%')
-        ->get(['id', 'service_name', 'service_description']); // Return only necessary fields
+        ->get(['id', 'service_name', 'service_description']); 
 
     return response()->json(['services' => $services]);
 }
