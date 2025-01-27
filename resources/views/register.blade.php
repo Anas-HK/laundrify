@@ -36,6 +36,13 @@
         </div>
     </nav>
 
+    @if ($errors->has('error'))
+    <div class="alert alert-danger">
+        {{ $errors->first('error') }}
+    </div>
+    @endif
+
+
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
@@ -231,8 +238,6 @@
 
         // If all validations pass
         if (isValid) {
-            alert('Registration successful!');
-
             this.submit();
         }
     });
