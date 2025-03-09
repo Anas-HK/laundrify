@@ -74,7 +74,15 @@
         @endif
     </form>
 
-    
+    <!-- Chat Button (Only for specific statuses) -->
+    @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
+        <div class="text-center mt-4">
+        <a href="{{ route('seller.chat.index', $order->id) }}" class="btn btn-primary">
+    Chat with Customer
+</a>
+        </div>
+    @endif
+
     <!-- Back to Seller Panel Button -->
     <div class="mt-4">
         <a href="{{ route('seller.panel') }}" class="btn btn-secondary">Back to Seller Panel</a>

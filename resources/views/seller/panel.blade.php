@@ -387,7 +387,7 @@
                                 <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject</button>
                             </form>
                         @else
-                            <a href="{{ route('order.handle', $order) }}" class="btn btn-info">View</a>
+                            <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-info">View</a>
                         @endif
                     </td>
                 </tr>
