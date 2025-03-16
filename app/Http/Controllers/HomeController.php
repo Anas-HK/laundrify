@@ -17,11 +17,12 @@ class HomeController extends Controller
         return view('home', compact('services', 'sellers'));
     }
 
+    
     public function index()
     {   
         // PHP error log method
         Log::info('Session data:', session()->all());
-        $sellers = Seller::where('is_deleted', false)->where('accountIsApproved', 1)->get(); // Only approved sellers
+        $sellers = Seller::where('is_deleted', false)->where('accountIsApproved', 1)->get(); 
         return view('home', compact('sellers'));
     }
 }

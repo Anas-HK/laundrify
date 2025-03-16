@@ -10,6 +10,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\TestingController;
 
 
 
@@ -114,3 +115,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServices'])->name('seller.services');
+
+
+

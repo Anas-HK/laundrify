@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Notifications\NewServiceAddedNotification;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Seller;
+
 
 
 class SellerServiceController extends Controller

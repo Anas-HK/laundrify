@@ -77,7 +77,7 @@ class OrderController extends Controller
                 'phone' => 'required|string|max:15',
             ]);
     
-            // Create the order with seller_id
+            // This will create the order with seller_id
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'seller_id' => $cart[$service->id]['seller_id'],

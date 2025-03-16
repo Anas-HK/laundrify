@@ -176,7 +176,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS and Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.getElementById('registrationForm').addEventListener('submit', function(event) {
@@ -252,7 +251,6 @@
             isValid = false;
         }
 
-        // If all validations pass
         if (isValid) {
             this.submit();
         }

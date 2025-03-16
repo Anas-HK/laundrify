@@ -20,7 +20,6 @@ public function view()
 }
 public function approveService($id)
 {
-    // Find the service by ID
     $service = Service::find($id);
     $service->is_approved = 1; 
     $service->save();

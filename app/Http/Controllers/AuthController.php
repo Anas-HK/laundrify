@@ -41,7 +41,7 @@ public function verifyOtp(Request $request)
         return redirect()->route('register')->withErrors(['otp' => 'Session expired. Please register again.']);
     }
 
-    // Retrieve the user by email
+    //here we are retriving all the user by email
     $user = User::where('email', $email)->first();
 
     if (!$user) {
@@ -110,7 +110,7 @@ public function register(Request $request)
 
         Log::info('User created:', ['user_id' => $user->id]);
 
-        // Then try to send email
+        // Now we will send  the email
         Mail::to($request->email)->send(new OtpMail($otp));
         Log::info('OTP email sent');
 
