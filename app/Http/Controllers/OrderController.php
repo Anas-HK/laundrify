@@ -188,7 +188,7 @@ class OrderController extends Controller
 
         $order->update(['status' => $request->status]);
 
-        return redirect()->route('seller.order.handle', $order)->with('success', 'Order status updated successfully!');
+        return redirect()->route('order.handle', $order)->with('success', 'Order status updated successfully!');
     }
 
     public function showOrderHandling(Order $order)
