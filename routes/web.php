@@ -10,7 +10,6 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\MessageController;
 
 
 
@@ -86,6 +85,9 @@ Route::get('services/{id}', [ServiceController::class, 'showService'])->name('se
 // Notification route
 Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
 
+
+
+
 // Routes for cart functionality
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
@@ -103,9 +105,10 @@ Route::middleware('auth')->group(function () {
 
 });
 
-// Remove this duplicate route that's causing confusion
-// Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])->name('order.handle');
+// Add to web.php
+Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])->name('order.handle');
 Route::post('/seller/order/{order}/update-status', [OrderController::class, 'updateOrderStatus'])->name('order.updateStatus');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'allOrders'])->name('order.all');
@@ -117,21 +120,3 @@ Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServi
 
 
 
-
-// User (buyer) chat routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/chat/{order}', [MessageController::class, 'chat'])->name('chat.index');
-    Route::post('/chat/{order}/send', [MessageController::class, 'send'])->name('chat.send');
-    Route::post('/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('chat.mark-read');
-});
-
-// Seller chat routes
-Route::middleware(['auth:seller'])->group(function () {
-    Route::get('/seller/chat/{order}', [MessageController::class, 'chat'])->name('seller.chat.index');
-    Route::post('/seller/chat/{order}/send', [MessageController::class, 'send'])->name('seller.chat.send');
-    Route::post('/seller/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('seller.chat.mark-read');
-});
-
-Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])
-    ->name('seller.order.handle')
-    ->middleware('auth:seller');

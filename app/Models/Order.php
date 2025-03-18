@@ -17,25 +17,21 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
+public function orderItems()
+{
+    return $this->hasMany(OrderItem::class);
+}
 
     public function seller()
-    {
-        return $this->belongsTo(Seller::class);
-    }
-    // Relationship with User
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+{
+    return $this->belongsTo(Seller::class);
+}
+ // Relationship with User
+ public function user()
+ {
+     return $this->belongsTo(User::class);
+ }
 
-    public function messages()
-    {
-        return $this->hasMany(Message::class);
-    }
 
 
 }

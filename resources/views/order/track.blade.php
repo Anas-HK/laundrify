@@ -95,21 +95,12 @@
                     </div>
                 @endforeach
             </div>
-
-            <!-- Chat Button (Only for specific statuses) -->
-            @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
-                <div class="text-center mb-4">
-                <a href="{{ route('chat.index', $order->id) }}" class="btn btn-primary">
-    Chat with Seller
-</a>
-                </div>
-            @endif
         @endif
 
         <div class="mb-4">
             <p><strong>Status:</strong> 
                 <span class="badge bg-{{ $order->status == 'pending' ? 'warning' : ($order->status == 'completed' ? 'success' : ($order->status == 'rejected' ? 'danger' : 'info')) }}">
-                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                    {{ ucfirst($order->status) }}
                 </span>
             </p>
         </div>
