@@ -89,46 +89,48 @@
     </ul>
 </div>
 
-                <div class="dropdown">
-                    @auth
-                        @php
-                            $profileUpdate = \App\Models\UserProfileUpdate::where('user_id', Auth::id())->first();
-                        @endphp
-                        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            @if ($profileUpdate && $profileUpdate->profile_image)
-                                <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="rounded-circle" style="width: 30px; height: 30px;">
-                            @else
-                                <i class="fas fa-user-circle" style="font-size: 30px;"></i>
-                            @endif
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                            <li><span class="dropdown-item">Welcome, {{ Auth::user()->name }}!</span></li>
-                            <li><a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a></li>
-                            <li><a href="{{ route('order.all') }}" class="dropdown-item">View Your Orders</a></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
-                                    @csrf
-                                    <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
-                                </form>
-                            </li>
-                            @if(Auth::user()->sellerType == 1)
-                                <li><a href="{{ route('admin.dashboard') }}" class="dropdown-item">Admin Dashboard</a></li>
-                            @elseif(Auth::user()->sellerType == 3)
-                                <li><a href="{{ route('seller.panel') }}" class="dropdown-item">Seller Panel</a></li>
-                            @endif
-                            <li><a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a></li>
-                            <li><a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a></li>
-                        </ul>
-                    @else
-                        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle" style="font-size: 30px;"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-                            <li><a href="{{ route('login') }}" class="dropdown-item">Login</a></li>
-                            <li><a href="{{ route('register') }}" class="dropdown-item">Register</a></li>
-                        </ul>
-                    @endauth
-                </div>
+<div class="dropdown">
+    @auth
+        @php
+            $profileUpdate = \App\Models\UserProfileUpdate::where('user_id', Auth::id())->first();
+        @endphp
+        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            @if ($profileUpdate && $profileUpdate->profile_image)
+                <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="rounded-circle" style="width: 30px; height: 30px;">
+            @else
+                <i class="fas fa-user-circle" style="font-size: 30px;"></i>
+            @endif
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+            <li><span class="dropdown-item">Welcome, {{ Auth::user()->name }}!</span></li>
+            <li><a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a></li>
+            <li><a href="{{ route('order.all') }}" class="dropdown-item">View Your Orders</a></li>
+            <li><a href="{{ route('order.history') }}" class="dropdown-item">Order History</a></li>
+            <li>
+                <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
+                    @csrf
+                    <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
+                </form>
+            </li>
+            @if(Auth::user()->sellerType == 1)
+                <li><a href="{{ route('admin.dashboard') }}" class="dropdown-item">Admin Dashboard</a></li>
+            @elseif(Auth::user()->sellerType == 3)
+                <li><a href="{{ route('seller.panel') }}" class="dropdown-item">Seller Panel</a></li>
+            @endif
+            <li><a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a></li>
+            <li><a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a></li>
+        </ul>
+    @else
+        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user-circle" style="font-size: 30px;"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+            <li><a href="{{ route('login') }}" class="dropdown-item">Login</a></li>
+            <li><a href="{{ route('register') }}" class="dropdown-item">Register</a></li>
+        </ul>
+    @endauth
+</div>
+
                 
             </div>
         </div>

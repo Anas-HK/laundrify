@@ -10,6 +10,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\MessageController;
 
 
 
@@ -97,6 +98,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
     Route::get('/order/track/{order}', [OrderController::class, 'trackOrder'])->name('order.track');
     Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
+    Route::get('/order/history', [OrderController::class, 'history'])->name('order.history');
+    Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
+
 });
 
 // Remove this duplicate route that's causing confusion

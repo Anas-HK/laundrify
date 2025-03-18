@@ -17,15 +17,30 @@ use App\Notifications\NewOrderNotification;
 class OrderController extends Controller
 {
 
-    public function allOrders()
+    public function show($id)
+{
+    $order = Order::where('user_id', Auth::id())->findOrFail($id);
+    return view('orders.show', compact('order'));
+}
+public function history()
+{
+    $orders = Order::where('user_id', Auth::id())
+                    ->where('status', 'completed')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+    return view('order.history', compact('orders'));
+}
+
+public function allOrders()
 {
     $user = auth()->user();
 
-    // Fetch all orders for the authenticated user or return an empty collection
-    $orders = $user->orders ?? collect();
+    // Fetch all orders except those with status 'completed' for the authenticated user
+    $orders = $user->orders->where('status', '!=', 'completed') ?? collect();
 
     return view('order.all-orders', compact('orders'));
 }
+
 
     public function showCheckout()
     {
