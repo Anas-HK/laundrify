@@ -203,7 +203,7 @@ public function allOrders()
 
         $order->update(['status' => $request->status]);
 
-        return redirect()->route('order.handle', $order)->with('success', 'Order status updated successfully!');
+        return redirect()->route('seller.order.handle', $order)->with('success', 'Order status updated successfully!');
     }
 
     public function showOrderHandling(Order $order)
