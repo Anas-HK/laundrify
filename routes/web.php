@@ -48,7 +48,9 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/edit-service/{id}', [SellerServiceController::class, 'edit'])->name('seller.editService');
     Route::delete('/seller/delete-service/{id}', [SellerServiceController::class, 'delete'])->name('seller.deleteService');
     Route::get('/search-services', [ServiceController::class, 'searchServices'])->name('search.services');
-
+    
+    // Earnings feature
+    Route::get('/seller/earnings', [SellerController::class, 'earnings'])->name('seller.earnings');
 });
 
 // Admin routes

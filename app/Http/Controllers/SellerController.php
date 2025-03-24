@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Seller;
 use App\Models\User;
 use App\Models\Service;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -103,5 +104,56 @@ public function sellerPanel()
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect()->route('login.seller');
+}
+
+/**
+ * Show the seller's earnings dashboard
+ * 
+ * @param Request $request
+ * @return \Illuminate\View\View
+ */
+public function earnings(Request $request)
+{
+    $seller = auth()->guard('seller')->user();
+    if (!$seller) {
+        return redirect()->route('login.seller');
+    }
+    
+    $period = $request->get('period', 'all');
+    
+    // Get earnings for different time periods
+    $allTimeEarnings = Order::getSellerEarnings($seller->id);
+    $currentPeriodEarnings = Order::getSellerEarnings($seller->id, $period);
+    
+    // Get detailed data for completed orders
+    $completedOrders = Order::where('seller_id', $seller->id)
+                      ->where('status', 'completed')
+                      ->with(['user', 'items.service'])
+                      ->orderBy('created_at', 'desc')
+                      ->paginate(10);
+    
+    // Get monthly earnings data for the chart
+    $monthlyData = [];
+    for ($i = 0; $i < 6; $i++) {
+        $month = now()->subMonths($i);
+        $earnings = Order::where('seller_id', $seller->id)
+                  ->where('status', 'completed')
+                  ->whereYear('created_at', $month->year)
+                  ->whereMonth('created_at', $month->month)
+                  ->sum('total_amount');
+        
+        $monthlyData[$month->format('M Y')] = $earnings;
+    }
+    // Reverse to show oldest to newest
+    $monthlyData = array_reverse($monthlyData, true);
+    
+    return view('seller.earnings', [
+        'seller' => $seller,
+        'period' => $period,
+        'allTimeEarnings' => $allTimeEarnings,
+        'currentPeriodEarnings' => $currentPeriodEarnings,
+        'completedOrders' => $completedOrders,
+        'monthlyData' => $monthlyData
+    ]);
 }
 }

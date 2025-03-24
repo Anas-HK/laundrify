@@ -255,6 +255,7 @@
             <a href="" class="nav-btn">Remove Service</a>
             <a href="" class="nav-btn">Update Service</a>
             <a href="" class="nav-btn">Orders</a>
+            <a href="{{ route('seller.earnings') }}" class="nav-btn">Earnings</a>
 
             @if(session('admin_id'))
                 <form action="{{ route('admin.returnToAdmin') }}" method="POST" style="display: inline;">
