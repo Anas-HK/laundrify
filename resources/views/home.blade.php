@@ -189,7 +189,14 @@
                                 @endif
                             </div>
                             <div class="card-body text-center">
-                                <h5 class="card-title">{{ $seller->name }}</h5>
+                                <h5 class="card-title">
+                                    {{ $seller->name }}
+                                    @if($seller->accountIsApproved == 1)
+                                        <span class="verified-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="This seller has been verified by Laundrify">
+                                            <i class="fas fa-check-circle"></i><span class="verified-text">Verified</span>
+                                        </span>
+                                    @endif
+                                </h5>
                                 <p class="card-text"><strong>City:</strong> {{ $seller->city }}</p>
                                 <p class="card-text"><strong>Area:</strong> {{ $seller->area }}</p>
                                 <a href="{{ route('sellers.services', $seller->id) }}" class="btn btn-primary">View Services</a>
@@ -228,7 +235,14 @@
                                         <h5 class="card-title text-center">{{ $service->service_name }}</h5>
 
                                         <div class="service-details">
-                                            <p><strong>Seller:</strong> {{ $service->seller->name }}</p>
+                                            <p><strong>Seller:</strong> 
+                                                {{ $service->seller->name }}
+                                                @if($service->seller->accountIsApproved == 1)
+                                                    <span class="verified-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="This seller has been verified by Laundrify">
+                                                        <i class="fas fa-check-circle"></i><span class="verified-text">Verified</span>
+                                                    </span>
+                                                @endif
+                                            </p>
                                             <p><strong>Email:</strong> {{ $service->seller->email }}</p>
                                             <p><strong>City:</strong> {{ $service->seller->city }}</p>
                                             <p><strong>Area:</strong> {{ $service->seller->area }}</p>
@@ -322,7 +336,7 @@
                     <li>✔️ Separate whites and colors to avoid bleeding.</li>
                     <li>✔️ Use cold water to preserve fabric quality.</li>
                     <li>✔️ Turn clothes inside out to reduce wear and tear.</li>
-                    <li>✔️ Don’t overload your washing machine for better results.</li>
+                    <li>✔️ Don't overload your washing machine for better results.</li>
                 </ul>
             </div>
 
@@ -359,6 +373,16 @@
 <script>
     document.querySelector('.fas.fa-bell').addEventListener('click', function() {
         document.querySelector('.dropdown-menu').classList.toggle('show');
+    });
+</script>
+
+<script>
+    // Initialize Bootstrap tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     });
 </script>
 
