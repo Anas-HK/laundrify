@@ -6,6 +6,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+<style>
+
+
+
+
+
+</style>
 </head>
 <body>
     {{-- <pre>{{ var_dump(session()->all()) }}</pre> --}}
@@ -281,26 +290,30 @@
         </div>
     </div>
 </section>
-
 <section class="feedback">
     <div class="container">
-        <h2 style="font-size: 40px">What Our Customers Say</h2>
-        <div class="feedback-cards">
-            <div class="feedback-card">
-                <p>"Laundrify has made my life so much easier. Their service is fast, reliable, and my clothes always come back perfectly clean!"</p>
-                <h4>- Sarah M.</h4>
-            </div>
-            <div class="feedback-card">
-                <p>"I love how convenient Laundrify is. Their pickup and delivery service saves me so much time, and the quality is always top-notch."</p>
-                <h4>- John D.</h4>
-            </div>
-            <div class="feedback-card">
-                <p>"As a busy professional, Laundrify has been a game-changer for me. I can always count on them for clean, fresh clothes."</p>
-                <h4>- Emily R.</h4>
-            </div>
-        </div>
+        <h2 style="font-size: 40px; text-align: center;">What Our Customers Say</h2>
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                @foreach ($feedbacks as $feedback)
+                    <div class="swiper-slide">
+                        <div class="feedback-card p-4 shadow-sm border rounded">
+                            <p style="font-size: 24px; font-weight: bold;">"{{ $feedback->feedback }}"</p>
+                            
+                            
+                            <h5><strong>Order Date:</strong> {{ $feedback->order->created_at->format('d M Y - h:i A') }}</h5>
+
+                            <h5><strong>Customer:</strong> {{ $feedback->user->name ?? 'Anonymous' }}</h5>
+                            <h5><strong>Seller:</strong> {{ $feedback->seller->name ?? 'N/A' }}</h5>
+                        </div>
+                    </div>
+                @endforeach
+          
     </div>
 </section>
+
+
+
 
 <section class="about" id="about">
     <div class="container">
@@ -479,5 +492,24 @@ document.addEventListener('click', function(event) {
             });
         });
     });
+
+    
+    var swiper = new Swiper('.swiper-container', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        autoplay: {
+            delay: 3000,
+        },
+    });
+
 </script>
 </html>

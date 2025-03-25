@@ -134,6 +134,12 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::post('/seller/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('seller.chat.mark-read');
 });
 
+
+Route::get('/order/{id}/feedback', [OrderController::class, 'feedback'])->name('order.feedback');
+Route::post('/order/{id}/feedback', [OrderController::class, 'submitFeedback'])->name('order.feedback.submit');
+
+
 Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])
     ->name('seller.order.handle')
     ->middleware('auth:seller');
+

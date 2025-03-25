@@ -32,6 +32,11 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function feedbacks()
+{
+    return $this->hasMany(Feedback::class);
+}
+
     public function messages()
     {
         return $this->hasMany(Message::class);

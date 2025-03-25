@@ -20,7 +20,7 @@
                         <th>Date</th>
                         <th>Status</th>
                         <th>Total Price</th>
-                        <th>Details</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,7 +30,10 @@
                             <td><?= date('d M Y', strtotime($order->created_at)) ?></td>
                             <td><?= ucfirst($order->status) ?></td>
                             <td>$<?= number_format($order->total_price, 2) ?></td>
-                            <td><a href="<?= route('order.show', $order->id) ?>" class="btn btn-primary btn-sm">View</a></td>
+                            <td>
+                                <a href="<?= route('order.show', $order->id) ?>" class="btn btn-primary btn-sm">View</a>
+                                <a href="<?= route('order.feedback', $order->id) ?>" class="btn btn-warning btn-sm">Feedback</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

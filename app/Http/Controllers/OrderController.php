@@ -10,13 +10,43 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Notifications\NewOrderNotification;
+use App\Models\Feedback;
 
+use App\Models\User;
 
 
 
 class OrderController extends Controller
 {
 
+    public function feedback($id) {
+        $order = Order::findOrFail($id);
+        return view('order.feedbacks', compact('order'));
+    }
+    
+    public function submitFeedback(Request $request, $orderId)
+    {
+        $request->validate([
+            'feedback' => 'required|string|max:1000',
+        ]);
+    
+        $order = Order::findOrFail($orderId);
+    
+        Feedback::create([
+            'order_id' => $orderId,
+            'user_id' => auth()->id(), // Get the logged-in user
+            'seller_id' => $order->seller_id, // Assuming `seller_id` is stored in the Order model
+            'feedback' => $request->feedback,
+        ]);
+    
+        return redirect()->route('order.history')->with('success', 'Feedback submitted successfully!');
+    }
+    
+    
+    
+    
+    
+    
     public function show($id)
 {
     $order = Order::where('user_id', Auth::id())->findOrFail($id);

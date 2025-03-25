@@ -7,6 +7,8 @@ use App\Models\Service;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Feedback;
+
 
 class SellerController extends Controller
 {
@@ -79,11 +81,21 @@ class SellerController extends Controller
     
     public function showServices($seller_id)
     {
-        $seller = User::findOrFail($seller_id); 
+        $seller = User::findOrFail($seller_id);
         $services = Service::where('seller_id', $seller_id)->get();
+        $feedbacks = Feedback::where('seller_id', $seller_id)->with('user')->get(); // Eager loading user
     
-        return view('seller-service', compact('seller', 'services')); 
+        // Debugging
+        dd($feedbacks);
+    
+        return view('seller-services', compact('seller', 'services', 'feedbacks'));
     }
+    
+    
+    
+    
+    
+    
     
 public function sellerPanel()
 {

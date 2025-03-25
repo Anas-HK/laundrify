@@ -5,6 +5,94 @@
     box-sizing: border-box;
 }
 
+
+.feedback h2 {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+/* ===== Swiper Container ===== */
+
+
+/* ===== Feedback Card ===== */
+.feedback-card {
+    background: #ffffff;
+    color: #333;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s ease-in-out;
+}
+
+.feedback-card:hover {
+    transform: translateY(-10px);
+}
+
+.feedback-card p {
+    font-size: 22px;
+    font-weight: bold;
+    color: #222;
+}
+
+.feedback-card h5 {
+    font-size: 16px;
+    font-weight: normal;
+    color: #555;
+    margin: 10px 0;
+}
+
+.feedback-card strong {
+    color: #6e8efb;
+}
+
+/* ===== Swiper Navigation ===== */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #fff !important;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Swiper Pagination ===== */
+.swiper-pagination-bullet {
+    background: #fff !important;
+    opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+    background: #ffcc00 !important;
+    opacity: 1;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .feedback h2 {
+        font-size: 30px;
+    }
+
+    .feedback-card {
+        padding: 15px;
+    }
+
+    .feedback-card p {
+        font-size: 18px;
+    }
+}
+
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -639,30 +727,6 @@ section.services h2::after {
     .button-container .btn {
         font-size: 14px;
     }
-}
-
-/* Feedback section styles */
-.feedback {
-    padding: 50px 0;
-}
-
-.feedback h2 {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.feedback-cards {
-    display: flex;
-    justify-content: space-between;
-    gap: 30px;
-}
-
-.feedback-card {
-    flex: 1;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* About section styles */

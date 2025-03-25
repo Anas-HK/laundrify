@@ -135,6 +135,26 @@
     </div>
 </section>
 
+@if(isset($feedbacks) && $feedbacks->count() > 0)
+    <section class="feedback mt-4">
+        <h3 class="text-center">Customer Feedback</h3>
+        <div class="feedback-cards">
+            @foreach ($feedbacks as $feedback)
+                <div class="feedback-card p-3 mb-3 border rounded shadow-sm">
+                    <p>"{{ $feedback->feedback }}"</p>
+                    <small><strong>Customer:</strong> {{ $feedback->user->name ?? 'Anonymous' }}</small><br>
+                    <small><strong>Order ID:</strong> {{ $feedback->order_id }}</small>
+                </div>
+            @endforeach
+        </div>
+    </section>
+@else
+    <p class="text-center mt-3 text-muted">No feedback available for this seller yet.</p>
+@endif
+
+
+
+
 <a href="{{ route('cart.view') }}" class="cart-icon">
     <span class="icon">🛒</span>
     <span class="count">
