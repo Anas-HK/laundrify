@@ -101,7 +101,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/order/track/{order}', [OrderController::class, 'trackOrder'])->name('order.track');
     Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
     Route::get('/order/history', [OrderController::class, 'history'])->name('order.history');
-    Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
+    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.show');
+
+    // Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
 
 });
 
@@ -142,4 +144,5 @@ Route::post('/order/{id}/feedback', [OrderController::class, 'submitFeedback'])-
 Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])
     ->name('seller.order.handle')
     ->middleware('auth:seller');
+
 
