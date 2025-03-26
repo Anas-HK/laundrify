@@ -116,7 +116,22 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span>Chat for Order #{{ $order->id }}</span>
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div>
+        <span>Chat for Order #{{ $order->id }}</span>
+        <br>
+        <small>
+            <strong>Chat with:</strong> 
+            {{ $isSeller ? $order->user->name : $order->seller->name }}
+        </small>
+        <br>
+        <small>
+            <strong>Payment Mode:</strong> 
+            {{ $order->transaction_id ? 'Online (Transaction ID: ' . $order->transaction_id . ')' : 'Cash on Delivery' }}
+        </small>
+    </div>
+</div>
+
                         <a href="{{ $backUrl }}" class="btn btn-sm btn-light">Back to Order</a>
                     </div>
                     <div class="card-body p-0">

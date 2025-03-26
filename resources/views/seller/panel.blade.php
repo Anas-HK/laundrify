@@ -381,16 +381,19 @@
                     <td>{{ $order->total_amount ?? 'N/A' }} PKR</td> 
                     <td>{{ $order->status }}</td>
                     <td>
-                        @if($order->status === 'pending')
-                            <form action="{{ route('order.acceptReject', $order) }}" method="POST" style="display: inline;">
-                                @csrf
-                                <button type="submit" name="status" value="accepted" class="btn btn-success">Accept</button>
-                                <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject</button>
-                            </form>
-                        @else
-                            <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-info">View</a>
-                        @endif
-                    </td>
+    @if($order->status === 'pending')
+        <form action="{{ route('order.acceptReject', $order) }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" name="status" value="accepted" class="btn btn-success">Accept</button>
+            <button type="submit" name="status" value="rejected" class="btn btn-danger">Reject</button>
+        </form>
+        <br>
+        <small><strong>Transaction ID:</strong> {{ $order->transaction_id ?? 'Cash on Delivery' }}</small>
+    @else
+        <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-info">View</a>
+    @endif
+</td>
+
                 </tr>
             @endforeach
         </tbody>

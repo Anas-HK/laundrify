@@ -13,6 +13,18 @@
     <h4 class="text-center">Current Status: <span class="badge bg-{{ $order->status == 'completed' ? 'success' : ($order->status == 'pending' ? 'warning' : ($order->status == 'rejected' ? 'danger' : 'info')) }}">{{ ucfirst($order->status) }}</span></h4>
     <h4 class="text-center">Total Amount: {{ $order->total_amount }} PKR</h4>
 
+    <h3 class="mt-4">Payment Details</h3>
+<ul class="list-group">
+    <li class="list-group-item"><strong>Payment Mode:</strong> 
+        {{ $order->transaction_id ? 'Online' : 'Cash on Delivery' }}
+    </li>
+    @if($order->transaction_id)
+        <li class="list-group-item"><strong>Transaction ID:</strong> {{ $order->transaction_id }}</li>
+    @endif
+</ul>
+
+
+
     <h3 class="mt-4">Customer Details</h3>
     <ul class="list-group">
         <li class="list-group-item"><strong>Name:</strong> {{ $order->user->name }}</li>

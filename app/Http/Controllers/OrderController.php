@@ -120,7 +120,10 @@ public function allOrders()
                 'service_id' => 'required|exists:services,id',
                 'address' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
+                'payment_method' => 'required|in:cod,online',
+                'transaction_id' => 'required_if:payment_method,online|string|max:255',
             ]);
+            
     
             // This will create the order with seller_id
             $order = Order::create([
@@ -130,6 +133,7 @@ public function allOrders()
                 'phone' => $request->phone,
                 'status' => 'pending',
                 'total_amount' => $totalAmount,
+                'transaction_id' => $request->transaction_id, // Store transaction ID if provided
                 'updated_at' => now(),
                 'created_at' => now(),
             ]);
