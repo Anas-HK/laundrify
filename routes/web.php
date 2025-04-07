@@ -11,6 +11,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\SellerVerificationController;
 
 
 
@@ -51,6 +52,11 @@ Route::middleware(['auth:seller'])->group(function () {
     
     // Earnings feature
     Route::get('/seller/earnings', [SellerController::class, 'earnings'])->name('seller.earnings');
+    
+    // Verification feature
+    Route::get('/seller/verification/apply', [SellerVerificationController::class, 'showVerificationForm'])->name('seller.verification.apply');
+    Route::post('/seller/verification/submit', [SellerVerificationController::class, 'submitVerificationRequest'])->name('seller.verification.submit');
+    Route::get('/seller/verification/status', [SellerVerificationController::class, 'showVerificationStatus'])->name('seller.verification.status');
 });
 
 // Admin routes
@@ -67,7 +73,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Route::post('/admin/login-seller/{id}', [AdminController::class, 'loginAsSeller'])->name('admin.loginSeller');
     Route::post('/admin/return-to-admin', [AdminController::class, 'returnToAdmin'])->name('admin.returnToAdmin');
-
+    
+    // Admin Verification Management
+    Route::get('/admin/verifications', [\App\Http\Controllers\Admin\VerificationController::class, 'index'])->name('admin.verifications.index');
+    Route::get('/admin/verifications/{verification}', [\App\Http\Controllers\Admin\VerificationController::class, 'show'])->name('admin.verifications.show');
+    Route::post('/admin/verifications/{verification}/approve', [\App\Http\Controllers\Admin\VerificationController::class, 'approve'])->name('admin.verifications.approve');
+    Route::post('/admin/verifications/{verification}/reject', [\App\Http\Controllers\Admin\VerificationController::class, 'reject'])->name('admin.verifications.reject');
 });   
 
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware('auth');
@@ -101,10 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/order/track/{order}', [OrderController::class, 'trackOrder'])->name('order.track');
     Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
     Route::get('/order/history', [OrderController::class, 'history'])->name('order.history');
-    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.show');
-
-    // Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
-
+    Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
 });
 
 // Remove this duplicate route that's causing confusion

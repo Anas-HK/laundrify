@@ -35,7 +35,7 @@ class OrderController extends Controller
         Feedback::create([
             'order_id' => $orderId,
             'user_id' => auth()->id(), // Get the logged-in user
-            'seller_id' => $order->seller_id, // Assuming `seller_id` is stored in the Order model
+            'seller_id' => $order->seller_id, // This should be the seller ID from the order
             'feedback' => $request->feedback,
         ]);
     
@@ -48,28 +48,29 @@ class OrderController extends Controller
     
     
     public function show($id)
-{
-    $order = Order::where('user_id', Auth::id())->findOrFail($id);
-    return view('orders.show', compact('order'));
-}
-public function history()
-{
-    $orders = Order::where('user_id', Auth::id())
-                    ->where('status', 'completed')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-    return view('order.history', compact('orders'));
-}
+    {
+        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+        $order->load(['seller', 'items.service']);
+        return view('orders.show', compact('order'));
+    }
+    public function history()
+    {
+        $orders = Order::where('user_id', Auth::id())
+                        ->where('status', 'completed')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+        return view('order.history', compact('orders'));
+    }
 
-public function allOrders()
-{
-    $user = auth()->user();
+    public function allOrders()
+    {
+        $user = auth()->user();
 
-    // Fetch all orders except those with status 'completed' for the authenticated user
-    $orders = $user->orders->where('status', '!=', 'completed') ?? collect();
+        // Fetch all orders except those with status 'completed' for the authenticated user
+        $orders = $user->orders->where('status', '!=', 'completed') ?? collect();
 
-    return view('order.all-orders', compact('orders'));
-}
+        return view('order.all-orders', compact('orders'));
+    }
 
 
     public function showCheckout()

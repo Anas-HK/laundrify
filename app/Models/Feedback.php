@@ -20,7 +20,7 @@ class Feedback extends Model
 
     public function seller()
     {
-        return $this->belongsTo(User::class, 'seller_id'); // Seller receiving feedback
+        return $this->belongsTo(Seller::class, 'seller_id'); // Seller receiving feedback
     }
      // Relationship with the order
      public function order()

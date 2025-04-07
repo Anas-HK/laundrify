@@ -1,8 +1,8 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Seller;
 
 return new class extends Migration
 {
@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('seller_id')->nullable()->default(1);
-            $table->foreign('seller_id')->references('id')->on('sellers')->onDelete('cascade');
+            $table->foreignId('seller_id')->constrained('sellers')->onDelete('cascade');
             $table->string('address');
             $table->string('phone');
-            $table->string('status')->default('pending'); 
-            $table->integer('total_amount');
+            $table->enum('status', ['pending', 'accepted', 'in_progress', 'completed', 'cancelled', 'rejected',
+                'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered'])->default('pending');
+            $table->decimal('total_amount', 10, 2);
+            $table->string('transaction_id')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +32,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('orders');
     }
-
-
-};
+}; 

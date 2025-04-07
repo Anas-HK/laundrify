@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Seller;
+use App\Models\Feedback;
 
 
 class ServiceController extends Controller
@@ -20,12 +21,17 @@ class ServiceController extends Controller
     }
 
 
-    public function showSellerServices($sellerId)
+    public function showSellerServices($seller_id)
     {
-        $seller = Seller::find($sellerId);
-        $services = $seller->services()->where('is_approved', true)->get(); // Filter services where is_approved is true
-
-        return view('seller-services', compact('seller', 'services'));
+        $seller = Seller::findOrFail($seller_id);
+        $services = Service::where('seller_id', $seller_id)->get();
+        
+        // Get feedback for this seller
+        $feedbacks = Feedback::where('seller_id', $seller_id)
+                      ->with('user')
+                      ->get();
+        
+        return view('seller-services', compact('seller', 'services', 'feedbacks'));
     }
 
 public function searchServices(Request $request)

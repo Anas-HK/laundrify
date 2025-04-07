@@ -81,12 +81,14 @@ class SellerController extends Controller
     
     public function showServices($seller_id)
     {
-        $seller = User::findOrFail($seller_id);
+        $seller = Seller::findOrFail($seller_id);
         $services = Service::where('seller_id', $seller_id)->get();
-        $feedbacks = Feedback::where('seller_id', $seller_id)->with('user')->get(); // Eager loading user
-    
-        // Debugging
-        dd($feedbacks);
+        
+        // The feedback table uses seller_id but references the users table
+        // We need to check if there's a corresponding user with the same ID
+        $feedbacks = Feedback::where('seller_id', $seller_id)
+                    ->with('user')
+                    ->get();
     
         return view('seller-services', compact('seller', 'services', 'feedbacks'));
     }

@@ -200,7 +200,7 @@
                             <div class="card-body text-center">
                                 <h5 class="card-title">
                                     {{ $seller->name }}
-                                    @if($seller->accountIsApproved == 1)
+                                    @if($seller->isVerified())
                                         <span class="verified-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="This seller has been verified by Laundrify">
                                             <i class="fas fa-check-circle"></i><span class="verified-text">Verified</span>
                                         </span>
@@ -246,7 +246,7 @@
                                         <div class="service-details">
                                             <p><strong>Seller:</strong> 
                                                 {{ $service->seller->name }}
-                                                @if($service->seller->accountIsApproved == 1)
+                                                @if($service->seller->isVerified())
                                                     <span class="verified-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="This seller has been verified by Laundrify">
                                                         <i class="fas fa-check-circle"></i><span class="verified-text">Verified</span>
                                                     </span>

@@ -256,6 +256,9 @@
             <a href="" class="nav-btn">Update Service</a>
             <a href="" class="nav-btn">Orders</a>
             <a href="{{ route('seller.earnings') }}" class="nav-btn">Earnings</a>
+            <a href="{{ route('seller.verification.apply') }}" class="nav-btn">
+                <i class="fas fa-certificate"></i> Get Verified
+            </a>
 
             @if(session('admin_id'))
                 <form action="{{ route('admin.returnToAdmin') }}" method="POST" style="display: inline;">

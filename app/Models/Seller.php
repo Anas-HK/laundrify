@@ -46,4 +46,22 @@ class Seller extends Authenticatable
     {
         return $this->morphMany(DatabaseNotification::class, 'notifiable');
     }
+
+    /**
+     * Get the seller's verification request.
+     */
+    public function verificationRequest()
+    {
+        return $this->hasOne(SellerVerification::class);
+    }
+
+    /**
+     * Check if the seller is verified.
+     *
+     * @return bool
+     */
+    public function isVerified()
+    {
+        return $this->verificationRequest && $this->verificationRequest->status === 'approved';
+    }
 }

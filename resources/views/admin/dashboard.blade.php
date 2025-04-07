@@ -136,6 +136,15 @@
         <a href="{{ route('admin.dashboard') }}" class="active">Dashboard</a>
         <a href="{{ route('admin.sellers') }}">Manage Sellers</a>
         <a href="{{ route('admin.services') }}">Manage Services</a>
+        <a href="{{ route('admin.verifications.index') }}">
+            Verification Requests
+            @php
+                $pendingCount = \App\Models\SellerVerification::where('status', 'pending')->count();
+            @endphp
+            @if($pendingCount > 0)
+                <span class="badge badge-danger badge-pill ml-2">{{ $pendingCount }}</span>
+            @endif
+        </a>
         <a href="{{ route('admin.settings') }}">Settings</a>
     </div>
 
@@ -231,6 +240,49 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+            @endif
+        </div>
+
+        <div class="card">
+            <h3>Pending Verification Requests</h3>
+            @php
+                $pendingVerifications = \App\Models\SellerVerification::with('seller')
+                    ->where('status', 'pending')
+                    ->latest('submitted_at')
+                    ->take(5)
+                    ->get();
+            @endphp
+            
+            @if($pendingVerifications->isEmpty())
+                <div class="alert alert-info">
+                    No pending verification requests at the moment.
+                </div>
+            @else
+                <div class="table-responsive mb-5">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Seller</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($pendingVerifications as $verification)
+                                <tr>
+                                    <td>{{ $verification->seller->name }}</td>
+                                    <td>{{ $verification->submitted_at->format('M d, Y') }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.verifications.show', $verification) }}" class="btn btn-info btn-sm">Review</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="text-right">
+                        <a href="{{ route('admin.verifications.index') }}" class="btn btn-primary btn-sm">View All Requests</a>
+                    </div>
                 </div>
             @endif
         </div>

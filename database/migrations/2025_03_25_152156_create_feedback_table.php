@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Customer who gave feedback
-            $table->foreignId('seller_id')->constrained('users')->onDelete('cascade'); // Seller receiving feedback
+            $table->foreignId('seller_id')->constrained('sellers')->onDelete('cascade'); // Seller receiving feedback
             $table->text('feedback');
             $table->timestamps();
         });
