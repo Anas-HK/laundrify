@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
-<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
 
 
@@ -18,129 +22,209 @@
 </head>
 <body>
     {{-- <pre>{{ var_dump(session()->all()) }}</pre> --}}
-    <div class="container-fluid fixed-top" style="top: 56px; z-index: 1030;">
+    <!-- Toast notification container - fixed position that doesn't overflow -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080; margin-top: 70px;">
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
             </div>
         @endif
     
         @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
             </div>
         @endif
     </div>
-<header>
+
+<!-- Modern, consistent navbar -->
+<header class="navbar-main">
     <div class="container">
         <div class="header-content">
-            <div class="logo">Laundrify</div>
+            <div class="logo">
+                <a href="#home">
+                    <span class="logo-text">Laundrify</span>
+                    <span class="logo-icon"><i class="fas fa-tshirt"></i></span>
+                </a>
+            </div>
+            
             <div class="search-bar">
-                <input 
-                    type="text" 
-                    id="serviceSearch" 
-                    placeholder="Search for services..." 
-                    onkeyup="searchServices()" 
-                    onclick="toggleSearchResults()"
-                />
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="serviceSearch" 
+                        placeholder="Search for services..." 
+                        onkeyup="searchServices()" 
+                        onclick="toggleSearchResults()"
+                    />
+                </div>
                 <div id="searchResults" class="search-results" style="display: none;"></div>
             </div>
             
-            <div class="nav-icons">
-                <a href="#home">Home</a>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#sellers" class="nav-link">Sellers</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+
+            <div class="nav-actions">
+                <!-- Notification dropdown with improved styling -->
+                <div class="notification-dropdown dropdown">
+                    <button class="notification-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        @auth
+                            @php
+                                $unreadCount = Auth::user()->unreadNotifications->count();
+                            @endphp
+
+                            @if($unreadCount > 0)
+                                <span class="notification-badge">{{ $unreadCount }}</span>
+                            @endif
+                        @endauth
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationDropdown">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span>Notifications</span>
+                            @auth
+                                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="d-inline-block">
+                                    @csrf
+                                    <button type="submit" class="btn btn-link btn-sm p-0 text-primary">Mark all as read</button>
+                                </form>
+                            @endauth
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        @auth
+                            @php
+                                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
+                            @endphp
+                            @if(count($notifications) > 0)
+                                @foreach($notifications as $notification)
+                                    <li class="notification-item {{ is_null($notification->read_at) ? 'unread' : '' }}">
+                                        <a href="{{ $notification->data['service_url'] ?? '#' }}">
+                                            <div class="notification-content">
+                                                <p>{{ $notification->data['message'] ?? 'No message available' }}</p>
+                                                <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                            </div>
+                                        </a>
+                                    </li>
+                                @endforeach
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="dropdown-footer"><a href="#">View All Notifications</a></li>
+                            @else
+                                <li class="notification-empty">No notifications yet</li>
+                            @endif
+                        @else
+                            <li class="notification-empty">Please login to see notifications</li>
+                        @endauth
+                    </ul>
+                </div>
+
+                <!-- User profile dropdown with improved styling -->
+                <div class="profile-dropdown dropdown">
+                    @auth
+                        @php
+                            $profileUpdate = \App\Models\UserProfileUpdate::where('user_id', Auth::id())->first();
+                        @endphp
+                        <button class="profile-btn" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            @if ($profileUpdate && $profileUpdate->profile_image)
+                                <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="profile-img">
+                            @else
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            @endif
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="profileDropdown">
+                            <li class="dropdown-header">Welcome, {{ Auth::user()->name }}!</li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i>Update Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('order.all') }}"><i class="fas fa-shopping-bag me-2"></i>View Your Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ route('order.history') }}"><i class="fas fa-history me-2"></i>Order History</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            @if(Auth::user()->sellerType == 1)
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</a></li>
+                            @elseif(Auth::user()->sellerType == 3)
+                                <li><a class="dropdown-item" href="{{ route('seller.panel') }}"><i class="fas fa-store me-2"></i>Seller Panel</a></li>
+                            @endif
+                            <li><a class="dropdown-item" href="{{ route('register.seller') }}"><i class="fas fa-user-plus me-2"></i>Register as Seller</a></li>
+                            <li><a class="dropdown-item" href="{{ route('login.seller') }}"><i class="fas fa-sign-in-alt me-2"></i>Login as Seller</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    @else
+                        <button class="profile-btn" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="profile-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{{ route('login') }}"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                            <li><a class="dropdown-item" href="{{ route('register') }}"><i class="fas fa-user-plus me-2"></i>Register</a></li>
+                        </ul>
+                    @endauth
+                </div>
+            </div>
+            
+            <!-- Mobile menu toggle button -->
+            <div class="mobile-menu-toggle">
+                <button type="button" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile menu dropdown -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="container">
+            <div class="mobile-search">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" placeholder="Search for services...">
+                </div>
+            </div>
+            <div class="mobile-links">
+                <a href="#home" class="active">Home</a>
                 <a href="#sellers">Sellers</a>
                 <a href="#services">Services</a>
                 <a href="#about">About</a>
-
-                <div class="notification-dropdown dropdown">
-    <button class="btn btn-link dropdown-toggle" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-bell"></i>
-        @auth
-            @php
-                $unreadCount = Auth::user()->unreadNotifications->count();
-            @endphp
-
-            @if($unreadCount > 0)
-                <span class="badge bg-danger rounded-pill position-absolute top-0 end-0 translate-middle" style="font-size: 0.75rem;">{{ $unreadCount }}</span>
-            @endif
-        @endauth
-    </button>
-
-    <ul class="dropdown-menu" aria-labelledby="notificationDropdown">
-        <li class="dropdown-header d-flex justify-content-between align-items-center">
-            <span>Notifications</span>
-            @auth
-                <form method="POST" action="{{ route('notifications.markAllAsRead') }}" class="d-inline-block">
-                    @csrf
-                    <button type="submit" class="btn btn-link btn-sm text-muted">Mark all as read</button>
-                </form>
-            @endauth
-        </li>
-        <li>
-            <hr class="dropdown-divider">
-        </li>
-        @auth
-            @php
-                $notifications = Auth::user()->notifications()->latest()->take(5)->get();
-            @endphp
-            @foreach($notifications as $notification)
-    <li class="dropdown-item {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
-        <a href="{{ $notification->data['service_url'] ?? '#' }}" class="text-dark">
-            {{ $notification->data['message'] ?? 'No message available' }}
-        </a>
-    </li>
-@endforeach
-        @else
-            <li class="dropdown-item text-muted">Please login to see notifications.</li>
-        @endauth
-    </ul>
-</div>
-
-<div class="dropdown">
-    @auth
-        @php
-            $profileUpdate = \App\Models\UserProfileUpdate::where('user_id', Auth::id())->first();
-        @endphp
-        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            @if ($profileUpdate && $profileUpdate->profile_image)
-                <img src="{{ asset('storage/' . $profileUpdate->profile_image) }}" alt="Profile Image" class="rounded-circle" style="width: 30px; height: 30px;">
-            @else
-                <i class="fas fa-user-circle" style="font-size: 30px;"></i>
-            @endif
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-            <li><span class="dropdown-item">Welcome, {{ Auth::user()->name }}!</span></li>
-            <li><a href="{{ route('profile.edit') }}" class="dropdown-item">Update Profile</a></li>
-            <li><a href="{{ route('order.all') }}" class="dropdown-item">View Your Orders</a></li>
-            <li><a href="{{ route('order.history') }}" class="dropdown-item">Order History</a></li>
-            <li>
-                <form method="POST" action="{{ route('logout') }}" class="dropdown-item">
-                    @csrf
-                    <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
-                </form>
-            </li>
-            @if(Auth::user()->sellerType == 1)
-                <li><a href="{{ route('admin.dashboard') }}" class="dropdown-item">Admin Dashboard</a></li>
-            @elseif(Auth::user()->sellerType == 3)
-                <li><a href="{{ route('seller.panel') }}" class="dropdown-item">Seller Panel</a></li>
-            @endif
-            <li><a href="{{ route('register.seller') }}" class="dropdown-item">Register as Seller</a></li>
-            <li><a href="{{ route('login.seller') }}" class="dropdown-item">Login as Seller</a></li>
-        </ul>
-    @else
-        <button class="btn btn-link dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user-circle" style="font-size: 30px;"></i>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
-            <li><a href="{{ route('login') }}" class="dropdown-item">Login</a></li>
-            <li><a href="{{ route('register') }}" class="dropdown-item">Register</a></li>
-        </ul>
-    @endauth
-</div>
-
-                
+                @auth
+                    <a href="{{ route('profile.edit') }}">Update Profile</a>
+                    <a href="{{ route('order.all') }}">View Your Orders</a>
+                    <a href="{{ route('order.history') }}">Order History</a>
+                    @if(Auth::user()->sellerType == 1)
+                        <a href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                    @elseif(Auth::user()->sellerType == 3)
+                        <a href="{{ route('seller.panel') }}">Seller Panel</a>
+                    @endif
+                    <a href="{{ route('register.seller') }}">Register as Seller</a>
+                    <a href="{{ route('login.seller') }}">Login as Seller</a>
+                    <form method="POST" action="{{ route('logout') }}" class="mobile-logout">
+                        @csrf
+                        <button type="submit">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('register') }}">Register</a>
+                @endauth
             </div>
         </div>
     </div>
@@ -400,6 +484,35 @@
 </script>
 
 <script>
+// Initialize toasts
+document.addEventListener('DOMContentLoaded', function() {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+    var toastList = toastElList.map(function(toastEl) {
+        return new bootstrap.Toast(toastEl, {
+            autohide: true,
+            delay: 5000
+        }).show();
+    });
+    
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+            mobileMenuBtn.querySelector('i').classList.toggle('fa-bars');
+            mobileMenuBtn.querySelector('i').classList.toggle('fa-times');
+        });
+    }
+});
+
 // Function to search for services
 function searchServices() {
     let searchTerm = document.getElementById('serviceSearch').value;
@@ -431,14 +544,14 @@ function searchServices() {
                         `;
                     });
                 } else {
-                    resultContainer.style.display = 'none';  // Hide results if no services found
-                    resultContainer.innerHTML = '<p>No services found.</p>';
+                    resultContainer.style.display = 'block';  // Still show container with no results message
+                    resultContainer.innerHTML = '<p class="no-results">No services found.</p>';
                 }
             })
             .catch(error => {
                 console.error('Error fetching search results:', error);
-                resultContainer.style.display = 'none';  // Hide results in case of error
-                resultContainer.innerHTML = '<p>An error occurred while searching. Please try again.</p>';
+                resultContainer.style.display = 'block';  // Show container with error message
+                resultContainer.innerHTML = '<p class="search-error">An error occurred while searching. Please try again.</p>';
             });
     } else {
         resultContainer.style.display = 'none';  // Hide results if search term is too short
@@ -448,8 +561,12 @@ function searchServices() {
 
 // Function to toggle the visibility of search results
 function toggleSearchResults() {
+    let searchTerm = document.getElementById('serviceSearch').value;
     let resultContainer = document.getElementById('searchResults');
-    resultContainer.style.display = 'block';  // Always show when clicking on the search input
+    
+    if (searchTerm.length >= 3) {
+        resultContainer.style.display = 'block';  // Show only if there's a valid search term
+    }
 }
 
 // Function to handle click outside of search bar
@@ -458,11 +575,38 @@ document.addEventListener('click', function(event) {
     const resultContainer = document.getElementById('searchResults');
 
     // Hide results if clicked outside search bar and results container
-    if (!searchBar.contains(event.target) && !resultContainer.contains(event.target)) {
+    if (searchBar && resultContainer && !searchBar.contains(event.target) && !resultContainer.contains(event.target)) {
         resultContainer.style.display = 'none';
     }
 });
 
+var swiper = new Swiper('.swiper-container', {
+    slidesPerView: 1,
+    spaceBetween: 20,
+    loop: true,
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+    autoplay: {
+        delay: 3000,
+    },
+    breakpoints: {
+        640: {
+            slidesPerView: 1,
+        },
+        768: {
+            slidesPerView: 2,
+        },
+        1024: {
+            slidesPerView: 3,
+        },
+    }
+});
 </script>
 
 
