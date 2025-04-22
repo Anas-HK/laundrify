@@ -11,12 +11,49 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
+/* Modern Logo Styles */
+.logo-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
 
+.logo-icon {
+    font-size: 1.5rem;
+    color: var(--white, #fff);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4361ee, #3a56d4);
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    box-shadow: 0 4px 8px rgba(67, 97, 238, 0.25);
+}
 
+.logo-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #2d3748;
+    position: relative;
+}
 
-
+.logo-text::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 70%;
+    height: 2px;
+    background: linear-gradient(135deg, #4361ee, #3a56d4);
+    border-radius: 8px;
+}
 
 </style>
 </head>
@@ -53,8 +90,10 @@
         <div class="header-content">
             <div class="logo">
                 <a href="#home">
-                    <span class="logo-text">Laundrify</span>
-                    <span class="logo-icon"><i class="fas fa-tshirt"></i></span>
+                    <div class="logo-container">
+                        <i class="fas fa-tshirt logo-icon"></i>
+                        <span class="logo-text">Laundrify</span>
+                    </div>
                 </a>
             </div>
             

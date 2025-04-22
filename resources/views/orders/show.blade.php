@@ -3,77 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details - {{ $order->id }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Order Details - {{ $order->id }} | Laundrify</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .order-status {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .status-pending {
-            background-color: #ffe8cc;
-            color: #ff9800;
-        }
-        .status-accepted {
-            background-color: #cce5ff;
-            color: #0d6efd;
-        }
-        .status-in-progress {
-            background-color: #e0f7fa;
-            color: #00acc1;
-        }
-        .status-completed {
-            background-color: #d4edda;
-            color: #28a745;
-        }
-        .status-cancelled {
-            background-color: #f8d7da;
-            color: #dc3545;
-        }
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-            margin-bottom: 20px;
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 25px;
-        }
-        .timeline-item:before {
-            content: "";
-            position: absolute;
-            left: -24px;
-            top: 0;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background-color: #e9ecef;
-            border: 3px solid #dee2e6;
-            z-index: 1;
-        }
-        .timeline-item.active:before {
-            background-color: #28a745;
-            border-color: #d4edda;
-        }
-        .timeline-item:after {
-            content: "";
-            position: absolute;
-            left: -16px;
-            top: 18px;
-            bottom: 0;
-            width: 2px;
-            background-color: #dee2e6;
-        }
-        .timeline-item:last-child:after {
-            display: none;
-        }
-    </style>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/orderDetails.css') }}">
 </head>
 <body>
-    <div class="container mt-4 mb-5">
+    <header class="bg-white shadow-sm py-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                @include('components.logo')
+                <div>
+                    <a href="{{ url('/') }}" class="btn-contact btn-sm">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container order-details-page">
         <div class="row mb-3">
             <div class="col-12">
                 <nav aria-label="breadcrumb">
@@ -87,84 +47,93 @@
         </div>
 
         <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-4">
+            <div class="col-lg-8">
+                <!-- Order Details Card -->
+                <div class="order-card card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Order #{{ $order->id }}</h5>
-                        <span class="order-status status-{{ strtolower(str_replace(' ', '-', $order->status)) }}">
-                            {{ ucfirst($order->status) }}
+                        <span class="order-status status-{{ strtolower(str_replace(' ', '-', str_replace('_', '-', $order->status))) }}">
+                            <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i>
+                            {{ ucwords(str_replace('_', ' ', $order->status)) }}
                         </span>
                     </div>
                     <div class="card-body">
-                        <div class="row mb-3">
+                        <div class="row">
                             <div class="col-md-6">
-                                <p class="mb-1"><strong>Order Date:</strong></p>
-                                <p>{{ $order->created_at->format('F d, Y h:i A') }}</p>
+                                <div class="info-group">
+                                    <div class="info-label">Order Date</div>
+                                    <div class="info-value">{{ $order->created_at->format('F d, Y h:i A') }}</div>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <p class="mb-1"><strong>Total Amount:</strong></p>
-                                <p>${{ number_format($order->total_amount, 2) }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <p class="mb-1"><strong>Delivery Address:</strong></p>
-                                <p>{{ $order->address }}</p>
+                                <div class="info-group">
+                                    <div class="info-label">Total Amount</div>
+                                    <div class="info-value">${{ number_format($order->total_amount, 2) }}</div>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                <p class="mb-1"><strong>Contact Phone:</strong></p>
-                                <p>{{ $order->phone }}</p>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <p class="mb-1"><strong>Seller:</strong></p>
-                                <p>{{ $order->seller->name ?? 'N/A' }}</p>
+                                <div class="info-group">
+                                    <div class="info-label">Delivery Address</div>
+                                    <div class="info-value">{{ $order->address }}</div>
+                                </div>
                             </div>
                             <div class="col-md-6">
-                                @if($order->transaction_id)
-                                <p class="mb-1"><strong>Transaction ID:</strong></p>
-                                <p>{{ $order->transaction_id }}</p>
-                                @endif
+                                <div class="info-group">
+                                    <div class="info-label">Contact Phone</div>
+                                    <div class="info-value">{{ $order->phone }}</div>
+                                </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Seller</div>
+                                    <div class="info-value">{{ $order->seller->name ?? 'N/A' }}</div>
+                                </div>
+                            </div>
+                            @if($order->transaction_id)
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Transaction ID</div>
+                                    <div class="info-value">{{ $order->transaction_id }}</div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
-                <div class="card mb-4">
+                <!-- Order Items Card -->
+                <div class="order-card card">
                     <div class="card-header">
                         <h5 class="mb-0">Order Items</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered">
+                            <table class="order-items-table">
                                 <thead>
                                     <tr>
-                                        <th>Service</th>
-                                        <th class="text-center">Price</th>
-                                        <th class="text-center">Quantity</th>
-                                        <th class="text-end">Total</th>
+                                        <th style="width: 50%;">Service</th>
+                                        <th style="width: 15%;" class="text-center">Price</th>
+                                        <th style="width: 15%;" class="text-center">Qty</th>
+                                        <th style="width: 20%;" class="text-end">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($order->items as $item)
                                     <tr>
                                         <td>
-                                            {{ $item->service->title ?? 'Unknown Service' }}
-                                            <small class="d-block text-muted">{{ $item->service->category ?? '' }}</small>
+                                            <div class="fw-medium">{{ $item->service->name ?? $item->service->title ?? 'Unknown Service' }}</div>
+                                            <small class="text-muted">{{ $item->service->category ?? '' }}</small>
                                         </td>
                                         <td class="text-center">${{ number_format($item->price, 2) }}</td>
                                         <td class="text-center">{{ $item->quantity }}</td>
-                                        <td class="text-end">${{ number_format($item->price * $item->quantity, 2) }}</td>
+                                        <td class="text-end fw-semibold">${{ number_format($item->price * $item->quantity, 2) }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="3" class="text-end">Total:</th>
-                                        <th class="text-end">${{ number_format($order->total_amount, 2) }}</th>
+                                        <td colspan="3" class="text-end fw-bold">Total:</td>
+                                        <td class="text-end fw-bold">${{ number_format($order->total_amount, 2) }}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -173,12 +142,13 @@
                 </div>
 
                 @if($order->status === 'completed')
-                <div class="card mb-4">
+                <div class="order-card card">
                     <div class="card-header">
                         <h5 class="mb-0">Leave Feedback</h5>
                     </div>
                     <div class="card-body">
-                        <a href="{{ route('order.feedback', $order->id) }}" class="btn btn-primary">
+                        <p class="text-muted mb-3">Share your experience with this service to help other customers make better decisions.</p>
+                        <a href="{{ route('order.feedback', $order->id) }}" class="action-btn btn-feedback">
                             <i class="fas fa-comment"></i> Write a Review
                         </a>
                     </div>
@@ -186,66 +156,79 @@
                 @endif
             </div>
 
-            <div class="col-md-4">
-                <div class="card mb-4">
+            <div class="col-lg-4">
+                <!-- Order Status Card -->
+                <div class="order-card card">
                     <div class="card-header">
                         <h5 class="mb-0">Order Status</h5>
                     </div>
                     <div class="card-body">
                         <div class="timeline">
-                            <div class="timeline-item {{ in_array($order->status, ['pending', 'accepted', 'in_progress', 'completed']) ? 'active' : '' }}">
-                                <h6>Order Placed</h6>
-                                <p class="small text-muted">{{ $order->created_at->format('M d, Y h:i A') }}</p>
+                            <div class="timeline-item {{ in_array($order->status, ['pending', 'accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
+                                <div class="timeline-title">Order Placed</div>
+                                <div class="timeline-date">{{ $order->created_at->format('M d, Y h:i A') }}</div>
                             </div>
                             
-                            <div class="timeline-item {{ in_array($order->status, ['accepted', 'in_progress', 'completed']) ? 'active' : '' }}">
-                                <h6>Order Accepted</h6>
-                                <p class="small text-muted">
-                                    @if(in_array($order->status, ['accepted', 'in_progress', 'completed']))
+                            <div class="timeline-item {{ in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
+                                <div class="timeline-title">Order Accepted</div>
+                                <div class="timeline-date">
+                                    @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
                                         {{ $order->updated_at->format('M d, Y h:i A') }}
                                     @else
                                         Pending
                                     @endif
-                                </p>
+                                </div>
                             </div>
                             
-                            <div class="timeline-item {{ in_array($order->status, ['in_progress', 'completed']) ? 'active' : '' }}">
-                                <h6>In Progress</h6>
-                                <p class="small text-muted">
-                                    @if(in_array($order->status, ['in_progress', 'completed']))
+                            <div class="timeline-item {{ in_array($order->status, ['pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']) ? 'active' : '' }}">
+                                <div class="timeline-title">In Process</div>
+                                <div class="timeline-date">
+                                    @if(in_array($order->status, ['pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
                                         {{ $order->updated_at->format('M d, Y h:i A') }}
                                     @else
                                         Pending
                                     @endif
-                                </p>
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item {{ in_array($order->status, ['delivered', 'completed']) ? 'active' : '' }}">
+                                <div class="timeline-title">Delivered</div>
+                                <div class="timeline-date">
+                                    @if(in_array($order->status, ['delivered', 'completed']))
+                                        {{ $order->updated_at->format('M d, Y h:i A') }}
+                                    @else
+                                        Pending
+                                    @endif
+                                </div>
                             </div>
                             
                             <div class="timeline-item {{ $order->status === 'completed' ? 'active' : '' }}">
-                                <h6>Completed</h6>
-                                <p class="small text-muted">
+                                <div class="timeline-title">Completed</div>
+                                <div class="timeline-date">
                                     @if($order->status === 'completed')
                                         {{ $order->updated_at->format('M d, Y h:i A') }}
                                     @else
                                         Pending
                                     @endif
-                                </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
+                <!-- Actions Card -->
+                <div class="order-card card">
                     <div class="card-header">
                         <h5 class="mb-0">Actions</h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="{{ route('order.track', $order->id) }}" class="btn btn-outline-primary">
+                        <div class="d-grid gap-3">
+                            <a href="{{ route('order.track', $order->id) }}" class="action-btn btn-track">
                                 <i class="fas fa-truck"></i> Track Order
                             </a>
                             
-                            @if($order->status !== 'cancelled' && $order->status !== 'completed')
-                            <a href="{{ route('chat.index', $order->id) }}" class="btn btn-outline-info">
+                            @if($order->status !== 'cancelled' && $order->status !== 'completed' && $order->status !== 'rejected')
+                            <a href="{{ route('chat.index', $order->id) }}" class="action-btn btn-contact">
                                 <i class="fas fa-comments"></i> Contact Seller
                             </a>
                             @endif
@@ -256,6 +239,21 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer class="bg-white py-4 mt-2 border-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Laundrify. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-muted me-3">Privacy Policy</a>
+                    <a href="#" class="text-muted">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

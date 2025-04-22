@@ -1,330 +1,265 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body, h1, h2, h3, p, ul, ol, li, a, input, button, textarea {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+@extends('admin.layouts.app')
 
-        body {
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
+@section('title', 'Dashboard')
 
-        /* Header */
-        header {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        header .nav-btn {
-            color: #fff;
-            text-decoration: none;
-            background-color: #0056b3;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        header .nav-btn:hover {
-            background-color: #003f88;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #343a40;
-            color: #fff;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 20px;
-        }
-
-        .sidebar a {
-            display: block;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-
-        .sidebar .active {
-            background-color: #007bff;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        .card {
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .card h3 {
-            margin-bottom: 15px;
-        }
-
-        .card p {
-            margin-bottom: 10px;
-        }
-
-        .card .btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .card .btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 0 0 10px 10px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="logo">Laundrify Admin</div>
-        <form method="POST" action="{{ route('logout') }}" class="d-inline">
-            @csrf
-            <button type="submit" class="nav-btn">Logout</button>
-        </form>
-    </header>
-
-    <div class="sidebar">
-        <a href="{{ route('admin.dashboard') }}" class="active">Dashboard</a>
-        <a href="{{ route('admin.sellers') }}">Manage Sellers</a>
-        <a href="{{ route('admin.services') }}">Manage Services</a>
-        <a href="{{ route('admin.verifications.index') }}">
-            Verification Requests
-            @php
-                $pendingCount = \App\Models\SellerVerification::where('status', 'pending')->count();
-            @endphp
-            @if($pendingCount > 0)
-                <span class="badge badge-danger badge-pill ml-2">{{ $pendingCount }}</span>
-            @endif
+@section('content')
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-primary shadow-sm">
+            <i class="fas fa-download fa-sm text-white-50 me-1"></i> Generate Report
         </a>
-        <a href="{{ route('admin.settings') }}">Settings</a>
     </div>
 
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Admin Dashboard</h1>
-            @if(session('impersonate'))
-                <form action="{{ route('admin.stopImpersonating') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-secondary btn-sm">Logout Seller's Account</button>
-                </form>
-            @endif
-        </div>
-        @if(session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
-        @endif
-
-        <div class="card">
-            <h3>Pending Sellers</h3>
-            @if($pendingSellers->isEmpty())
-                <div class="alert alert-info">
-                    No pending sellers at the moment.
-                </div>
-            @else
-                <div class="table-responsive mb-5">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pendingSellers as $seller)
-                                <tr id="seller-{{ $seller->id }}">
-                                    <td>{{ $seller->name }}</td>
-                                    <td>{{ $seller->email }}</td>
-                                    <td>
-                                        <form action="{{ route('admin.approveSeller', $seller->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                                        </form>
-                                        <form action="{{ route('admin.rejectSeller', $seller->id) }}" method="POST" style="display:inline;" onsubmit="return handleDelete(event, {{ $seller->id }})">
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
-
-        <div class="card">
-            <h3>Pending Services</h3>
-            @if($pendingServices->isEmpty())
-                <div class="alert alert-info">
-                    No pending services at the moment.
-                </div>
-            @else
-                <div class="table-responsive mb-5">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Service Name</th>
-                                <th>Price</th>
-                                <th>Description</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pendingServices as $service)
-                                <tr id="service-{{ $service->id }}">
-                                    <td>{{ $service->service_name }}</td>
-                                    <td>{{ $service->service_price }}</td>
-                                    <td>{{ $service->service_description }}</td>
-                                    <td>
-                                        <form action="{{ route('admin.approveService', $service->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                                        </form>
-                                        <form action="{{ route('admin.rejectService', $service->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
-
-        <div class="card">
-            <h3>Pending Verification Requests</h3>
-            @php
-                $pendingVerifications = \App\Models\SellerVerification::with('seller')
-                    ->where('status', 'pending')
-                    ->latest('submitted_at')
-                    ->take(5)
-                    ->get();
-            @endphp
-            
-            @if($pendingVerifications->isEmpty())
-                <div class="alert alert-info">
-                    No pending verification requests at the moment.
-                </div>
-            @else
-                <div class="table-responsive mb-5">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Seller</th>
-                                <th>Submitted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pendingVerifications as $verification)
-                                <tr>
-                                    <td>{{ $verification->seller->name }}</td>
-                                    <td>{{ $verification->submitted_at->format('M d, Y') }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.verifications.show', $verification) }}" class="btn btn-info btn-sm">Review</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="text-right">
-                        <a href="{{ route('admin.verifications.index') }}" class="btn btn-primary btn-sm">View All Requests</a>
+    <!-- Dashboard Summary -->
+    <div class="row dashboard-summary mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card primary h-100">
+                <div class="summary-card-body">
+                    <div class="summary-card-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ count($sellers) }}</div>
+                        <div class="stat-label">Total Sellers</div>
                     </div>
                 </div>
-            @endif
+            </div>
         </div>
-
-        <div class="card">
-            <h3>All Sellers</h3>
-            @if($sellers->isEmpty())
-                <div class="alert alert-info">
-                    No sellers available at the moment.
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card warning h-100">
+                <div class="summary-card-body">
+                    <div class="summary-card-icon">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ count($pendingSellers) }}</div>
+                        <div class="stat-label">Pending Verifications</div>
+                    </div>
                 </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($sellers as $seller)
-                                <tr>
-                                    <td>{{ $seller->name }}</td>
-                                    <td>{{ $seller->email }}</td>
-                                    <td>
-                                        <form action="{{ route('admin.loginSeller', $seller->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-info btn-sm">Login Seller's Account</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card success h-100">
+                <div class="summary-card-body">
+                    <div class="summary-card-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ count($pendingServices) }}</div>
+                        <div class="stat-label">Pending Services</div>
+                    </div>
                 </div>
-            @endif
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card danger h-100">
+                <div class="summary-card-body">
+                    <div class="summary-card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <div class="stat-value">{{ count($sellers) > 0 ? number_format(count($pendingSellers) / count($sellers) * 100, 1) : 0 }}%</div>
+                        <div class="stat-label">Approval Rate</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2023 Laundrify. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+    <div class="row">
+        <!-- Pending Verifications Panel -->
+        <div class="col-lg-6 mb-4">
+            <div class="data-card h-100">
+                <div class="data-card-header">
+                    <h5 class="data-card-title">
+                        <i class="fas fa-user-check text-warning me-2"></i>Pending Seller Verifications
+                    </h5>
+                    <a href="{{ route('admin.verifications.index') }}" class="data-card-action">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="data-card-body">
+                    @if(count($pendingSellers) > 0)
+                        <ul class="seller-list">
+                            @foreach($pendingSellers as $seller)
+                            <li class="seller-item">
+                                <div class="seller-avatar">
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($seller->name) }}&background=4e73df&color=fff" alt="{{ $seller->name }}">
+                                </div>
+                                <div class="seller-info">
+                                    <h6 class="seller-name">{{ $seller->name }}</h6>
+                                    <p class="seller-email">{{ $seller->email }}</p>
+                                </div>
+                                <div class="ms-auto d-flex align-items-center">
+                                    <span class="status-badge status-pending me-3">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </span>
+                                    <div class="d-flex">
+                                        <form action="{{ route('admin.approveSeller', $seller->id) }}" method="POST" class="me-2 approval-form approve-form" data-entity-type="Seller">
+                                            @csrf
+                                            <button type="submit" class="action-btn approve" data-bs-toggle="tooltip" title="Approve Seller">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.rejectSeller', $seller->id) }}" method="POST" class="approval-form reject-form" data-entity-type="Seller">
+                                            @csrf
+                                            <button type="submit" class="action-btn reject" data-bs-toggle="tooltip" title="Reject Seller">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="data-card-empty">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No pending verifications</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Services Panel -->
+        <div class="col-lg-6 mb-4">
+            <div class="data-card h-100">
+                <div class="data-card-header">
+                    <h5 class="data-card-title">
+                        <i class="fas fa-box-open text-info me-2"></i>Pending Services
+                    </h5>
+                    <a href="{{ route('admin.services') }}" class="data-card-action">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="data-card-body">
+                    @if(count($pendingServices) > 0)
+                        <div class="table-responsive">
+                            <table class="admin-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Service Name</th>
+                                        <th>Seller</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($pendingServices as $service)
+                                    <tr>
+                                        <td class="table-id">#{{ $service->id }}</td>
+                                        <td>{{ $service->name }}</td>
+                                        <td>{{ $service->seller ? $service->seller->name : 'N/A' }}</td>
+                                        <td>৳{{ $service->price }}</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <form action="{{ route('admin.approveService', $service->id) }}" method="POST" class="me-2 approval-form approve-form" data-entity-type="Service">
+                                                    @csrf
+                                                    <button type="submit" class="action-btn approve" data-bs-toggle="tooltip" title="Approve Service">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('admin.rejectService', $service->id) }}" method="POST" class="approval-form reject-form" data-entity-type="Service">
+                                                    @csrf
+                                                    <button type="submit" class="action-btn reject" data-bs-toggle="tooltip" title="Reject Service">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="data-card-empty">
+                            <i class="fas fa-check-circle"></i>
+                            <p>No pending services</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Registered Sellers Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="data-card">
+                <div class="data-card-header">
+                    <h5 class="data-card-title">
+                        <i class="fas fa-store text-primary me-2"></i>Registered Sellers
+                    </h5>
+                    <a href="{{ route('admin.sellers') }}" class="data-card-action">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="data-card-body">
+                    @if(count($sellers) > 0)
+                        <div class="table-responsive">
+                            <table class="admin-table w-100">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Shop/Service</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($sellers->take(5) as $seller)
+                                    <tr>
+                                        <td class="table-id">#{{ $seller->id }}</td>
+                                        <td>{{ $seller->name }}</td>
+                                        <td>{{ $seller->email }}</td>
+                                        <td>{{ $seller->business_name ?? 'N/A' }}</td>
+                                        <td>{{ $seller->created_at->diffForHumans() }}</td>
+                                        <td>
+                                            <form action="{{ route('admin.loginSeller', $seller->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="action-btn view" data-bs-toggle="tooltip" title="Login as Seller">
+                                                    <i class="fas fa-sign-in-alt"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="data-card-empty">
+                            <i class="fas fa-store-slash"></i>
+                            <p>No registered sellers yet</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    // Generate a report function
+    function generateReport() {
+        toast.info('Generating report...', 'Report');
+        
+        // Simulate report generation
+        setTimeout(() => {
+            toast.success('Report generated successfully!', 'Report');
+        }, 2000);
+    }
+</script>
+@endsection

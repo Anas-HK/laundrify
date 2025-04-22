@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- You can @ files here
+- You can use markdown but dont have to
+
+Whatever route I give you, update the UI of it matching with the rest of the work we've done so far. Also write css in external file to keep view blade file clean
+
+don't add any routes by yourself, if you're adding routes add the same ones in the existing files or check [web.php](mdc:routes/web.php) route file

@@ -1,157 +1,366 @@
+@php
+    use Illuminate\Support\Facades\Route;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name') }} - Admin Dashboard</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@yield('title', 'Admin Dashboard') | Laundrify Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Custom styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Admin Layout CSS -->
+    <link href="{{ asset('css/adminLayout.css') }}" rel="stylesheet">
+    
+    <!-- Custom Admin Dashboard CSS -->
+    <link href="{{ asset('css/adminDashboard.css') }}" rel="stylesheet">
+    
+    <!-- Toast Notifications CSS -->
+    <link href="{{ asset('css/admin-toast.css') }}" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    @yield('styles')
+
     <style>
         body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fc;
         }
-        .admin-header {
-            background-color: #4e73df;
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+        
         .sidebar {
-            min-height: calc(100vh - 56px);
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
         }
+        
+        .sidebar-brand {
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .brand-content {
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-title {
+            font-size: 1.2rem;
+            margin-left: 0.75rem;
+            margin-bottom: 0;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+        
         .nav-link {
-            color: #4a5568;
-            padding: 12px 20px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            transition: all 0.3s;
+            padding: 0.85rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
-        .nav-link:hover, .nav-link.active {
-            background-color: #edf2ff;
-            color: #4e73df;
+        
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
         }
-        .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        .admin-content {
-            padding: 20px;
-        }
-        .card {
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            border-radius: 10px;
-            border: none;
-        }
-        .card-header {
-            border-radius: 10px 10px 0 0 !important;
+        
+        .nav-link.active {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.2);
             font-weight: 600;
         }
-        .badge-verification {
-            background-color: #4e73df;
-            color: white;
-            font-size: 0.7rem;
-            margin-left: 5px;
-            padding: 3px 6px;
-            border-radius: 3px;
+        
+        .nav-link i {
+            width: 1.25rem;
+            text-align: center;
+            margin-right: 0.75rem;
+            font-size: 1rem;
         }
-        .alert {
-            border-radius: 10px;
+        
+        .content-area {
+            padding: 1.5rem;
+        }
+        
+        .sidebar-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin: 1rem 1.5rem;
+        }
+        
+        .admin-user {
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .admin-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .admin-name {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .admin-role {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50rem;
+        }
+        
+        .btn-icon {
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
     </style>
 </head>
 <body>
-    <header class="admin-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h1 class="h4 mb-0">Laundrify Admin Panel</h1>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-content">
+                    <i class="fas fa-tshirt fa-2x text-white"></i>
+                    <h1 class="sidebar-title">Laundrify</h1>
                 </div>
-                <div class="col-md-6 text-end">
-                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-light btn-sm">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </form>
-                </div>
+                <button id="sidebarToggle" class="btn btn-link text-white p-0">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
-        </div>
-    </header>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 p-0">
-                <div class="sidebar p-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sellers') }}" class="nav-link {{ request()->routeIs('admin.sellers') ? 'active' : '' }}">
-                                <i class="fas fa-users"></i> Sellers
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.services') }}" class="nav-link {{ request()->routeIs('admin.services') ? 'active' : '' }}">
-                                <i class="fas fa-concierge-bell"></i> Services
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.verifications.index', ['status' => 'pending']) }}" class="nav-link {{ request()->routeIs('admin.verifications.*') ? 'active' : '' }}">
-                                <i class="fas fa-certificate"></i> Verifications
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
-                                <i class="fas fa-cog"></i> Settings
-                            </a>
-                        </li>
-                    </ul>
+            
+            <!-- Admin User Info -->
+            <div class="admin-user">
+                <div class="admin-avatar">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=4e73df&color=fff" alt="Admin" class="img-fluid">
+                </div>
+                <div class="admin-info">
+                    <div class="admin-name">{{ Auth::user()->name }}</div>
+                    <div class="admin-role">Administrator</div>
                 </div>
             </div>
             
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10">
-                <div class="admin-content">
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-menu">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.sellers') }}" class="nav-link {{ request()->routeIs('admin.sellers') ? 'active' : '' }}">
+                            <i class="fas fa-store"></i>
+                            <span>Sellers</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.services') }}" class="nav-link {{ request()->routeIs('admin.services') ? 'active' : '' }}">
+                            <i class="fas fa-box"></i>
+                            <span>Services</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.verifications.index') }}" class="nav-link {{ request()->routeIs('admin.verifications.index') ? 'active' : '' }}">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verifications</span>
+                            @php
+                                $routeName = Route::currentRouteName();
+                                $pendingCount = App\Models\Seller::where('accountIsApproved', 0)->where('is_deleted', 0)->count();
+                                $showBadge = $pendingCount > 0 && $routeName !== 'admin.verifications.index' && !str_contains($routeName, 'chat');
+                            @endphp
+                            
+                            @if($showBadge)
+                                <span class="badge bg-danger ms-auto">
+                                    {{ $pendingCount }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                    
+                    <div class="sidebar-divider"></div>
+                    
+                    <li class="nav-item mt-auto">
+                        <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Begin Page Content -->
+            <div class="content-area">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">@yield('title', 'Dashboard')</h1>
+                    <ol class="breadcrumb mb-0 bg-transparent p-0">
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                        <li class="breadcrumb-item active">@yield('title', 'Dashboard')</li>
+                    </ol>
+                </div>
+                
+                <!-- Success/Error Messages - Hidden but kept for compatibility -->
+                <div class="d-none">
                     @if(session('success'))
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i> {{ session('success') }}
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
                     
                     @if(session('error'))
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
-                    
-                    @yield('content')
+                </div>
+                
+                <!-- Page Content -->
+                @yield('content')
+            </div>
+        </div>
+    </div>
+    
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Select "Logout" below if you are ready to end your current session.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-primary">Logout</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Initialize tooltips -->
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Toast Notifications JS -->
+    <script src="{{ asset('js/admin-toast.js') }}"></script>
+    
+    <!-- Admin Layout JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+        // Sidebar Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            // Toggle sidebar from button in sidebar
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('toggled');
+                    // Save state to localStorage
+                    localStorage.setItem('sidebarToggled', sidebar.classList.contains('toggled'));
+                });
+            }
+            
+            // Check if sidebar was toggled previously
+            const sidebarToggled = localStorage.getItem('sidebarToggled');
+            if (sidebarToggled === 'true') {
+                sidebar.classList.add('toggled');
+            }
+            
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
+            
+            // Pass flash messages to toast system
+            @if(session('success'))
+                toast.success("{{ session('success') }}");
+            @endif
+            
+            @if(session('error'))
+                toast.error("{{ session('error') }}");
+            @endif
+            
+            @if(session('warning'))
+                toast.warning("{{ session('warning') }}");
+            @endif
+            
+            @if(session('info'))
+                toast.info("{{ session('info') }}");
+            @endif
+            
+            @if(session('status'))
+                toast.success("{{ session('status') }}");
+            @endif
         });
     </script>
+    
+    <!-- Page Specific Scripts -->
     @yield('scripts')
 </body>
 </html> 

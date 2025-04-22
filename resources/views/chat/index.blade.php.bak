@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Chat - Order #{{ $order->id }} | Laundrify</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/chat.css') }}">
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+</head>
+<body>
+    <header class="bg-white shadow-sm py-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                @include('components.logo')
+                <div>
+                    <a href="{{ url('/') }}" class="btn-contact btn-sm">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container chat-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="chat-card">
+                    <div class="chat-header">
+                        <div>
+                            <div class="chat-title">Chat for Order #{{ $order->id }}</div>
+                            <div class="chat-subtitle">
+                                <strong>Chat with:</strong> 
+                                {{ $isSeller ? $order->user->name : $order->seller->name }}
+                            </div>
+                            <div class="chat-subtitle">
+                                <strong>Payment Mode:</strong> 
+                                {{ $order->transaction_id ? 'Online (Transaction ID: ' . $order->transaction_id . ')' : 'Cash on Delivery' }}
+                            </div>
+                        </div>
+                        <a href="{{ $backUrl }}" class="chat-back-btn">
+                            <i class="fas fa-arrow-left"></i> Back to Order
+                        </a>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        @foreach($messages as $message)
+                            <div class="message {{ $message->sender_type === ($isSeller ? 'seller' : 'user') ? 'sent' : 'received' }}">
+                                <div class="message-bubble">
+                                    {{ $message->message }}
+                                    <div class="message-info">
+                                        {{ $message->created_at->format('M d, H:i') }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <div class="typing-indicator" id="typing-indicator">
+                        <span>Someone is typing</span>
+                        <div class="typing-dots">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <form id="message-form" class="chat-input-form">
+                            <input type="text" id="message-input" class="chat-input" placeholder="Type your message..." autocomplete="off">
+                            <button class="chat-send-btn" type="submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white py-4 mt-4 border-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">&copy; {{ date('Y') }} Laundrify. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-muted me-3">Privacy Policy</a>
+                    <a href="#" class="text-muted">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Initialize Pusher with debug logging
+        Pusher.logToConsole = true;
+        
+        const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+            encrypted: true
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chat-messages');
+            const messageForm = document.getElementById('message-form');
+            const messageInput = document.getElementById('message-input');
+            
+            // Get user type from server-side variable
+            const isSeller = {{ $isSeller ? 'true' : 'false' }};
+            console.log('User type:', isSeller ? 'Seller' : 'Buyer');
+            
+            // Get routes based on user type
+            const markReadRoute = isSeller ? '{{ route("seller.chat.mark-read", $order->id) }}' : '{{ route("chat.mark-read", $order->id) }}';
+            const sendMessageRoute = isSeller ? '{{ route("seller.chat.send", $order->id) }}' : '{{ route("chat.send", $order->id) }}';
+            console.log('Chat routes:', { markReadRoute, sendMessageRoute });
+    
+            // Subscribe to the chat channel
+            const channelName = 'chat.{{ $order->id }}';
+            console.log('Subscribing to channel:', channelName);
+            const channel = pusher.subscribe(channelName);
+    
+            // Listen for new messages
+            channel.bind('new-message', function(data) {
+                console.log('Received new message:', data);
+                const message = data.message;
+                appendMessage(message);
+                
+                // Mark message as read if it's not from current user
+                if (message.sender_type !== (isSeller ? 'seller' : 'user')) {
+                    console.log('Marking message as read');
+                    fetch(markReadRoute, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    });
+                }
+            });
+    
+            // Handle connection states
+            pusher.connection.bind('connected', () => {
+                console.log('Successfully connected to Pusher');
+            });
+            
+            pusher.connection.bind('error', (err) => {
+                console.error('Pusher connection error:', err);
+            });
+    
+            // Handle message form submission
+            messageForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+    
+                if (message) {
+                    console.log('Sending message:', message);
+                    fetch(sendMessageRoute, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ message: message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Server response:', data);
+                        if (data.success) {
+                            messageInput.value = '';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                    });
+                }
+            });
+    
+            function appendMessage(message) {
+                console.log('Appending message:', message);
+                const isCurrentUserMessage = message.sender_type === (isSeller ? 'seller' : 'user');
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isCurrentUserMessage ? 'sent' : 'received'}`;
+    
+                const messageBubble = document.createElement('div');
+                messageBubble.className = 'message-bubble';
+                messageBubble.textContent = message.message;
+    
+                const messageInfo = document.createElement('div');
+                messageInfo.className = 'message-info';
+                
+                const date = new Date(message.created_at);
+                messageInfo.textContent = date.toLocaleString('default', { 
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+    
+                messageBubble.appendChild(messageInfo);
+                messageDiv.appendChild(messageBubble);
+                chatContainer.appendChild(messageDiv);
+                
+                // Scroll to the new message with smooth animation
+                chatContainer.scrollTo({
+                    top: chatContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+    
+            // Initial scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+    </script>
+</body>
+</html>

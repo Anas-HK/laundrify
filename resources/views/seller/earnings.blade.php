@@ -3,268 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Earnings Dashboard - Laundrify</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #005f73;
-            padding: 20px;
-            color: #fff;
-        }
-
-        .header-container h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .seller-nav {
-            display: flex;
-            gap: 10px;
-        }
-
-        .seller-nav .nav-btn {
-            padding: 10px 15px;
-            color: #fff;
-            background-color: #0a9396;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .seller-nav .nav-btn:hover {
-            background-color: #94d2bd;
-        }
-
-        .seller-nav .logout-btn {
-            background-color: #ee9b00;
-        }
-
-        .seller-nav .logout-btn:hover {
-            background-color: #ca6702;
-        }
-
-        .earnings-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .earnings-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .total-earnings {
-            font-size: 32px;
-            font-weight: bold;
-            color: #0a9396;
-        }
-
-        .period-selector {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            gap: 10px;
-        }
-
-        .period-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 20px;
-            background-color: #f0f0f0;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .period-btn:hover {
-            background-color: #e0e0e0;
-        }
-
-        .period-btn.active {
-            background-color: #005f73;
-            color: white;
-        }
-
-        .chart-container {
-            height: 300px;
-            margin-top: 30px;
-        }
-
-        .table th {
-            background-color: #005f73;
-            color: white;
-        }
-
-        .orders-table {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .back-btn {
-            margin-top: 20px;
-        }
-    </style>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/sellerPanel.css') }}">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <h1>Earnings Dashboard</h1>
-            <nav class="seller-nav">
-                <a href="{{ route('seller.panel') }}" class="nav-btn">Back to Dashboard</a>
-                <form id="logout-form" action="{{ route('logout.seller') }}" method="POST" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="nav-btn logout-btn">Logout</button>
-                </form>
-            </nav>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand" href="{{ route('seller.panel') }}">
+                <div class="logo-container">
+                    <i class="fas fa-tshirt logo-icon"></i>
+                    <span class="logo-text">Laundrify</span>
+                </div>
+            </a>
+            
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Nav Content -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('seller.panel') }}">
+                            <i class="fas fa-home me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('add.service') }}">
+                            <i class="fas fa-plus-circle me-1"></i> Add Service
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ route('seller.earnings') }}">
+                            <i class="fas fa-wallet me-1"></i> Earnings
+                        </a>
+                    </li>
+                    @if(!Auth::guard('seller')->user()->is_verified)
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('seller.verification.apply') }}">
+                            <i class="fas fa-certificate me-1"></i> Get Verified
+                        </a>
+                    </li>
+                    @endif
+                    
+                    <!-- User Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> {{ Auth::guard('seller')->user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <form action="{{ route('logout.seller') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="container py-4">
-        <div class="row">
-            <!-- Earnings Summary Cards -->
-            <div class="col-md-4">
-                <div class="earnings-card text-center">
-                    <h4>Total Earnings</h4>
-                    <div class="total-earnings">{{ number_format($allTimeEarnings['total']) }} PKR</div>
-                    <p>From {{ $allTimeEarnings['count'] }} completed orders</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="earnings-card text-center">
-                    <h4>{{ ucfirst($period) }} Earnings</h4>
-                    <div class="total-earnings">{{ number_format($currentPeriodEarnings['total']) }} PKR</div>
-                    <p>From {{ $currentPeriodEarnings['count'] }} completed orders</p>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="earnings-card text-center">
-                    <h4>Average Per Order</h4>
-                    <div class="total-earnings">
-                        @if($allTimeEarnings['count'] > 0)
-                            {{ number_format($allTimeEarnings['total'] / $allTimeEarnings['count']) }} PKR
-                        @else
-                            0 PKR
-                        @endif
+    <main class="main-content">
+        <div class="container dashboard-container">
+            <!-- Section Title -->
+            <div class="welcome-card animate__animated animate__fadeIn">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="welcome-title">Earnings Dashboard</h1>
+                        <p class="welcome-text">Track your income and financial performance</p>
                     </div>
-                    <p>Based on all completed orders</p>
+                    <div class="col-md-4 text-end d-none d-md-block">
+                        <i class="fas fa-wallet welcome-icon"></i>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Period Selector -->
-        <div class="period-selector">
-            <form action="{{ route('seller.earnings') }}" method="GET" class="d-flex gap-2">
-                <button type="submit" name="period" value="week" class="period-btn {{ $period == 'week' ? 'active' : '' }}">This Week</button>
-                <button type="submit" name="period" value="month" class="period-btn {{ $period == 'month' ? 'active' : '' }}">This Month</button>
-                <button type="submit" name="period" value="year" class="period-btn {{ $period == 'year' ? 'active' : '' }}">This Year</button>
-                <button type="submit" name="period" value="all" class="period-btn {{ $period == 'all' ? 'active' : '' }}">All Time</button>
-            </form>
-        </div>
-
-        <!-- Earnings Chart -->
-        <div class="earnings-card">
-            <h3 class="text-center mb-4">Earnings Trend (Last 6 Months)</h3>
-            <div class="chart-container">
-                <canvas id="earningsChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Recent Completed Orders -->
-        <div class="earnings-card mt-4">
-            <h3 class="text-center mb-4">Recent Completed Orders</h3>
             
-            @if($completedOrders->isEmpty())
-                <p class="text-center">No completed orders found.</p>
-            @else
-                <div class="table-responsive orders-table">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Date</th>
-                                <th>Services</th>
-                                <th>Total Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($completedOrders as $order)
-                                <tr>
-                                    <td>#{{ $order->id }}</td>
-                                    <td>{{ $order->user->name }}</td>
-                                    <td>{{ $order->created_at->format('M d, Y') }}</td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            @foreach($order->items as $item)
-                                                <li>{{ $item->service->service_name }} ({{ $item->quantity }} x {{ $item->price }} PKR)</li>
-                                            @endforeach
-                                        </ul>
-                                    </td>
-                                    <td>{{ number_format($order->total_amount) }} PKR</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <!-- Earnings Summary Cards -->
+            <div class="row stats-row">
+                <div class="col-md-4">
+                    <div class="stats-card animate__animated animate__fadeIn">
+                        <div class="stats-icon bg-primary">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3 class="stats-number">{{ number_format($allTimeEarnings['total']) }} PKR</h3>
+                            <p class="stats-label">Total Earnings ({{ $allTimeEarnings['count'] }} orders)</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $completedOrders->links() }}
+                <div class="col-md-4">
+                    <div class="stats-card animate__animated animate__fadeIn" style="animation-delay: 0.1s;">
+                        <div class="stats-icon bg-success">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3 class="stats-number">{{ number_format($currentPeriodEarnings['total']) }} PKR</h3>
+                            <p class="stats-label">{{ ucfirst($period) }} Earnings ({{ $currentPeriodEarnings['count'] }} orders)</p>
+                        </div>
+                    </div>
                 </div>
-            @endif
+                
+                <div class="col-md-4">
+                    <div class="stats-card animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
+                        <div class="stats-icon bg-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stats-content">
+                            <h3 class="stats-number">
+                                @if($allTimeEarnings['count'] > 0)
+                                    {{ number_format($allTimeEarnings['total'] / $allTimeEarnings['count']) }} PKR
+                                @else
+                                    0 PKR
+                                @endif
+                            </h3>
+                            <p class="stats-label">Average Per Order</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Period Selector -->
+            <div class="section-card animate__animated animate__fadeIn" style="animation-delay: 0.3s;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar"></i> Select Time Period
+                    </h2>
+                </div>
+                <div class="section-body text-center">
+                    <form action="{{ route('seller.earnings') }}" method="GET">
+                        <div class="d-flex justify-content-center flex-wrap gap-2">
+                            <button type="submit" name="period" value="week" class="btn {{ $period == 'week' ? 'btn-primary' : 'btn-outline-primary' }} me-2">
+                                <i class="fas fa-calendar-week me-2"></i>This Week
+                            </button>
+                            <button type="submit" name="period" value="month" class="btn {{ $period == 'month' ? 'btn-primary' : 'btn-outline-primary' }} me-2">
+                                <i class="fas fa-calendar-alt me-2"></i>This Month
+                            </button>
+                            <button type="submit" name="period" value="year" class="btn {{ $period == 'year' ? 'btn-primary' : 'btn-outline-primary' }} me-2">
+                                <i class="fas fa-calendar me-2"></i>This Year
+                            </button>
+                            <button type="submit" name="period" value="all" class="btn {{ $period == 'all' ? 'btn-primary' : 'btn-outline-primary' }}">
+                                <i class="fas fa-infinity me-2"></i>All Time
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Earnings Chart -->
+            <div class="section-card animate__animated animate__fadeIn" style="animation-delay: 0.4s;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i> Earnings Trend
+                    </h2>
+                    <span class="text-muted">Last 6 Months</span>
+                </div>
+                <div class="section-body">
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="earningsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Completed Orders -->
+            <div class="section-card animate__animated animate__fadeIn" style="animation-delay: 0.5s;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-clipboard-check"></i> Recent Completed Orders
+                    </h2>
+                </div>
+                
+                <div class="section-body">
+                    @if($completedOrders->isEmpty())
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <p>No completed orders found.</p>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Services</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($completedOrders as $order)
+                                        <tr>
+                                            <td>
+                                                <span class="fw-medium">#{{ $order->id }}</span>
+                                            </td>
+                                            <td>{{ $order->user->name }}</td>
+                                            <td>{{ $order->created_at->format('M d, Y') }}</td>
+                                            <td>
+                                                <div class="services-list">
+                                                    @foreach($order->items as $item)
+                                                        <div>
+                                                            {{ $item->service->service_name }}
+                                                            <span class="text-muted">
+                                                                ({{ $item->quantity }} x {{ $item->price }} PKR)
+                                                            </span>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                            <td class="fw-semibold">{{ number_format($order->total_amount) }} PKR</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-4">
+                            {{ $completedOrders->links() }}
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </main>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p class="mb-0">&copy; {{ date('Y') }} Laundrify. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // Set up the earnings chart
-        const ctx = document.getElementById('earningsChart').getContext('2d');
-        
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode(array_keys($monthlyData)) !!},
-                datasets: [{
-                    label: 'Monthly Earnings (PKR)',
-                    data: {!! json_encode(array_values($monthlyData)) !!},
-                    backgroundColor: '#0a9396',
-                    borderColor: '#005f73',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString() + ' PKR';
+        // Initialize Chart.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('earningsChart').getContext('2d');
+            
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode(array_keys($monthlyData)) !!},
+                    datasets: [{
+                        label: 'Monthly Earnings (PKR)',
+                        data: {!! json_encode(array_values($monthlyData)) !!},
+                        backgroundColor: 'rgba(78, 115, 223, 0.7)',
+                        borderColor: 'rgba(78, 115, 223, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString() + ' PKR';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' PKR';
+                                }
                             }
                         }
                     }
                 }
-            }
+            });
+            
+            // Enable all tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
     </script>
 </body>

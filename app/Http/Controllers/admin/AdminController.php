@@ -52,13 +52,13 @@ public function rejectService($id)
 }
 public function manageSellers()
     {
-        $sellers = Seller::all();
+        $sellers = Seller::paginate(10);
         return view('admin.sellers', compact('sellers'));
     }
 
     public function manageServices()
     {
-        $services = Service::all();
+        $services = Service::paginate(10);
         return view('admin.services', compact('services'));
     }
 

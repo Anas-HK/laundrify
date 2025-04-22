@@ -4,75 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Laundrify</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #f4f6f9;
+        .auth-container {
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            margin-top: 70px;
+            margin-bottom: 40px;
+            background-color: var(--light-color);
         }
-        nav {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
+
+        .auth-card {
+            width: 100%;
+            max-width: 700px;
+            background-color: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 40px;
+            overflow: hidden;
+            position: relative;
         }
-        .navbar-brand{
-            color: white;
-            font-weight: bold;
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--primary-dark));
         }
-        footer {
-            color:white;
-            background-color: #007bff !important;
+
+        .auth-form h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
         }
-        .footer-text {
-            color: white;
+
+        .auth-form h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            border-radius: 2px;
         }
-        .registration-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 30px;
-            margin-top: 50px;
-        }
+
         .form-label {
             font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            font-size: 14px;
         }
+
+        .form-control, .form-select {
+            height: 48px;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius-md);
+            padding: 10px 15px;
+            font-size: 15px;
+            transition: all var(--transition-normal);
+            background-color: var(--white);
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: var(--primary-color);
+        }
+
         .error-text {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.35rem;
+            font-weight: 500;
+        }
+
+        .btn {
+            height: 48px;
+            font-weight: 600;
+            font-size: 16px;
+            border-radius: var(--border-radius-md);
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            border: none;
+            transition: all var(--transition-normal);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .alert {
+            border-radius: var(--border-radius-md);
+            padding: 15px;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        footer {
+            margin-top: 0;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg  ">
+    <!-- Modern Navbar -->
+    <header class="navbar-main">
         <div class="container">
-            <a class="navbar-brand" href="#">Laundrify</a>
-            <a href="{{ route('home') }}" class="btn btn-outline-primary">Home</a>
+            <div class="header-content">
+                <div class="logo">
+                    <a href="{{ route('home') }}">
+                        <span class="logo-text">Laundrify</span>
+                        <span class="logo-icon"><i class="fas fa-tshirt"></i></span>
+                    </a>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="{{ route('home') }}" class="nav-link">Home</a>
+                </div>
+            </div>
         </div>
-    </nav>
+    </header>
 
     @if ($errors->has('error'))
-    <div class="alert alert-danger">
-        {{ $errors->first('error') }}
+    <div class="container mt-4">
+        <div class="alert alert-danger">
+            {{ $errors->first('error') }}
+        </div>
     </div>
     @endif
 
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Registration Form -->
+            <form id="registrationForm" class="auth-form" action="{{ route('register') }}" method="POST" novalidate>
+                @csrf
+                <h3>Buyer Registration</h3>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="registration-container">
-                    <!-- Registration Form -->
-                    <form id="registrationForm" action="{{ route('register') }}" method="POST" novalidate>
-                        @csrf
-                        <h3 class="text-center mb-4">Buyer Registration</h3>
-
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
                         <!-- Full Name -->
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
                             <input type="text" class="form-control" id="name" name="name" 
-                                   minlength="3" maxlength="255" required>
+                                minlength="3" maxlength="255" required>
                             <div id="nameError" class="error-text"></div>
                         </div>
 
@@ -87,7 +181,7 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" 
-                                   minlength="8" required>
+                                minlength="8" required>
                             <div id="passwordError" class="error-text"></div>
                         </div>
 
@@ -95,7 +189,7 @@
                         <div class="mb-3">
                             <label for="password_confirmation" class="form-label">Confirm Password</label>
                             <input type="password" class="form-control" id="password_confirmation" 
-                                   name="password_confirmation" required>
+                                name="password_confirmation" required>
                             <div id="passwordConfirmationError" class="error-text"></div>
                         </div>
 
@@ -103,10 +197,13 @@
                         <div class="mb-3">
                             <label for="mobile" class="form-label">Mobile Number</label>
                             <input type="tel" class="form-control" id="mobile" name="mobile" 
-                                   pattern="[0-9]{11}" required>
+                                pattern="[0-9]{11}" required>
                             <div id="mobileError" class="error-text"></div>
                         </div>
+                    </div>
 
+                    <!-- Right Column -->
+                    <div class="col-md-6">
                         <!-- Address -->
                         <div class="mb-3">
                             <label for="address" class="form-label">Address Line 1</label>
@@ -120,24 +217,24 @@
                             <input type="text" class="form-control" id="address2" name="address2">
                         </div>
 
-                        <!-- City, State, Zip Row -->
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" name="city" required>
-                                <div id="cityError" class="error-text"></div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="state" class="form-label">State</label>
-                                <input type="text" class="form-control" id="state" name="state" required>
-                                <div id="stateError" class="error-text"></div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="zip" class="form-label">Postal Code</label>
-                                <input type="text" class="form-control" id="zip" name="zip" 
-                                       pattern="[0-9]{6}" required>
-                                <div id="zipError" class="error-text"></div>
-                            </div>
+                        <!-- City, State, Zip -->
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" required>
+                            <div id="cityError" class="error-text"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state" required>
+                            <div id="stateError" class="error-text"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="zip" class="form-label">Postal Code</label>
+                            <input type="text" class="form-control" id="zip" name="zip" 
+                                pattern="[0-9]{6}" required>
+                            <div id="zipError" class="error-text"></div>
                         </div>
 
                         <!-- Pickup Time -->
@@ -151,32 +248,40 @@
                             </select>
                             <div id="pickupTimeError" class="error-text"></div>
                         </div>
-
-                        <!-- Terms and Conditions -->
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
-                            <label class="form-check-label" for="terms">
-                                I agree to the terms and conditions
-                            </label>
-                            <div id="termsError" class="error-text"></div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
-                    </form>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Terms and Conditions -->
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms">
+                            I agree to the terms and conditions
+                        </label>
+                    </div>
+                    <div id="termsError" class="error-text"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+                
+                <p class="text-center mt-4">Already have an account? <a href="{{ route('login') }}">Login here</a></p>
+            </form>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer mt-auto py-3  text-center">
+    <footer>
         <div class="container">
-            <span class="footer-text" class="text-muted">&copy; 2025 Laundrify. All rights reserved.</span>
+            <div class="text-center">
+                <p>&copy; 2024 Laundrify. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.getElementById('registrationForm').addEventListener('submit', function(event) {
         event.preventDefault();
