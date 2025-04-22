@@ -117,53 +117,67 @@
                     </li>
                 </ul>
             </div>
-            
             <!-- Update Status -->
-            <div class="info-card status-form">
-                <h3 class="card-title"><i class="fas fa-clipboard-check"></i> Update Status</h3>
-                
-                <form action="{{ route('order.updateStatus', $order) }}" method="POST">
-                    @csrf
-                    <div class="status-select-container">
-                        <label for="status" class="status-select-label">Change Order Status:</label>
-                        <select name="status" id="status" class="status-select" {{ $order->status == 'rejected' ? 'disabled' : '' }} required>
-                            @if($order->status !== 'rejected')
-                                <option value="accepted" {{ $order->status === 'accepted' ? 'selected' : '' }}>Accepted</option>
-                                <option value="pickup_departed" {{ $order->status === 'pickup_departed' ? 'selected' : '' }}>Delivery Boy Departed</option>
-                                <option value="picked_up" {{ $order->status === 'picked_up' ? 'selected' : '' }}>Laundry Picked Up</option>
-                                <option value="started_washing" {{ $order->status === 'started_washing' ? 'selected' : '' }}>Started Washing</option>
-                                <option value="ironing" {{ $order->status === 'ironing' ? 'selected' : '' }}>Ironing</option>
-                                <option value="ready_for_delivery" {{ $order->status === 'ready_for_delivery' ? 'selected' : '' }}>Ready for Delivery</option>
-                                <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Laundry Delivered</option>
-                                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Order Completed</option>
-                            @endif
-                        </select>
-                    </div>
-                    
-                    <div class="btn-container">
-                        @if($order->status !== 'rejected')
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Update Status
-                            </button>
-                        @else
-                            <button type="button" class="btn btn-disabled" disabled>
-                                <i class="fas fa-ban"></i> Cannot Update - Order Rejected
-                            </button>
-                        @endif
-                        
-                        <!-- Chat Button (Only for specific statuses) -->
-                        @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
-                            <a href="{{ route('seller.chat.index', $order->id) }}" class="btn btn-info">
-                                <i class="fas fa-comments"></i> Chat with Customer
-                            </a>
-                        @endif
-                        
-                        <a href="{{ route('seller.panel') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Dashboard
-                        </a>
-                    </div>
-                </form>
-            </div>
+<div class="info-card status-form">
+    <h3 class="card-title"><i class="fas fa-clipboard-check"></i> Update Status</h3>
+    
+    <form action="{{ route('order.updateStatus', $order) }}" method="POST">
+        @csrf
+
+        @php
+            $statusFlow = [
+                'accepted' => 'pickup_departed',
+                'pickup_departed' => 'picked_up',
+                'picked_up' => 'started_washing',
+                'started_washing' => 'ironing',
+                'ironing' => 'ready_for_delivery',
+                'ready_for_delivery' => 'delivered',
+                'delivered' => 'completed',
+            ];
+            $nextStatus = $statusFlow[$order->status] ?? null;
+        @endphp
+
+        <div class="status-select-container">
+            <label for="status" class="status-select-label">Change Order Status:</label>
+
+            @if($order->status === 'rejected' || !$nextStatus)
+                <select class="status-select" disabled>
+                    <option selected>No further actions</option>
+                </select>
+            @else
+                <select name="status" id="status" class="status-select" required>
+                    <option value="{{ $nextStatus }}">
+                        {{ ucfirst(str_replace('_', ' ', $nextStatus)) }}
+                    </option>
+                </select>
+            @endif
+        </div>
+
+        <div class="btn-container">
+            @if($order->status !== 'rejected' && $nextStatus)
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Status
+                </button>
+            @else
+                <button type="button" class="btn btn-disabled" disabled>
+                    <i class="fas fa-ban"></i> Cannot Update - {{ $order->status === 'rejected' ? 'Order Rejected' : 'Already Completed' }}
+                </button>
+            @endif
+
+            <!-- Chat Button (Only for specific statuses) -->
+            @if(in_array($order->status, ['accepted', 'pickup_departed', 'picked_up', 'started_washing', 'ironing', 'ready_for_delivery', 'delivered', 'completed']))
+                <a href="{{ route('seller.chat.index', $order->id) }}" class="btn btn-info">
+                    <i class="fas fa-comments"></i> Chat with Customer
+                </a>
+            @endif
+
+            <a href="{{ route('seller.panel') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </form>
+</div>
+
         </div>
     </div>
 </div>

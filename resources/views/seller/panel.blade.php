@@ -280,88 +280,98 @@
                     @endif
                 </div>
             </div>
-            
             <!-- Orders Section -->
-            <div class="section-card animate__animated animate__fadeIn">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-shopping-bag"></i> Recent Orders
-                    </h2>
-                </div>
-                
-                <div class="section-body">
-                    @if($orders->isEmpty())
-                        <div class="empty-state">
-                            <i class="fas fa-clipboard-list"></i>
-                            <p>No orders found. Orders will appear here when customers place them.</p>
-                        </div>
-                    @else
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle orders-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Buyer</th>
-                                        <th>Services</th>
-                                        <th>Total</th>
-                                        <th>Status</th>
-                                        <th class="text-end">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($orders->take(5) as $order)
-                                        <tr>
-                                            <td>
-                                                <span class="fw-medium">#{{ $order->id }}</span>
-                                                <div class="small text-muted">{{ $order->created_at->format('M d, Y') }}</div>
-                                            </td>
-                                            <td>{{ $order->user->name }}</td>
-                                            <td>
-                                                <div class="services-list">
-                                                    @foreach($order->items->take(2) as $item)
-                                                        <div>{{ $item->service->service_name }} × {{ $item->quantity }}</div>
-                                                    @endforeach
-                                                    @if($order->items->count() > 2)
-                                                        <div class="small text-muted">+{{ $order->items->count() - 2 }} more</div>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span class="fw-semibold">{{ $order->total_amount ?? 'N/A' }} PKR</span>
-                                            </td>
-                                            <td class="text-md-center">
-                                                <div class="badge status-{{ $order->status }}">
-                                                    <i class="fas fa-circle"></i> {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                                                </div>
-                                            </td>
-                                            <td class="text-end">
-                                                @if($order->status === 'pending')
-                                                    <div class="btn-group">
-                                                        <form action="{{ route('order.acceptReject', $order) }}" method="POST">
-                                                            @csrf
-                                                            <button type="submit" name="status" value="accepted" class="btn btn-sm btn-success me-1">
-                                                                <i class="fas fa-check me-1"></i> Accept
-                                                            </button>
-                                                            <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger">
-                                                                <i class="fas fa-times me-1"></i> Reject
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                @else
-                                                    <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-eye me-1"></i> Details
-                                                    </a>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
-                </div>
+<div class="section-card animate__animated animate__fadeIn">
+    <div class="section-header">
+        <h2 class="section-title">
+            <i class="fas fa-shopping-bag"></i> Recent Orders
+        </h2>
+    </div>
+    
+    <div class="section-body">
+        @if($orders->isEmpty())
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <p>No orders found. Orders will appear here when customers place them.</p>
             </div>
-        </div>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover align-middle orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Buyer</th>
+                            <th>Services</th>
+                            <th>Total</th>
+                            <th>Payment Type</th> <!-- ✅ New Column -->
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($orders->take(5) as $order)
+                            <tr>
+                                <td>
+                                    <span class="fw-medium">#{{ $order->id }}</span>
+                                    <div class="small text-muted">{{ $order->created_at->format('M d, Y') }}</div>
+                                </td>
+                                <td>{{ $order->user->name }}</td>
+                                <td>
+                                    <div class="services-list">
+                                        @foreach($order->items->take(2) as $item)
+                                            <div>{{ $item->service->service_name }} × {{ $item->quantity }}</div>
+                                        @endforeach
+                                        @if($order->items->count() > 2)
+                                            <div class="small text-muted">+{{ $order->items->count() - 2 }} more</div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">{{ $order->total_amount ?? 'N/A' }} PKR</span>
+                                </td>
+
+                                <!-- ✅ Payment Type Column -->
+                                <td>
+                                    @if($order->transaction_id)
+                                        <span class="badge bg-info text-dark">Online</span>
+                                        <div class="small text-muted">Txn: {{ $order->transaction_id }}</div>
+                                    @else
+                                        <span class="badge bg-secondary">Cash on Delivery</span>
+                                    @endif
+                                </td>
+
+                                <td class="text-md-center">
+                                    <div class="badge status-{{ $order->status }}">
+                                        <i class="fas fa-circle"></i> {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    @if($order->status === 'pending')
+                                        <div class="btn-group">
+                                            <form action="{{ route('order.acceptReject', $order) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" name="status" value="accepted" class="btn btn-sm btn-success me-1">
+                                                    <i class="fas fa-check me-1"></i> Accept
+                                                </button>
+                                                <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-times me-1"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye me-1"></i> Details
+                                        </a>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>        </div>
     </main>
     
     <!-- Footer -->

@@ -122,7 +122,7 @@ class OrderController extends Controller
                 'address' => 'required|string|max:255',
                 'phone' => 'required|string|max:15',
                 'payment_method' => 'required|in:cod,online',
-                'transaction_id' => 'required_if:payment_method,online|string|max:255',
+            'transaction_id' => 'required_if:payment_method,online|nullable|string|max:255',
             ]);
             
     
@@ -134,7 +134,7 @@ class OrderController extends Controller
                 'phone' => $request->phone,
                 'status' => 'pending',
                 'total_amount' => $totalAmount,
-                'transaction_id' => $request->transaction_id, // Store transaction ID if provided
+                'transaction_id' => $request->payment_method === 'online' ? $request->transaction_id : null,
                 'updated_at' => now(),
                 'created_at' => now(),
             ]);
