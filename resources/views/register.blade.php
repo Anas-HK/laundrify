@@ -89,7 +89,6 @@
         .error-text {
             color: var(--danger);
             font-size: 0.85rem;
-            margin-top: 0.35rem;
             font-weight: 500;
         }
 
@@ -116,6 +115,7 @@
         .alert {
             border-radius: var(--border-radius-md);
             padding: 15px;
+            margin-top:100px;
             margin-bottom: 20px;
             border: none;
         }
@@ -284,82 +284,102 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.getElementById('registrationForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        // Reset previous error messages
-        const errorFields = document.querySelectorAll('.error-text');
-        errorFields.forEach(field => field.textContent = '');
+    event.preventDefault();
+    
+    // Reset previous error messages
+    const errorFields = document.querySelectorAll('.error-text');
+    errorFields.forEach(field => field.textContent = '');
 
-        let isValid = true;
+    let isValid = true;
 
-        // Validation functions
-        const validateField = (field, errorMessage) => {
-            const errorElement = document.getElementById(`${field.id}Error`);
-            if (!field.value.trim()) {
-                errorElement.textContent = errorMessage;
-                isValid = false;
-            }
-        };
-
-        // Validate required fields
-        const name = document.getElementById('name');
-        validateField(name, 'Full Name is required');
-
-        const email = document.getElementById('email');
-        if (!email.value.includes('@')) {
-            document.getElementById('emailError').textContent = 'Please enter a valid email address';
+    // Validation functions
+    const validateField = (field, errorMessage) => {
+        const errorElement = document.getElementById(`${field.id}Error`);
+        if (!field.value.trim()) {
+            errorElement.textContent = errorMessage;
             isValid = false;
         }
+    };
 
-        const password = document.getElementById('password');
-        if (password.value.length < 8) {
-            document.getElementById('passwordError').textContent = 'Password must be at least 8 characters';
-            isValid = false;
-        }
+    // Validate Full Name (only English alphabet, 3-20 chars)
+    const name = document.getElementById('name');
+    if (!/^[a-zA-Z ]{3,20}$/.test(name.value.trim())) {
+        document.getElementById('nameError').textContent = 'Only English letters allowed (3-20 characters)';
+        isValid = false;
+    }
 
-        const confirmPassword = document.getElementById('password_confirmation');
-        if (password.value !== confirmPassword.value) {
-            document.getElementById('passwordConfirmationError').textContent = 'Passwords do not match';
-            isValid = false;
-        }
+    // Validate Email (specific to gmail.com)
+    const email = document.getElementById('email');
+    if (!/^[a-zA-Z0-9]{3,20}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(email.value.trim())) {
+    document.getElementById('emailError').textContent = '3-20 alphanumeric chars before @, no special chars allowed';
+    isValid = false;
+}
 
-        const mobile = document.getElementById('mobile');
-        if (!/^[0-9]{11}$/.test(mobile.value)) {
-            document.getElementById('mobileError').textContent = 'Please enter a valid 11-digit mobile number';
-            isValid = false;
-        }
+    // Validate Password
+    const password = document.getElementById('password');
+    if (password.value.length < 8) {
+        document.getElementById('passwordError').textContent = 'Password must be at least 8 characters';
+        isValid = false;
+    }
 
-        const address = document.getElementById('address');
-        validateField(address, 'Address is required');
+    // Validate Confirm Password
+    const confirmPassword = document.getElementById('password_confirmation');
+    if (password.value !== confirmPassword.value) {
+        document.getElementById('passwordConfirmationError').textContent = 'Passwords do not match';
+        isValid = false;
+    }
 
-        const city = document.getElementById('city');
-        validateField(city, 'City is required');
+    // Validate Mobile (exactly 11 digits)
+    const mobile = document.getElementById('mobile');
+    if (!/^[0-9]{11}$/.test(mobile.value.trim())) {
+        document.getElementById('mobileError').textContent = 'Please enter a valid 11-digit mobile number';
+        isValid = false;
+    }
 
-        const state = document.getElementById('state');
-        validateField(state, 'State is required');
+    // Validate Address (must contain both letters and numbers, 10-50 chars)
+    const address = document.getElementById('address');
+    if (!/^(?=.*[a-zA-Z])(?=.*[0-9]).{10,50}$/.test(address.value.trim())) {
+        document.getElementById('addressError').textContent = 'Must contain both letters and numbers (10-50 characters)';
+        isValid = false;
+    }
 
-        const zip = document.getElementById('zip');
-        if (!/^[0-9]{6}$/.test(zip.value)) {
-            document.getElementById('zipError').textContent = 'Please enter a valid 6-digit postal code';
-            isValid = false;
-        }
+    // Validate City (only English letters)
+    const city = document.getElementById('city');
+    if (!/^[a-zA-Z ]+$/.test(city.value.trim())) {
+        document.getElementById('cityError').textContent = 'Only English letters allowed';
+        isValid = false;
+    }
 
-        const pickupTime = document.getElementById('pickup_time');
-        if (!pickupTime.value) {
-            document.getElementById('pickupTimeError').textContent = 'Please select a pickup time';
-            isValid = false;
-        }
+    // Validate State (only English letters)
+    const state = document.getElementById('state');
+    if (!/^[a-zA-Z ]+$/.test(state.value.trim())) {
+        document.getElementById('stateError').textContent = 'Only English letters allowed';
+        isValid = false;
+    }
 
-        const terms = document.getElementById('terms');
-        if (!terms.checked) {
-            document.getElementById('termsError').textContent = 'Please accept the terms and conditions';
-            isValid = false;
-        }
+    // Validate Zip (exactly 6 digits)
+    const zip = document.getElementById('zip');
+    if (!/^[0-9]{6}$/.test(zip.value.trim())) {
+        document.getElementById('zipError').textContent = 'Please enter a valid 6-digit postal code';
+        isValid = false;
+    }
 
-        if (isValid) {
-            this.submit();
-        }
-    });
+    const pickupTime = document.getElementById('pickup_time');
+    if (!pickupTime.value) {
+        document.getElementById('pickupTimeError').textContent = 'Please select a pickup time';
+        isValid = false;
+    }
+
+    const terms = document.getElementById('terms');
+    if (!terms.checked) {
+        document.getElementById('termsError').textContent = 'Please accept the terms and conditions';
+        isValid = false;
+    }
+
+    if (isValid) {
+        this.submit();
+    }
+});
     </script>
 </body>
 </html>

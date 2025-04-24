@@ -66,29 +66,49 @@ public function verifyOtp(Request $request)
         return back()->withErrors(['otp' => 'Invalid OTP. Please try again.']);
     }
 }
-
 public function register(Request $request) 
 {
     try {
         Log::info('Registration attempt:', $request->all());
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string|regex:/^[a-zA-Z ]{3,20}$/',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:users',
+                'regex:/^[a-zA-Z0-9]{3,20}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/'
+            ],
             'password' => 'required|string|min:8|confirmed',
-            'mobile' => 'required|string|max:15',
-            'address' => 'required|string|max:255',
+            'mobile' => 'required|string|regex:/^[0-9]{11}$/',
+            'address' => [
+                'required',
+                'string',
+                'min:10',
+                'max:50',
+                'regex:/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/'
+            ],
             'address2' => 'nullable|string|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'zip' => 'required|string|max:20',
+            'city' => 'required|string|regex:/^[a-zA-Z ]+$/',
+            'state' => 'required|string|regex:/^[a-zA-Z ]+$/',
+            'zip' => 'required|string|regex:/^[0-9]{6}$/',
             'pickup_time' => 'required|in:morning,afternoon,evening',
             'terms' => 'accepted',
+        ], [
+            'name.regex' => 'Only English letters allowed (3-20 characters)',
+            'email.regex' => 'Only @gmail.com allowed (3-20 chars before @, no special chars)',
+            'mobile.regex' => 'Please enter a valid 11-digit mobile number',
+            'address.regex' => 'Address must contain both letters and numbers',
+            'city.regex' => 'Only English letters allowed',
+            'state.regex' => 'Only English letters allowed',
+            'zip.regex' => 'Please enter a valid 6-digit postal code',
         ]);
 
         Log::info('Validation passed');
 
-        // Generating OTP
+        // Rest of your registration logic...
         $otp = rand(100000, 999999);
         Log::info('Generated OTP: ' . $otp);
 
@@ -110,7 +130,6 @@ public function register(Request $request)
 
         Log::info('User created:', ['user_id' => $user->id]);
 
-        // Now we will send  the email
         Mail::to($request->email)->send(new OtpMail($otp));
         Log::info('OTP email sent');
 
@@ -125,7 +144,6 @@ public function register(Request $request)
             ->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
     }
 }
-
     public function showLoginForm()
     {
         if (Auth::check()) {
