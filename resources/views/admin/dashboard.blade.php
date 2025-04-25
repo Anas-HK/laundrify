@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        {{-- <h1 class="h3 mb-0 text-gray-800">Dashboard</h1> --}}
         <a href="#" class="d-none d-sm-inline-block btn btn-primary shadow-sm">
             <i class="fas fa-download fa-sm text-white-50 me-1"></i> Generate Report
         </a>
@@ -155,9 +155,9 @@
                                     @foreach($pendingServices as $service)
                                     <tr>
                                         <td class="table-id">#{{ $service->id }}</td>
-                                        <td>{{ $service->name }}</td>
+                                        <td>{{ $service->service_name }}</td>
                                         <td>{{ $service->seller ? $service->seller->name : 'N/A' }}</td>
-                                        <td>৳{{ $service->price }}</td>
+                                        <td>{{ number_format($service->service_price, 2) }} PKR</td>
                                         <td>
                                             <div class="d-flex">
                                                 <form action="{{ route('admin.approveService', $service->id) }}" method="POST" class="me-2 approval-form approve-form" data-entity-type="Service">

@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Manage Sellers</h1>
+        {{-- <h1 class="h3 mb-0 text-gray-800">Manage Sellers</h1> --}}
         <ol class="breadcrumb mb-0 bg-transparent p-0">
             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Sellers</li>

@@ -52,8 +52,10 @@ Route::middleware(['auth:seller'])->group(function () {
     
     // Earnings feature
     Route::get('/seller/earnings', [SellerController::class, 'earnings'])->name('seller.earnings');
-    
-    // Verification feature
+});
+
+// Seller Verification routes
+Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/verification/apply', [SellerVerificationController::class, 'showVerificationForm'])->name('seller.verification.apply');
     Route::post('/seller/verification/submit', [SellerVerificationController::class, 'submitVerificationRequest'])->name('seller.verification.submit');
     Route::get('/seller/verification/status', [SellerVerificationController::class, 'showVerificationStatus'])->name('seller.verification.status');
@@ -87,7 +89,7 @@ Route::post('/profile', [ProfileController::class, 'update'])->name('profile.upd
 Route::middleware('auth')->group(function () {
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-Route::get('notifications/{id}/redirect', 'NotificationController@redirectToService')->name('notifications.redirect');
+Route::get('notifications/{id}/redirect', [NotificationController::class, 'redirectToService'])->name('notifications.redirect');
 Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
@@ -135,6 +137,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/chat/{order}', [MessageController::class, 'chat'])->name('chat.index');
     Route::post('/chat/{order}/send', [MessageController::class, 'send'])->name('chat.send');
     Route::post('/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('chat.mark-read');
+    Route::get('/chat/{order}/messages', [MessageController::class, 'getMessages'])->name('chat.get-messages');
 });
 
 // Seller chat routes
@@ -142,6 +145,7 @@ Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/chat/{order}', [MessageController::class, 'chat'])->name('seller.chat.index');
     Route::post('/seller/chat/{order}/send', [MessageController::class, 'send'])->name('seller.chat.send');
     Route::post('/seller/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('seller.chat.mark-read');
+    Route::get('/seller/chat/{order}/messages', [MessageController::class, 'getMessages'])->name('seller.chat.get-messages');
 });
 
 

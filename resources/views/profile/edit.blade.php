@@ -77,9 +77,9 @@
                                         <i class="fas fa-user"></i>
                                     </div>
                                 @endif
-                                <label for="profile_image" class="avatar-upload">
+                                <label for="profile_image_display" class="avatar-upload">
                                     <i class="fas fa-camera"></i>
-                                    <input type="file" id="profile_image_display" onchange="displaySelectedImage(this)">
+                                    <input type="file" id="profile_image_display" onchange="displaySelectedImage(this)" accept="image/jpeg,image/png,image/gif">
                                 </label>
                             </div>
                             <h2 class="user-name">{{ $user->name }}</h2>
@@ -88,6 +88,13 @@
 
                         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="profile-form">
                             @csrf
+                            
+                            @if ($errors->has('profile_image'))
+                                <div class="alert alert-danger">{{ $errors->first('profile_image') }}</div>
+                            @elseif ($errors->has('error'))
+                                <div class="alert alert-danger">{{ $errors->first('error') }}</div>
+                            @endif
+                            
                             <input type="file" id="profile_image" name="profile_image" class="d-none">
                             
                             <div class="form-row">
@@ -155,6 +162,21 @@
     <script>
         function displaySelectedImage(input) {
             if (input.files && input.files[0]) {
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+                if (!allowedTypes.includes(input.files[0].type)) {
+                    alert('Please select a valid image file (JPG, JPEG, PNG, GIF)');
+                    input.value = '';
+                    return;
+                }
+
+                // Validate file size (2MB)
+                if (input.files[0].size > 2 * 1024 * 1024) {
+                    alert('File size should be less than 2MB');
+                    input.value = '';
+                    return;
+                }
+
                 const reader = new FileReader();
                 
                 reader.onload = function(e) {
@@ -166,17 +188,21 @@
                     if (existingImg) {
                         existingImg.src = e.target.result;
                     } else if (placeholder) {
-                        placeholder.remove();
+                        placeholder.style.display = 'none'; // Hide placeholder
                         const newImg = document.createElement('img');
                         newImg.src = e.target.result;
                         newImg.alt = 'Profile Image';
                         newImg.className = 'avatar-image';
-                        avatarContainer.prepend(newImg);
+                        avatarContainer.insertBefore(newImg, placeholder);
                     }
                     
                     // Update the hidden form input
                     const hiddenInput = document.getElementById('profile_image');
-                    hiddenInput.files = input.files;
+                    
+                    // Use DataTransfer to create a proper FileList
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(input.files[0]);
+                    hiddenInput.files = dataTransfer.files;
                 }
                 
                 reader.readAsDataURL(input.files[0]);

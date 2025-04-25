@@ -53,7 +53,10 @@ class Order extends Model
     public static function getSellerEarnings($sellerId, $period = 'all')
     {
         $query = self::where('seller_id', $sellerId)
-                   ->where('status', 'completed');
+                   ->where(function($query) {
+                       $query->where('status', 'completed')
+                             ->orWhere('status', 'delivered');
+                   });
         
         // Apply date filtering based on period
         if ($period == 'week') {

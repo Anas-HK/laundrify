@@ -88,32 +88,40 @@
                                     @foreach($notifications as $notification)
                                         <li class="dropdown-item notification-item">
                                             <div class="notification-content">
-                                                @if(is_string($notification->data['order_details']))
-                                                    @php
-                                                        $details = json_decode($notification->data['order_details'], true);
-                                                    @endphp
-                                                @else
-                                                    @php
-                                                        $details = $notification->data['order_details'];
-                                                    @endphp
-                                                @endif
-                                                
-                                                <p>
-                                                    <strong>New Order from {{ $notification->data['seller_name'] }}</strong><br>
-                                                    Order ID: <span class="text-primary">#{{ $notification->data['order_id'] }}</span>
-                                                    
-                                                    @if(is_array($details))
-                                                        <br>
-                                                        <small class="notification-time">
-                                                            @foreach($details as $detail)
-                                                                Service: #{{ $detail['service_id'] }}, 
-                                                                Qty: {{ $detail['quantity'] }}, 
-                                                                Price: {{ $detail['price'] }} PKR<br>
-                                                            @endforeach
-                                                        </small>
+                                                @if(isset($notification->data['type']) && $notification->data['type'] == 'service_approved')
+                                                    <p>
+                                                        <strong><i class="fas fa-check-circle text-success"></i> Service Approved</strong><br>
+                                                        {{ $notification->data['message'] }}
+                                                    </p>
+                                                    <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                                @elseif(isset($notification->data['order_id']))
+                                                    @if(is_string($notification->data['order_details']))
+                                                        @php
+                                                            $details = json_decode($notification->data['order_details'], true);
+                                                        @endphp
+                                                    @else
+                                                        @php
+                                                            $details = $notification->data['order_details'];
+                                                        @endphp
                                                     @endif
-                                                </p>
-                                                <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                                    
+                                                    <p>
+                                                        <strong>New Order from {{ $notification->data['seller_name'] }}</strong><br>
+                                                        Order ID: <span class="text-primary">#{{ $notification->data['order_id'] }}</span>
+                                                        
+                                                        @if(is_array($details))
+                                                            <br>
+                                                            <small class="notification-time">
+                                                                @foreach($details as $detail)
+                                                                    Service: #{{ $detail['service_id'] }}, 
+                                                                    Qty: {{ $detail['quantity'] }}, 
+                                                                    Price: {{ $detail['price'] }} PKR<br>
+                                                                @endforeach
+                                                            </small>
+                                                        @endif
+                                                    </p>
+                                                    <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                                @endif
                                             </div>
                                         </li>
                                     @endforeach
@@ -407,5 +415,49 @@
             });
         });
     </script>
+
+    <!-- Toast container for notifications -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="serviceApprovedToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Service Approved</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <span id="toast-message">Your service has been approved by admin!</span>
+            </div>
+        </div>
+    </div>
+
+    @section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check URL parameters for service_approved
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            @if(session('service_approved'))
+                // Show toast for service approval from session
+                const toast = new bootstrap.Toast(document.getElementById('serviceApprovedToast'));
+                document.getElementById('toast-message').textContent = "{{ session('service_approved') }}";
+                toast.show();
+            @endif
+            
+            // Check for new service_approved notifications and show toast
+            const notifications = document.querySelectorAll('.notification-item');
+            notifications.forEach(notification => {
+                const text = notification.textContent;
+                if (text.includes('Service Approved') && notification.getAttribute('data-read') !== 'true') {
+                    const toast = new bootstrap.Toast(document.getElementById('serviceApprovedToast'));
+                    const message = notification.querySelector('p').textContent.trim();
+                    document.getElementById('toast-message').textContent = message;
+                    toast.show();
+                    notification.setAttribute('data-read', 'true');
+                }
+            });
+        });
+    </script>
+    @endsection
 </body>
 </html>

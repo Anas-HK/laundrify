@@ -41,6 +41,7 @@
                             <th>Seller Name</th>
                             <th>Email</th>
                             <th>Submitted</th>
+                            <th>Documents</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -51,7 +52,17 @@
                                 <td>{{ $request->id }}</td>
                                 <td>{{ $request->seller->name }}</td>
                                 <td>{{ $request->seller->email }}</td>
-                                <td>{{ $request->submitted_at->format('M d, Y') }}</td>
+                                <td>{{ $request->submitted_at ? $request->submitted_at->format('M d, Y') : $request->created_at->format('M d, Y') }}</td>
+                                <td>
+                                    @php
+                                        $docs = $request->documents;
+                                        if (is_string($docs)) {
+                                            $docs = json_decode($docs, true);
+                                        }
+                                        $docCount = is_array($docs) ? count($docs) : 0;
+                                    @endphp
+                                    <span class="badge bg-info">{{ $docCount }} Document(s)</span>
+                                </td>
                                 <td>
                                     @if($request->status === 'pending')
                                         <span class="badge badge-warning">Pending</span>

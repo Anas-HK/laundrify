@@ -18,33 +18,74 @@ class SellerController extends Controller
     }
     public function register(Request $request)
     {
+        // Custom validation messages
+        $customMessages = [
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'This email is already registered. Please use a different email.',
+            'email.max' => 'Email cannot exceed 255 characters.',
+        ];
+        
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:sellers',
+            'email' => 'required|string|email:rfc,dns|max:255|unique:sellers',
             'password' => 'required|string|min:8|confirmed',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'city' => 'nullable|string|max:255',
-            'area' => 'nullable|string|max:255',
-        ]);
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'city' => 'required|string|max:255',
+            'area' => 'required|string|max:255',
+            'terms' => 'required',
+        ], $customMessages);
     
-        if ($request->hasFile('profile_image')) {
-            $imagePath = $request->file('profile_image')->store('profile_images', 'public');
-        } else {
-            $imagePath = null;
+        try {
+            // Additional custom email validation
+            $email = $request->email;
+            $errors = [];
+            
+            // Check for suspicious domains
+            $suspiciousDomains = ['example.com', 'test.com', 'sample.com', 'temp-mail.org', 'fakeemail.com'];
+            foreach ($suspiciousDomains as $domain) {
+                if (strpos($email, $domain) !== false) {
+                    $errors['email'] = 'Please use a real email address, not a temporary or test email.';
+                    break;
+                }
+            }
+            
+            // Check for valid email format beyond Laravel's validation
+            $parts = explode('@', $email);
+            if (count($parts) == 2) {
+                $domain = $parts[1];
+                // Check domain has at least one dot
+                if (!str_contains($domain, '.') || substr_count($domain, '.') > 3) {
+                    $errors['email'] = 'Please provide an email with a valid domain format.';
+                }
+            }
+            
+            // Return with errors if any additional validations fail
+            if (!empty($errors)) {
+                return back()->withInput()->withErrors($errors);
+            }
+            
+            if ($request->hasFile('profile_image')) {
+                $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+            } else {
+                $imagePath = null;
+            }
+        
+            $seller = Seller::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password, // Don't use bcrypt here - the model's mutator will handle it
+                'profile_image' => $imagePath,
+                'city' => $request->city,
+                'area' => $request->area,
+                'accountIsApproved' => 0,
+            ]);
+        
+            // Return to registration page with success parameter
+            return redirect()->route('register.seller', ['registration' => 'success']);
+        } catch (\Exception $e) {
+            return back()->withInput()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
         }
-    
-        $seller = Seller::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'profile_image' => $imagePath,
-            'city' => $request->city,
-            'area' => $request->area,
-            'accountIsApproved' => 0,
-        ]);
-    
-        Auth::guard('seller')->login($seller);
-        return redirect()->route('home');
     }
     
     public function showLoginForm()
@@ -54,28 +95,58 @@ class SellerController extends Controller
 
     public function login(Request $request)
     {
+        // Custom validation messages for login
+        $customMessages = [
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Password is required.',
+        ];
+
         $request->validate([
-            'email' => 'required|string|email',
+            'email' => 'required|string|email:rfc',
             'password' => 'required|string',
-        ]);
+        ], $customMessages);
+
+        // Additional email validation for common mistakes
+        $email = $request->email;
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return back()->withInput()->withErrors(['email' => 'The email format is invalid. Please check for typos.']);
+        }
 
         $seller = Seller::where('email', $request->email)->first();
 
         if (!$seller) {
-            return back()->withErrors(['email' => 'Kindly register your account.']);
+            return back()->withErrors(['email' => 'No account found with this email. Please register first.']);
         }
-
 
         if ($seller->accountIsApproved==0) {
-            return back()->withErrors(['email' => 'Your account is pending approval.Please wait for admin approval.']);
+            return back()->withErrors(['email' => 'Your account is pending approval. Please wait for admin approval.']);
         }
+        
+        // First, try normal authentication
         $credentials = $request->only('email', 'password');
-
-        if (Auth::guard('seller')->attempt($credentials)) {
-            return redirect()->route('seller.panel');
+        if (Auth::guard('seller')->attempt($credentials, $request->filled('remember'))) {
+            return redirect()->intended(route('seller.panel'));
         }
-
-        return back()->withErrors(['email' => 'Invalid credentials.']);
+        
+        // If regular auth fails, try manually checking for double-hashed legacy passwords
+        $plainPassword = $request->password;
+        $hashedOnce = bcrypt($plainPassword);
+        
+        // Check if the stored password might be a legacy double-hashed password
+        if (password_verify($hashedOnce, $seller->password)) {
+            // If legacy password matches, log the user in manually
+            Auth::guard('seller')->login($seller, $request->filled('remember'));
+            
+            // Update the password to the new hashing method
+            $seller->password = $plainPassword; // This will use the model's mutator
+            $seller->save();
+            
+            return redirect()->intended(route('seller.panel'));
+        }
+        
+        // If both auth methods fail, return an error
+        return back()->withInput()->withErrors(['email' => 'The password you entered is incorrect. Please try again.']);
     }
  
     
@@ -104,10 +175,19 @@ public function sellerPanel()
     $seller = auth()->guard('seller')->user();
 
     $services = $seller->services; 
-    $orders = $seller->orders()->with(['user', 'items.service'])->get();
+    $orders = Order::where('seller_id', $seller->id)->with(['user', 'items.service'])->get();
+    
+    // Count completed and delivered orders for the dashboard
+    $completedOrdersCount = Order::where('seller_id', $seller->id)
+                                ->where(function($query) {
+                                    $query->where('status', 'completed')
+                                          ->orWhere('status', 'delivered');
+                                })
+                                ->count();
+    
     $notifications = $seller->notifications;
 
-    return view('seller.panel', compact('services', 'orders', 'notifications'));
+    return view('seller.panel', compact('services', 'orders', 'notifications', 'completedOrdersCount'));
 }
 
 
@@ -141,7 +221,10 @@ public function earnings(Request $request)
     
     // Get detailed data for completed orders
     $completedOrders = Order::where('seller_id', $seller->id)
-                      ->where('status', 'completed')
+                      ->where(function($query) {
+                          $query->where('status', 'completed')
+                                ->orWhere('status', 'delivered');
+                      })
                       ->with(['user', 'items.service'])
                       ->orderBy('created_at', 'desc')
                       ->paginate(10);
@@ -151,7 +234,10 @@ public function earnings(Request $request)
     for ($i = 0; $i < 6; $i++) {
         $month = now()->subMonths($i);
         $earnings = Order::where('seller_id', $seller->id)
-                  ->where('status', 'completed')
+                  ->where(function($query) {
+                      $query->where('status', 'completed')
+                            ->orWhere('status', 'delivered');
+                  })
                   ->whereYear('created_at', $month->year)
                   ->whereMonth('created_at', $month->month)
                   ->sum('total_amount');

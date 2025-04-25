@@ -155,6 +155,26 @@
         footer {
             margin-top: 0;
         }
+
+        /* Toast notification style */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast {
+            background-color: #ffffff;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .toast-header {
+            background-color: transparent;
+            border-bottom: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -177,6 +197,19 @@
         </div>
     </header>
 
+    <!-- Toast notification -->
+    <div class="toast-container">
+        <div class="toast" id="registrationToast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto"><i class="fas fa-check-circle text-success me-2"></i> Registration Successful</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Thank you for registering! Your account is now pending approval from our admin team. You will be notified when your account is approved.
+            </div>
+        </div>
+    </div>
+
     <div class="auth-container">
         <div class="auth-card">
             <form class="auth-form" method="POST" action="{{ route('register.seller') }}" enctype="multipart/form-data" id="sellerRegistrationForm">
@@ -197,13 +230,13 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
                             <div id="nameError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
                             <div id="emailError" class="invalid-feedback"></div>
                         </div>
                         
@@ -230,13 +263,13 @@
                         
                         <div class="mb-3">
                             <label for="city" class="form-label">City</label>
-                            <input type="text" class="form-control" id="city" name="city" required>
+                            <input type="text" class="form-control" id="city" name="city" value="{{ old('city') }}" required>
                             <div id="cityError" class="invalid-feedback"></div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="area" class="form-label">Service Area</label>
-                            <input type="text" class="form-control" id="area" name="area" required>
+                            <input type="text" class="form-control" id="area" name="area" value="{{ old('area') }}" required>
                             <div class="form-text">The specific area within the city where you provide service</div>
                             <div id="areaError" class="invalid-feedback"></div>
                         </div>
@@ -277,6 +310,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('sellerRegistrationForm');
 
+            // Check if we need to show success toast based on query param
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registration') === 'success') {
+                const toast = new bootstrap.Toast(document.getElementById('registrationToast'));
+                toast.show();
+            }
+
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 let isValid = true;
@@ -296,8 +336,28 @@
                 
                 // Validate email
                 const email = document.getElementById('email');
-                if (!email.value.includes('@')) {
-                    showError(email, 'emailError', 'Please enter a valid email address');
+                // More comprehensive email validation regex
+                const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                
+                if (!email.value.trim()) {
+                    showError(email, 'emailError', 'Email address is required');
+                    isValid = false;
+                } else if (!emailRegex.test(email.value)) {
+                    // More specific error message
+                    let errorMsg = 'Please enter a valid email address';
+                    
+                    // Check for common email mistakes
+                    if (!email.value.includes('@')) {
+                        errorMsg = 'Email must include an @ symbol';
+                    } else if (email.value.indexOf('@') === email.value.length - 1) {
+                        errorMsg = 'Email must include a domain after the @ symbol';
+                    } else if (!email.value.includes('.', email.value.indexOf('@'))) {
+                        errorMsg = 'Email domain must include a dot (.)';
+                    } else if (email.value.split('@').length > 2) {
+                        errorMsg = 'Email cannot contain multiple @ symbols';
+                    }
+                    
+                    showError(email, 'emailError', errorMsg);
                     isValid = false;
                 }
                 
@@ -320,6 +380,18 @@
                 if (!profileImage.files || !profileImage.files[0]) {
                     showError(profileImage, 'imageError', 'Please select a profile image');
                     isValid = false;
+                } else {
+                    // Validate file type
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+                    if (!allowedTypes.includes(profileImage.files[0].type)) {
+                        showError(profileImage, 'imageError', 'Please select a valid image format (JPG, PNG, GIF)');
+                        isValid = false;
+                    }
+                    // Validate file size (max 2MB)
+                    if (profileImage.files[0].size > 2 * 1024 * 1024) {
+                        showError(profileImage, 'imageError', 'Image size should be less than 2MB');
+                        isValid = false;
+                    }
                 }
                 
                 // Validate city
@@ -345,9 +417,15 @@
                 }
                 
                 if (isValid) {
-                    // Display success message
+                    // Add a loading state to the submit button
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    const originalText = submitButton.textContent;
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                    
+                    // Submit the form
                     form.submit();
-                    alert('Registration in process, please wait for admin approval.');
+                    // The success toast will show after redirect with success param
                 }
             });
             

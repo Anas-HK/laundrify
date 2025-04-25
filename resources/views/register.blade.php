@@ -173,7 +173,8 @@
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                pattern="[a-zA-Z0-9._%+\-!#$&'*\/=?^`{|}~]{1,64}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}" required>
                             <div id="emailError" class="error-text"></div>
                         </div>
 
@@ -308,10 +309,10 @@
         isValid = false;
     }
 
-    // Validate Email (specific to gmail.com)
+    // Validate Email (allowing special characters)
     const email = document.getElementById('email');
-    if (!/^[a-zA-Z0-9]{3,20}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(email.value.trim())) {
-    document.getElementById('emailError').textContent = '3-20 alphanumeric chars before @, no special chars allowed';
+    if (!/^[a-zA-Z0-9._%+\-!#$&'*\/=?^`{|}~]{1,64}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/.test(email.value.trim())) {
+        document.getElementById('emailError').textContent = 'Please enter a valid email address';
     isValid = false;
 }
 

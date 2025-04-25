@@ -21,8 +21,25 @@ public function view()
 public function approveService($id)
 {
     $service = Service::find($id);
+    if (!$service) {
+        return redirect()->route('admin.dashboard')->with('error', 'Service not found.');
+    }
+
     $service->is_approved = 1; 
     $service->save();
+    
+    // Get the seller associated with this service
+    $seller = Seller::find($service->seller_id);
+    if ($seller) {
+        // Send notification to the seller
+        $seller->notify(new \App\Notifications\ServiceApprovedNotification(
+            $service->service_name,
+            $service->id
+        ));
+        
+        // Save a session message that will be displayed next time the seller logs in
+        session()->flash('service_approved', "Your service '{$service->service_name}' has been approved.");
+    }
 
     return redirect()->route('admin.dashboard')->with('status', 'Service approved successfully.');
 }

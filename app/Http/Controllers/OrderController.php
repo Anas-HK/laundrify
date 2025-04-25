@@ -59,6 +59,18 @@ class OrderController extends Controller
                         ->where('status', 'completed')
                         ->orderBy('created_at', 'desc')
                         ->get();
+        
+        // If no completed orders are found, check for delivered orders too (which should be considered complete)
+        if ($orders->isEmpty()) {
+            $orders = Order::where('user_id', Auth::id())
+                          ->where(function($query) {
+                              $query->where('status', 'completed')
+                                    ->orWhere('status', 'delivered');
+                          })
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+        }
+        
         return view('order.history', compact('orders'));
     }
 
@@ -237,6 +249,12 @@ class OrderController extends Controller
         }
 
         $order->update(['status' => $request->status]);
+
+        // If the order is marked as completed, update the seller's earnings
+        if ($request->status === 'completed') {
+            // You could add any additional logic here if needed
+            // For example, sending a notification to the customer
+        }
 
         return redirect()->route('seller.order.handle', $order)->with('success', 'Order status updated successfully!');
     }

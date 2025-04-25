@@ -32,9 +32,9 @@
                         <i class="fas fa-user-check"></i> Seller Information
                     </h2>
                     <div>
-                        <span class="status-badge status-{{ strtolower($verification->status) }}">
-                            <i class="fas fa-{{ $verification->status == 'PENDING' ? 'clock' : ($verification->status == 'APPROVED' ? 'check-circle' : 'times-circle') }}"></i>
-                            {{ $verification->status }}
+                        <span class="status-badge status-{{ $verification->status }}">
+                            <i class="fas fa-{{ $verification->status == 'pending' ? 'clock' : ($verification->status == 'approved' ? 'check-circle' : 'times-circle') }}"></i>
+                            {{ ucfirst($verification->status) }}
                         </span>
                     </div>
                 </div>
@@ -45,14 +45,6 @@
                                 <label class="text-muted small mb-1">Seller Name</label>
                                 <div class="fw-bold">{{ $verification->seller->name }}</div>
                             </div>
-                            <div class="mb-3">
-                                <label class="text-muted small mb-1">Business Name</label>
-                                <div class="fw-bold">{{ $verification->business_name }}</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="text-muted small mb-1">Tax ID / Business Registration</label>
-                                <div class="fw-bold">{{ $verification->tax_id }}</div>
-                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -60,12 +52,8 @@
                                 <div class="fw-bold">{{ $verification->seller->email }}</div>
                             </div>
                             <div class="mb-3">
-                                <label class="text-muted small mb-1">Phone</label>
-                                <div class="fw-bold">{{ $verification->phone }}</div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="text-muted small mb-1">Address</label>
-                                <div class="fw-bold">{{ $verification->address }}</div>
+                                <label class="text-muted small mb-1">Submitted On</label>
+                                <div class="fw-bold">{{ $verification->submitted_at ? $verification->submitted_at->format('M d, Y h:i A') : $verification->created_at->format('M d, Y h:i A') }}</div>
                             </div>
                         </div>
                     </div>
@@ -73,25 +61,52 @@
                     <div class="mb-4">
                         <label class="text-muted small mb-1">Business Description</label>
                         <div class="p-3 bg-light rounded">
-                            {{ $verification->description }}
+                            {{ $verification->business_description }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-muted small mb-1">Reason For Verification</label>
+                        <div class="p-3 bg-light rounded">
+                            {{ $verification->reason_for_verification }}
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <label class="text-muted small mb-1">Supporting Documents</label>
+                        
                         <div class="row">
-                            @if($verification->document_paths)
-                                @foreach(json_decode($verification->document_paths) as $index => $path)
+                            @php
+                                $docs = $verification->documents;
+                                if (is_string($docs)) {
+                                    $docs = json_decode($docs, true);
+                                }
+                            @endphp
+                            
+                            @if(is_array($docs) && count($docs) > 0)
+                                @foreach($docs as $index => $path)
                                 <div class="col-md-4 mb-3">
                                     <div class="card h-100">
                                         <div class="position-relative">
-                                            <img src="{{ asset('storage/' . $path) }}" alt="Document {{ $index + 1 }}" class="card-img-top" style="max-height: 150px; object-fit: cover;">
+                                            @php
+                                                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                                                $isPdf = strtolower($extension) === 'pdf';
+                                            @endphp
+                                            
+                                            @if($isPdf)
+                                                <div class="d-flex justify-content-center align-items-center bg-light" style="height: 150px;">
+                                                    <i class="fas fa-file-pdf text-danger fa-3x"></i>
+                                                </div>
+                                            @else
+                                                <img src="{{ asset('storage/' . $path) }}" alt="Document {{ $index + 1 }}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                            @endif
+                                            
                                             <a href="{{ asset('storage/' . $path) }}" target="_blank" class="position-absolute top-0 end-0 m-2 bg-light rounded-circle p-1">
                                                 <i class="fas fa-expand text-primary"></i>
                                             </a>
                                         </div>
                                         <div class="card-footer bg-white">
-                                            <small class="text-muted">Document {{ $index + 1 }}</small>
+                                            <small class="text-muted">Document {{ $index + 1 }} ({{ strtoupper($extension) }})</small>
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +121,7 @@
                         </div>
                     </div>
 
-                    @if($verification->status == 'PENDING')
+                    @if($verification->status == 'pending')
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#rejectModal">
                             <i class="fas fa-times-circle me-1"></i> Reject
@@ -145,16 +160,16 @@
                                 </div>
                             </div>
 
-                            @if($verification->status != 'PENDING')
+                            @if($verification->status != 'pending')
                             <div class="timeline-item">
-                                <div class="timeline-marker {{ $verification->status == 'APPROVED' ? 'bg-success' : 'bg-danger' }}">
-                                    <i class="fas fa-{{ $verification->status == 'APPROVED' ? 'check' : 'times' }}"></i>
+                                <div class="timeline-marker {{ $verification->status == 'approved' ? 'bg-success' : 'bg-danger' }}">
+                                    <i class="fas fa-{{ $verification->status == 'approved' ? 'check' : 'times' }}"></i>
                                 </div>
                                 <div class="timeline-content">
-                                    <h5 class="timeline-title mb-1">Request {{ $verification->status }}</h5>
+                                    <h5 class="timeline-title mb-1">Request {{ ucfirst($verification->status) }}</h5>
                                     <div class="timeline-date text-muted small">{{ $verification->updated_at->format('M d, Y h:i A') }}</div>
                                     <p class="mb-0 mt-2 text-muted small">
-                                        @if($verification->status == 'APPROVED')
+                                        @if($verification->status == 'approved')
                                             Verification request was approved
                                         @else
                                             Verification request was rejected. Reason: {{ $verification->rejection_reason }}

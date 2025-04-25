@@ -168,9 +168,6 @@
                     <i class="fas fa-tshirt fa-2x text-white"></i>
                     <h1 class="sidebar-title">Laundrify</h1>
                 </div>
-                <button id="sidebarToggle" class="btn btn-link text-white p-0">
-                    <i class="fas fa-bars"></i>
-                </button>
             </div>
             
             <!-- Admin User Info -->
@@ -241,6 +238,11 @@
         
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Mobile Menu Button (appears only on small screens) -->
+            <button class="mobile-nav-toggle d-md-none" id="mobileNavToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <!-- Begin Page Content -->
             <div class="content-area">
                 <!-- Page Header -->
@@ -311,24 +313,15 @@
     
     <!-- Admin Layout JS -->
     <script>
-        // Sidebar Toggle
         document.addEventListener('DOMContentLoaded', function() {
-            const sidebarToggle = document.getElementById('sidebarToggle');
+            // Mobile menu toggle
+            const mobileNavToggle = document.getElementById('mobileNavToggle');
             const sidebar = document.getElementById('sidebar');
             
-            // Toggle sidebar from button in sidebar
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
+            if (mobileNavToggle) {
+                mobileNavToggle.addEventListener('click', function() {
                     sidebar.classList.toggle('toggled');
-                    // Save state to localStorage
-                    localStorage.setItem('sidebarToggled', sidebar.classList.contains('toggled'));
                 });
-            }
-            
-            // Check if sidebar was toggled previously
-            const sidebarToggled = localStorage.getItem('sidebarToggled');
-            if (sidebarToggled === 'true') {
-                sidebar.classList.add('toggled');
             }
             
             // Initialize tooltips

@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Hash;
 
 class Seller extends Authenticatable
 {
@@ -25,10 +26,15 @@ class Seller extends Authenticatable
         'remember_token',
     ];
 
-    // Mutator to automatically hash passwords
+    // Mutator to hash passwords only if they aren't already hashed
     public function setPasswordAttribute($password)
     {
-        $this->attributes['password'] = bcrypt($password);
+        // Only hash if the password isn't already hashed (Hash::needsRehash)
+        if (Hash::needsRehash($password)) {
+            $this->attributes['password'] = Hash::make($password);
+        } else {
+            $this->attributes['password'] = $password;
+        }
     }
 
     // Relationship with the Service model

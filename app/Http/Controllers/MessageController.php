@@ -71,10 +71,16 @@ class MessageController extends Controller
             'message' => $request->message,
         ]);
         
-        // Broadcast the event
-        event(new NewMessage($message, $order));
+        // We're not using real-time broadcasting anymore, so we comment this out
+        // event(new NewMessage($message, $order));
         
-        return response()->json(['success' => true, 'message' => $message]);
+        // Check if it's a traditional form submission or Ajax
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => $message]);
+        }
+        
+        // If it's a traditional form submission, redirect back to the chat
+        return redirect()->back();
     }
     
     public function markAsRead(Order $order)
@@ -89,5 +95,35 @@ class MessageController extends Controller
               ->update(['is_read' => true]);
         
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Get new messages for an order since last message ID
+     * Used for polling fallback when WebSocket connection fails
+     */
+    public function getMessages(Order $order, Request $request)
+    {
+        // Verify access based on route type
+        $isSeller = request()->is('seller/chat/*');
+        
+        if ($isSeller) {
+            if (!Auth::guard('seller')->check() || Auth::guard('seller')->id() != $order->seller_id) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+        } else {
+            if (!Auth::check() || Auth::id() != $order->user_id) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
+        }
+        
+        // Get all messages for this order
+        $messages = Message::where('order_id', $order->id)
+                        ->orderBy('created_at', 'asc')
+                        ->get();
+        
+        return response()->json([
+            'success' => true,
+            'messages' => $messages
+        ]);
     }
 }

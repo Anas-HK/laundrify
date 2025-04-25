@@ -130,6 +130,16 @@
         .error-messages li {
             margin-bottom: 5px;
         }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -169,16 +179,37 @@
                 @endif
             
                 <div class="mb-3">
-                    <input type="email" name="email" id="email" placeholder="Email" class="form-control" required>
+                    <input type="email" name="email" id="email" placeholder="Email" class="form-control" value="{{ old('email') }}" required>
                 </div>
 
                 <div class="mb-3">
                     <input type="password" name="password" id="password" placeholder="Password" class="form-control" required>
                 </div>
+                
+                <div class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    <label for="remember">Remember me</label>
+                </div>
 
                 <button type="submit" class="btn w-100" style="background-color: #2ecc71; color: white;">Login as Seller</button>
             
                 <p class="mt-4">Don't have a seller account? <a href="{{ route('register.seller') }}">Register here</a></p>
+                
+                <p class="mt-2">
+                    <a href="javascript:void(0);" onclick="document.getElementById('password-hint').style.display='block'">
+                        <i class="fas fa-question-circle"></i> Having trouble logging in?
+                    </a>
+                </p>
+                
+                <div id="password-hint" style="display:none; margin-top: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 14px;">
+                    <p><strong>Password Guidelines:</strong></p>
+                    <ul>
+                        <li>Make sure your keyboard Caps Lock is not enabled</li>
+                        <li>Check that there are no extra spaces before or after your password</li>
+                        <li>The system is case-sensitive (uppercase and lowercase letters are treated differently)</li>
+                        <li>If you have forgotten your password, please contact admin support</li>
+                    </ul>
+                </div>
             </form>
         </div>
     </main>
@@ -197,15 +228,71 @@
         function validateForm() {
             var email = document.getElementById("email");
             var password = document.getElementById("password");
-    
-            // Check if email or password is empty
-            if (email.value === "" || password.value === "") {
-                // Custom validation message
-                alert("Email and Password are required.");
-                return false; 
+            let isValid = true;
+            
+            // Clear previous error indicators
+            email.style.borderColor = "";
+            password.style.borderColor = "";
+            
+            // Remove any previous error elements
+            const existingErrors = document.querySelectorAll('.validation-error');
+            existingErrors.forEach(elem => elem.remove());
+            
+            // Email validation
+            if (email.value === "") {
+                showError(email, "Email address is required");
+                isValid = false;
+            } else {
+                // Comprehensive email validation regex
+                const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                
+                if (!emailRegex.test(email.value)) {
+                    let errorMsg = "Please enter a valid email address";
+                    
+                    // Check for common email mistakes
+                    if (!email.value.includes('@')) {
+                        errorMsg = "Email must include an @ symbol";
+                    } else if (email.value.indexOf('@') === email.value.length - 1) {
+                        errorMsg = "Email must include a domain after the @ symbol";
+                    } else if (!email.value.includes('.', email.value.indexOf('@'))) {
+                        errorMsg = "Email domain must include a dot (.)";
+                    } else if (email.value.split('@').length > 2) {
+                        errorMsg = "Email cannot contain multiple @ symbols";
+                    }
+                    
+                    showError(email, errorMsg);
+                    isValid = false;
+                }
             }
-    
-            return true; // Allow form submission if no error
+            
+            // Password validation
+            if (password.value === "") {
+                showError(password, "Password is required");
+                isValid = false;
+            }
+            
+            // Log the values (for debugging only, not for production)
+            console.log("Email:", email.value.trim());
+            console.log("Password length:", password.value.length);
+            
+            return isValid;
+        }
+        
+        function showError(inputElement, message) {
+            // Visual indication of error
+            inputElement.style.borderColor = "red";
+            
+            // Create error message element
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'validation-error';
+            errorDiv.style.color = 'red';
+            errorDiv.style.fontSize = '12px';
+            errorDiv.style.marginTop = '-15px';
+            errorDiv.style.marginBottom = '15px';
+            errorDiv.textContent = message;
+            
+            // Insert error message after the input
+            inputElement.parentNode.insertBefore(errorDiv, inputElement.nextSibling);
         }
     </script>
 </body>

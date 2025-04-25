@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Manage Services</h1>
+        {{-- <h1 class="h3 mb-0 text-gray-800">Manage Services</h1> --}}
         <ol class="breadcrumb mb-0 bg-transparent p-0">
             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item active">Services</li>
@@ -52,9 +52,9 @@
                             @foreach($services as $service)
                                 <tr>
                                     <td class="table-id">#{{ $service->id }}</td>
-                                    <td>{{ $service->name }}</td>
+                                    <td>{{ $service->service_name }}</td>
                                     <td>{{ $service->seller ? $service->seller->name : 'N/A' }}</td>
-                                    <td>৳{{ $service->price }}</td>
+                                    <td>{{ number_format($service->service_price, 2) }} PKR</td>
                                     <td>
                                         @if($service->is_approved == 1)
                                             <span class="status-badge status-completed">
@@ -99,29 +99,19 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <h6 class="fw-bold">{{ $service->name }}</h6>
+                                                <h6 class="fw-bold">{{ $service->service_name }}</h6>
                                                 <div class="mb-3">
-                                                    <span class="badge bg-primary">৳{{ $service->price }}</span>
+                                                    <span class="badge bg-primary">{{ number_format($service->service_price, 2) }} PKR</span>
                                                     <span class="badge {{ $service->is_approved ? 'bg-success' : 'bg-warning' }}">
                                                         {{ $service->is_approved ? 'Approved' : 'Pending' }}
                                                     </span>
                                                 </div>
                                                 
                                                 <h6 class="fw-bold">Description</h6>
-                                                <p>{{ $service->description }}</p>
+                                                <p>{{ $service->service_description }}</p>
                                                 
                                                 <h6 class="fw-bold">Seller Information</h6>
-                                                <p>
-                                                    <strong>Name:</strong> {{ $service->seller ? $service->seller->name : 'N/A' }}<br>
-                                                    <strong>Email:</strong> {{ $service->seller ? $service->seller->email : 'N/A' }}<br>
-                                                    <strong>Business:</strong> {{ $service->seller && $service->seller->business_name ? $service->seller->business_name : 'N/A' }}
-                                                </p>
-                                                
-                                                <h6 class="fw-bold">Dates</h6>
-                                                <p>
-                                                    <strong>Created:</strong> {{ $service->created_at->format('M d, Y H:i') }}<br>
-                                                    <strong>Updated:</strong> {{ $service->updated_at->format('M d, Y H:i') }}
-                                                </p>
+                                                <p>{{ $service->seller ? $service->seller->name : 'N/A' }}</p>
                                             </div>
                                             <div class="modal-footer">
                                                 @if($service->is_approved == 0)

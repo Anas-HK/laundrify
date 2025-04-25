@@ -242,6 +242,31 @@ body {
     }
 }
 
+/* Connection status indicator */
+.connection-status {
+    padding: 8px 15px;
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+    font-style: italic;
+    animation: pulse 2s infinite;
+    border-radius: 5px;
+    margin: 0 20px 15px 20px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
 .chat-input-container {
     padding: 18px;
     background: white;

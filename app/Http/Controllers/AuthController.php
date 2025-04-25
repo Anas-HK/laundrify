@@ -79,7 +79,7 @@ public function register(Request $request)
                 'email',
                 'max:255',
                 'unique:users',
-                'regex:/^[a-zA-Z0-9]{3,20}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/'
+                'regex:/^[a-zA-Z0-9._%+\-!#$&\'*\/=?^`{|}~]{1,64}@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/'
             ],
             'password' => 'required|string|min:8|confirmed',
             'mobile' => 'required|string|regex:/^[0-9]{11}$/',
@@ -98,7 +98,7 @@ public function register(Request $request)
             'terms' => 'accepted',
         ], [
             'name.regex' => 'Only English letters allowed (3-20 characters)',
-            'email.regex' => 'Only @gmail.com allowed (3-20 chars before @, no special chars)',
+            'email.regex' => 'Please enter a valid email address',
             'mobile.regex' => 'Please enter a valid 11-digit mobile number',
             'address.regex' => 'Address must contain both letters and numbers',
             'city.regex' => 'Only English letters allowed',

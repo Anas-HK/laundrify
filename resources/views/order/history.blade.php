@@ -247,7 +247,7 @@
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <div>
                                         <div class="text-muted">Total Price</div>
-                                        <div class="order-total">${{ number_format($order->total_price, 2) }}</div>
+                                        <div class="order-total">${{ number_format($order->total_amount, 2) }}</div>
                                     </div>
                                     
                                     <div class="order-actions">

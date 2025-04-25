@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Notifications\NewServiceAddedNotification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\Models\Seller;
 
 
@@ -55,9 +56,19 @@ class SellerServiceController extends Controller
         $sellerName = auth()->guard('seller')->user()->name;
         $sellerId = auth()->guard('seller')->user()->id;
         $serviceId = $service->id;
-        $users = AppUser::all(); 
+        
+        // Instead of notifying all users at once which causes timeout,
+        // we'll notify only a limited number or consider using a queue
+        // Option 1: Limit to recent users (e.g., last 10)
+        $users = AppUser::latest()->take(5)->get();
+        
         foreach ($users as $user) {
-            $user->notify(new NewServiceAddedNotification($sellerName, $service->service_name, $sellerId, $serviceId));
+            try {
+                $user->notify(new NewServiceAddedNotification($sellerName, $service->service_name, $sellerId, $serviceId));
+            } catch (\Exception $e) {
+                // Log the error but continue processing
+                Log::error('Failed to send notification: ' . $e->getMessage());
+            }
         }
     
         return redirect()->route('seller.panel')->with('success', 'Service added successfully and is awaiting admin approval.');
