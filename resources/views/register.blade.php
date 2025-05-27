@@ -155,7 +155,7 @@
     <div class="auth-container">
         <div class="auth-card">
             <!-- Registration Form -->
-            <form id="registrationForm" class="auth-form" action="{{ route('register') }}" method="POST" novalidate>
+            <form id="registrationForm" class="auth-form" action="{{ route('register.submit') }}" method="POST" novalidate>
                 @csrf
                 <h3>Buyer Registration</h3>
 

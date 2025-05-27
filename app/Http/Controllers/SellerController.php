@@ -5,9 +5,9 @@ use App\Models\Seller;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\Order;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Feedback;
 
 
 class SellerController extends Controller
@@ -123,6 +123,11 @@ class SellerController extends Controller
             return back()->withErrors(['email' => 'Your account is pending approval. Please wait for admin approval.']);
         }
         
+        // Check if the seller account is suspended
+        if ($seller->is_suspended) {
+            return back()->withErrors(['email' => 'Your seller account has been suspended. Reason: ' . $seller->suspension_reason]);
+        }
+        
         // First, try normal authentication
         $credentials = $request->only('email', 'password');
         if (Auth::guard('seller')->attempt($credentials, $request->filled('remember'))) {
@@ -175,7 +180,10 @@ public function sellerPanel()
     $seller = auth()->guard('seller')->user();
 
     $services = $seller->services; 
-    $orders = Order::where('seller_id', $seller->id)->with(['user', 'items.service'])->get();
+    $orders = Order::where('seller_id', $seller->id)
+                  ->with(['user', 'items.service'])
+                  ->orderBy('created_at', 'desc')
+                  ->get();
     
     // Count completed and delivered orders for the dashboard
     $completedOrdersCount = Order::where('seller_id', $seller->id)
@@ -185,9 +193,19 @@ public function sellerPanel()
                                 })
                                 ->count();
     
-    $notifications = $seller->notifications;
+    // Get all notifications sorted from latest to oldest
+    $notifications = $seller->notifications()->orderBy('created_at', 'desc')->get();
+    
+    // Get unread notifications count
+    $unreadNotificationsCount = $seller->unreadNotifications->count();
+    
+    // Get customer feedback for this seller
+    $feedbacks = Feedback::where('seller_id', $seller->id)
+                    ->with(['user', 'order'])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
-    return view('seller.panel', compact('services', 'orders', 'notifications', 'completedOrdersCount'));
+    return view('seller.panel', compact('services', 'orders', 'notifications', 'completedOrdersCount', 'feedbacks', 'unreadNotificationsCount'));
 }
 
 
@@ -255,5 +273,18 @@ public function earnings(Request $request)
         'completedOrders' => $completedOrders,
         'monthlyData' => $monthlyData
     ]);
+}
+
+/**
+ * Mark all notifications as read
+ *
+ * @return \Illuminate\Http\Response
+ */
+public function markNotificationsAsRead()
+{
+    $seller = auth()->guard('seller')->user();
+    $seller->unreadNotifications->markAsRead();
+    
+    return response()->json(['success' => true]);
 }
 }

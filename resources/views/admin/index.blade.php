@@ -67,7 +67,7 @@
                         <i class="fas fa-money-bill-wave text-warning"></i>
                     </div>
                     <div>
-                        <h3 class="stat-value">{{ number_format($totalRevenue, 2) }} €</h3>
+                        <h3 class="stat-value">{{ number_format($totalRevenue, 2) }} PKR</h3>
                         <p class="stat-label">Total Revenue</p>
                     </div>
                 </div>
@@ -177,7 +177,7 @@
                                             {{ $order->status }}
                                         </span>
                                     </td>
-                                    <td>{{ number_format($order->total_amount, 2) }} €</td>
+                                    <td>{{ number_format($order->total_amount, 2) }} PKR</td>
                                     <td>
                                         <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i>

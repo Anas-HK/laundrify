@@ -38,7 +38,7 @@ public function verifyOtp(Request $request)
     $email = session('email');
 
     if (!$email) {
-        return redirect()->route('register')->withErrors(['otp' => 'Session expired. Please register again.']);
+        return redirect()->route('register.form')->withErrors(['otp' => 'Session expired. Please register again.']);
     }
 
     //here we are retriving all the user by email
@@ -175,13 +175,27 @@ public function register(Request $request)
         if (empty($credentials['email']) || empty($credentials['password'])) {
             return back()->withErrors(['login' => 'Please enter email and password.'])->withInput();
         }
+        
+        // Check if the user is suspended before attempting authentication
+        $user = User::where('email', $credentials['email'])->first();
+        if ($user && $user->is_suspended) {
+            Auth::logout();
+            return back()->withErrors(['login' => 'Your account has been suspended. Reason: ' . $user->suspension_reason])->withInput();
+        }
     
         // Attempt to authenticate the user with provided credentials
         if (Auth::attempt($credentials)) {
+            // Check again after authentication (in case it was suspended right after the previous check)
+            $user = Auth::user();
+            if ($user->is_suspended) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect()->route('login')->withErrors(['login' => 'Your account has been suspended. Reason: ' . $user->suspension_reason]);
+            }
+            
             // Regenerate session to prevent session fixation attacks
             $request->session()->regenerate();
-    
-            $user = Auth::user();
     
             // Test Case 3: If user credentials are valid, check for admin
             if ($user->id == 1 || $user->sellerType == 1) {

@@ -21,6 +21,31 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/logo.css') }}">
     <link rel="stylesheet" href="{{ asset('css/sellerPanel.css') }}">
+    <style>
+        /* Styles for unread notifications */
+        .notification-item.unread {
+            background-color: rgba(13, 110, 253, 0.05);
+            font-weight: 500;
+        }
+        
+        .notification-item.unread::before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+        }
+        
+        .notification-item {
+            position: relative;
+            padding-left: 20px;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -67,10 +92,10 @@
                     
                     <!-- Notifications Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link notification-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link notification-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" onclick="markNotificationsAsRead()">
                             <i class="fas fa-bell"></i>
-                            @if($notifications->isNotEmpty())
-                                <span class="notification-badge">{{ $notifications->count() }}</span>
+                            @if($unreadNotificationsCount > 0)
+                                <span class="notification-badge">{{ $unreadNotificationsCount }}</span>
                             @endif
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end notification-dropdown-menu" aria-labelledby="notificationDropdown">
@@ -86,7 +111,7 @@
                                     </li>
                                 @else
                                     @foreach($notifications as $notification)
-                                        <li class="dropdown-item notification-item">
+                                        <li class="dropdown-item notification-item {{ is_null($notification->read_at) ? 'unread' : '' }}">
                                             <div class="notification-content">
                                                 @if(isset($notification->data['type']) && $notification->data['type'] == 'service_approved')
                                                     <p>
@@ -94,28 +119,40 @@
                                                         {{ $notification->data['message'] }}
                                                     </p>
                                                     <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
+                                                @elseif(isset($notification->data['order_id']) && isset($notification->data['cancellation_reason']))
+                                                    <p>
+                                                        <strong><i class="fas fa-times-circle text-danger"></i> Order Cancelled</strong><br>
+                                                        {{ $notification->data['message'] }}
+                                                        <br>
+                                                        <small class="text-muted">Reason: {{ \Illuminate\Support\Str::limit($notification->data['cancellation_reason'], 50) }}</small>
+                                                    </p>
+                                                    <span class="notification-time">{{ $notification->created_at->diffForHumans() }}</span>
                                                 @elseif(isset($notification->data['order_id']))
-                                                    @if(is_string($notification->data['order_details']))
+                                                    @if(isset($notification->data['order_details']) && is_string($notification->data['order_details']))
                                                         @php
                                                             $details = json_decode($notification->data['order_details'], true);
                                                         @endphp
-                                                    @else
+                                                    @elseif(isset($notification->data['order_details']))
                                                         @php
                                                             $details = $notification->data['order_details'];
+                                                        @endphp
+                                                    @else
+                                                        @php
+                                                            $details = null;
                                                         @endphp
                                                     @endif
                                                     
                                                     <p>
-                                                        <strong>New Order from {{ $notification->data['seller_name'] }}</strong><br>
+                                                        <strong><i class="fas fa-shopping-bag text-primary"></i> New Order from {{ $notification->data['seller_name'] ?? 'Customer' }}</strong><br>
                                                         Order ID: <span class="text-primary">#{{ $notification->data['order_id'] }}</span>
                                                         
                                                         @if(is_array($details))
                                                             <br>
                                                             <small class="notification-time">
                                                                 @foreach($details as $detail)
-                                                                    Service: #{{ $detail['service_id'] }}, 
-                                                                    Qty: {{ $detail['quantity'] }}, 
-                                                                    Price: {{ $detail['price'] }} PKR<br>
+                                                                    Service: #{{ $detail['service_id'] ?? 'N/A' }}, 
+                                                                    Qty: {{ $detail['quantity'] ?? 'N/A' }}, 
+                                                                    Price: {{ $detail['price'] ?? 'N/A' }} PKR<br>
                                                                 @endforeach
                                                             </small>
                                                         @endif
@@ -203,11 +240,11 @@
                 <div class="col-md-4">
                     <div class="stats-card animate__animated animate__fadeIn" style="animation-delay: 0.2s;">
                         <div class="stats-icon bg-warning">
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-comment"></i>
                         </div>
                         <div class="stats-content">
-                            <h3 class="stats-number">{{ isset($rating) ? number_format($rating, 1) : '0.0' }}</h3>
-                            <p class="stats-label">Average Rating</p>
+                            <h3 class="stats-number">{{ $feedbacks->count() }}</h3>
+                            <p class="stats-label">Customer Feedback</p>
                         </div>
                     </div>
                 </div>
@@ -289,97 +326,132 @@
                 </div>
             </div>
             <!-- Orders Section -->
-<div class="section-card animate__animated animate__fadeIn">
-    <div class="section-header">
-        <h2 class="section-title">
-            <i class="fas fa-shopping-bag"></i> Recent Orders
-        </h2>
-    </div>
-    
-    <div class="section-body">
-        @if($orders->isEmpty())
-            <div class="empty-state">
-                <i class="fas fa-clipboard-list"></i>
-                <p>No orders found. Orders will appear here when customers place them.</p>
+            <div class="section-card animate__animated animate__fadeIn">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-shopping-bag"></i> Your Orders
+                    </h2>
+                </div>
+                
+                <div class="section-body">
+                    @if($orders->isEmpty())
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>No orders found. Orders will appear here when customers place them.</p>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle orders-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Buyer</th>
+                                        <th>Services</th>
+                                        <th>Total</th>
+                                        <th>Payment Type</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($orders as $order)
+                                        <tr>
+                                            <td>
+                                                <span class="fw-medium">#{{ $order->id }}</span>
+                                                <div class="small text-muted">{{ $order->created_at->format('M d, Y') }}</div>
+                                            </td>
+                                            <td>{{ $order->user->name }}</td>
+                                            <td>
+                                                <div class="services-list">
+                                                    @foreach($order->items->take(2) as $item)
+                                                        <div>{{ $item->service->service_name }} × {{ $item->quantity }}</div>
+                                                    @endforeach
+                                                    @if($order->items->count() > 2)
+                                                        <div class="small text-muted">+{{ $order->items->count() - 2 }} more</div>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold">{{ $order->total_amount ?? 'N/A' }} PKR</span>
+                                            </td>
+
+                                            <!-- ✅ Payment Type Column -->
+                                            <td>
+                                                @if($order->transaction_id)
+                                                    <span class="badge bg-info text-dark">Online</span>
+                                                    <div class="small text-muted">Txn: {{ $order->transaction_id }}</div>
+                                                @else
+                                                    <span class="badge bg-secondary">Cash on Delivery</span>
+                                                @endif
+                                            </td>
+
+                                            <td class="text-md-center">
+                                                <div class="badge status-{{ $order->status }}">
+                                                    <i class="fas fa-circle"></i> {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                @if($order->status === 'pending')
+                                                    <div class="btn-group">
+                                                        <form action="{{ route('order.acceptReject', $order) }}" method="POST">
+                                                            @csrf
+                                                            <button type="submit" name="status" value="accepted" class="btn btn-sm btn-success me-1">
+                                                                <i class="fas fa-check me-1"></i> Accept
+                                                            </button>
+                                                            <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger">
+                                                                <i class="fas fa-times me-1"></i> Reject
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye me-1"></i> Details
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
             </div>
-        @else
-            <div class="table-responsive">
-                <table class="table table-hover align-middle orders-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Buyer</th>
-                            <th>Services</th>
-                            <th>Total</th>
-                            <th>Payment Type</th> <!-- ✅ New Column -->
-                            <th>Status</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($orders->take(5) as $order)
-                            <tr>
-                                <td>
-                                    <span class="fw-medium">#{{ $order->id }}</span>
-                                    <div class="small text-muted">{{ $order->created_at->format('M d, Y') }}</div>
-                                </td>
-                                <td>{{ $order->user->name }}</td>
-                                <td>
-                                    <div class="services-list">
-                                        @foreach($order->items->take(2) as $item)
-                                            <div>{{ $item->service->service_name }} × {{ $item->quantity }}</div>
-                                        @endforeach
-                                        @if($order->items->count() > 2)
-                                            <div class="small text-muted">+{{ $order->items->count() - 2 }} more</div>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="fw-semibold">{{ $order->total_amount ?? 'N/A' }} PKR</span>
-                                </td>
-
-                                <!-- ✅ Payment Type Column -->
-                                <td>
-                                    @if($order->transaction_id)
-                                        <span class="badge bg-info text-dark">Online</span>
-                                        <div class="small text-muted">Txn: {{ $order->transaction_id }}</div>
-                                    @else
-                                        <span class="badge bg-secondary">Cash on Delivery</span>
-                                    @endif
-                                </td>
-
-                                <td class="text-md-center">
-                                    <div class="badge status-{{ $order->status }}">
-                                        <i class="fas fa-circle"></i> {{ ucfirst(str_replace('_', ' ', $order->status)) }}
-                                    </div>
-                                </td>
-                                <td class="text-end">
-                                    @if($order->status === 'pending')
-                                        <div class="btn-group">
-                                            <form action="{{ route('order.acceptReject', $order) }}" method="POST">
-                                                @csrf
-                                                <button type="submit" name="status" value="accepted" class="btn btn-sm btn-success me-1">
-                                                    <i class="fas fa-check me-1"></i> Accept
-                                                </button>
-                                                <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-times me-1"></i> Reject
-                                                </button>
-                                            </form>
+            <!-- Customer Feedback Section -->
+            <div class="section-card animate__animated animate__fadeIn">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-comment"></i> Customer Feedback
+                    </h2>
+                </div>
+                
+                <div class="section-body">
+                    @if($feedbacks->isEmpty())
+                        <div class="empty-state">
+                            <i class="fas fa-comments"></i>
+                            <p>No feedback received yet. Feedback will appear here when customers leave reviews.</p>
+                        </div>
+                    @else
+                        <div class="feedback-list">
+                            @foreach($feedbacks as $feedback)
+                                <div class="feedback-item card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div>
+                                                <span class="fw-bold">{{ $feedback->user->name ?? 'Anonymous User' }}</span>
+                                                <span class="badge bg-primary ms-2">Order #{{ $feedback->order_id }}</span>
+                                            </div>
+                                            <small class="text-muted">{{ $feedback->created_at->format('M d, Y') }}</small>
                                         </div>
-                                    @else
-                                        <a href="{{ route('seller.order.handle', $order) }}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-eye me-1"></i> Details
-                                        </a>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                        <p class="mb-0">{{ $feedback->feedback }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
             </div>
-        @endif
-    </div>
-</div>        </div>
+        </div>
     </main>
     
     <!-- Footer -->
@@ -393,6 +465,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script>
+        // Function to mark notifications as read
+        function markNotificationsAsRead() {
+            fetch('{{ route('seller.notifications.markAsRead') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the notification badge
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge) {
+                        badge.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+        }
+
         // Initialize toasts
         document.addEventListener('DOMContentLoaded', function() {
             var toastElList = [].slice.call(document.querySelectorAll('.toast'));
@@ -429,6 +524,18 @@
                 <span id="toast-message">Your service has been approved by admin!</span>
             </div>
         </div>
+
+        <div id="orderCancelledToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-times-circle me-2"></i>
+                <strong class="me-auto">Order Cancelled</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <span id="cancelled-toast-message">An order has been cancelled by the customer.</span>
+            </div>
+        </div>
     </div>
 
     @section('scripts')
@@ -444,14 +551,25 @@
                 toast.show();
             @endif
             
-            // Check for new service_approved notifications and show toast
+            // Check for new notifications and show appropriate toast
             const notifications = document.querySelectorAll('.notification-item');
             notifications.forEach(notification => {
                 const text = notification.textContent;
+                
+                // Check for service approval notifications
                 if (text.includes('Service Approved') && notification.getAttribute('data-read') !== 'true') {
                     const toast = new bootstrap.Toast(document.getElementById('serviceApprovedToast'));
                     const message = notification.querySelector('p').textContent.trim();
                     document.getElementById('toast-message').textContent = message;
+                    toast.show();
+                    notification.setAttribute('data-read', 'true');
+                }
+                
+                // Check for order cancellation notifications
+                if (text.includes('Order Cancelled') && notification.getAttribute('data-read') !== 'true') {
+                    const toast = new bootstrap.Toast(document.getElementById('orderCancelledToast'));
+                    const message = notification.querySelector('p').textContent.trim();
+                    document.getElementById('cancelled-toast-message').textContent = message;
                     toast.show();
                     notification.setAttribute('data-read', 'true');
                 }

@@ -68,7 +68,7 @@
                             <div class="col-md-6">
                                 <div class="info-group">
                                     <div class="info-label">Total Amount</div>
-                                    <div class="info-value">${{ number_format($order->total_amount, 2) }}</div>
+                                    <div class="info-value">{{ number_format($order->total_amount, 2) }} PKR</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -121,19 +121,19 @@
                                     @foreach($order->items as $item)
                                     <tr>
                                         <td>
-                                            <div class="fw-medium">{{ $item->service->name ?? $item->service->title ?? 'Unknown Service' }}</div>
-                                            <small class="text-muted">{{ $item->service->category ?? '' }}</small>
+                                            <div class="fw-medium">{{ $item->service->service_name ?? 'Unknown Service' }}</div>
+                                            <small class="text-muted">{{ $item->service->service_description ?? '' }}</small>
                                         </td>
-                                        <td class="text-center">${{ number_format($item->price, 2) }}</td>
+                                        <td class="text-center">{{ number_format($item->price, 2) }} PKR</td>
                                         <td class="text-center">{{ $item->quantity }}</td>
-                                        <td class="text-end fw-semibold">${{ number_format($item->price * $item->quantity, 2) }}</td>
+                                        <td class="text-end fw-semibold">{{ number_format($item->price * $item->quantity, 2) }} PKR</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <td colspan="3" class="text-end fw-bold">Total:</td>
-                                        <td class="text-end fw-bold">${{ number_format($order->total_amount, 2) }}</td>
+                                        <td class="text-end fw-bold">{{ number_format($order->total_amount, 2) }} PKR</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -212,26 +212,45 @@
                                     @endif
                                 </div>
                             </div>
+
+                            @if($order->status === 'cancelled')
+                            <div class="timeline-item active">
+                                <div class="timeline-title text-danger">Cancelled</div>
+                                <div class="timeline-date">
+                                    @if($order->cancelled_at && !is_string($order->cancelled_at))
+                                        {{ $order->cancelled_at->format('M d, Y h:i A') }}
+                                    @elseif($order->cancelled_at)
+                                        {{ date('M d, Y h:i A', strtotime($order->cancelled_at)) }}
+                                    @else
+                                        {{ date('M d, Y h:i A', strtotime($order->updated_at)) }}
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
-                <!-- Actions Card -->
-                <div class="order-card card">
+                <!-- Order Actions Card -->
+                <div class="order-card card mt-4">
                     <div class="card-header">
-                        <h5 class="mb-0">Actions</h5>
+                        <h5 class="mb-0">Order Actions</h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-grid gap-3">
-                            <a href="{{ route('order.track', $order->id) }}" class="action-btn btn-track">
-                                <i class="fas fa-truck"></i> Track Order
+                        <div class="action-buttons">
+                            <a href="{{ route('order.track', $order->id) }}" class="action-btn mb-3">
+                                <i class="fas fa-map-marker-alt"></i> Track Order
                             </a>
                             
-                            @if($order->status !== 'cancelled' && $order->status !== 'completed' && $order->status !== 'rejected')
-                            <a href="{{ route('chat.index', $order->id) }}" class="action-btn btn-contact">
-                                <i class="fas fa-comments"></i> Contact Seller
+                            @if(in_array($order->status, ['pending', 'accepted']))
+                            <a href="{{ route('order.cancel.form', $order->id) }}" class="action-btn btn-cancel mb-3">
+                                <i class="fas fa-times-circle"></i> Cancel Order
                             </a>
                             @endif
+                            
+                            <a href="{{ route('chat.index', $order->id) }}" class="action-btn mb-3">
+                                <i class="fas fa-comments"></i> Contact Seller
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -34,6 +34,11 @@
                 
                 <div class="nav-links">
                     <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+                    @auth
+                    <a href="{{ route('favorites.index') }}" class="nav-link {{ request()->routeIs('favorites.*') ? 'active' : '' }}">
+                        <i class="fas fa-heart"></i> Favorites
+                    </a>
+                    @endauth
                     <a href="{{ route('cart.view') }}" class="nav-link {{ request()->routeIs('cart.*') ? 'active' : '' }}">
                         <i class="fas fa-shopping-cart"></i> Cart
                     </a>

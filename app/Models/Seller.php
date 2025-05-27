@@ -5,6 +5,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
 
 class Seller extends Authenticatable
 {
@@ -19,11 +20,20 @@ class Seller extends Authenticatable
         'area',
         'accountIsApproved',
         'is_deleted',
+        'is_suspended',
+        'suspended_at',
+        'suspension_reason',
+        'suspended_by'
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'is_suspended' => 'boolean',
+        'suspended_at' => 'datetime',
     ];
 
     // Mutator to hash passwords only if they aren't already hashed
@@ -69,5 +79,45 @@ class Seller extends Authenticatable
     public function isVerified()
     {
         return $this->verificationRequest && $this->verificationRequest->status === 'approved';
+    }
+
+    /**
+     * Get the admin who suspended this seller.
+     */
+    public function suspendedBy()
+    {
+        return $this->belongsTo(User::class, 'suspended_by');
+    }
+    
+    /**
+     * Check if the seller's account is suspended.
+     *
+     * @return bool
+     */
+    public function isSuspended(): bool
+    {
+        return $this->is_suspended;
+    }
+    
+    /**
+     * Scope a query to only include active sellers.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_suspended', false);
+    }
+    
+    /**
+     * Scope a query to only include suspended sellers.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSuspended(Builder $query): Builder
+    {
+        return $query->where('is_suspended', true);
     }
 }

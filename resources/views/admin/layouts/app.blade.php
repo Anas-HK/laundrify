@@ -193,9 +193,16 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a href="{{ route('admin.sellers') }}" class="nav-link {{ request()->routeIs('admin.sellers') ? 'active' : '' }}">
+                        <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.sellers.index') }}" class="nav-link {{ request()->routeIs('admin.sellers.index') || request()->routeIs('admin.sellers.show') ? 'active' : '' }}">
                             <i class="fas fa-store"></i>
-                            <span>Sellers</span>
+                            <span>Seller Management</span>
                         </a>
                     </li>
                     
@@ -210,17 +217,13 @@
                         <a href="{{ route('admin.verifications.index') }}" class="nav-link {{ request()->routeIs('admin.verifications.index') ? 'active' : '' }}">
                             <i class="fas fa-check-circle"></i>
                             <span>Verifications</span>
-                            @php
-                                $routeName = Route::currentRouteName();
-                                $pendingCount = App\Models\Seller::where('accountIsApproved', 0)->where('is_deleted', 0)->count();
-                                $showBadge = $pendingCount > 0 && $routeName !== 'admin.verifications.index' && !str_contains($routeName, 'chat');
-                            @endphp
-                            
-                            @if($showBadge)
-                                <span class="badge bg-danger ms-auto">
-                                    {{ $pendingCount }}
-                                </span>
-                            @endif
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') ? 'active' : '' }}">
+                            <i class="fas fa-users"></i>
+                            <span>User Management</span>
                         </a>
                     </li>
                     

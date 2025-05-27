@@ -204,7 +204,7 @@
                                     <i class="fas fa-money-bill-wave"></i>
                                     <div>
                                         <div class="meta-label">Total Amount</div>
-                                        <div class="meta-value">${{ number_format($order->total_amount, 2) }}</div>
+                                        <div class="meta-value">{{ number_format($order->total_amount, 2) }} PKR</div>
                                     </div>
                                 </div>
                                 
@@ -251,9 +251,9 @@
                             <div class="order-items">
                                 @foreach($order->items as $item)
                                 <div class="item-card">
-                                    <div class="item-name">{{ $item->service->name }}</div>
-                                    <span class="item-qty">{{ $item->quantity }} x {{ $item->item_type }}</span>
-                                    <span class="item-price">${{ number_format($item->price, 2) }}</span>
+                                    <div class="item-name">{{ $item->service->service_name ?? 'Unknown Service' }}</div>
+                                    <span class="item-qty">{{ $item->quantity }} x {{ $item->service->service_description ?? 'Service' }}</span>
+                                    <span class="item-price">{{ number_format($item->price, 2) }} PKR</span>
                                 </div>
                                 @endforeach
                             </div>

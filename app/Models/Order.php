@@ -11,8 +11,35 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'seller_id', 'address', 'phone', 'status',    'total_amount',        'transaction_id' 
-];
+    protected $fillable = [
+        'user_id', 
+        'seller_id', 
+        'address', 
+        'phone', 
+        'status',    
+        'total_amount',        
+        'transaction_id',
+        'cancellation_reason',
+        'cancelled_at'
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'cancelled_at'
+    ];
+
+    /**
+     * Check if the order can be cancelled.
+     * Orders can only be cancelled if they are in certain states.
+     *
+     * @return bool
+     */
+    public function canBeCancelled()
+    {
+        $cancellableStatuses = ['pending', 'accepted'];
+        return in_array($this->status, $cancellableStatuses);
+    }
 
     public function items()
     {
@@ -34,9 +61,9 @@ class Order extends Model
     }
 
     public function feedbacks()
-{
-    return $this->hasOne(Feedback::class);
-}
+    {
+        return $this->hasOne(Feedback::class);
+    }
 
     public function messages()
     {

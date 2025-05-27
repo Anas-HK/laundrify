@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $seller->name }} Services - Laundrify</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -280,6 +281,43 @@
             color: var(--success);
             border-left: 4px solid var(--success);
         }
+        
+        /* Favorite button styling */
+        .favorite-btn {
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            margin-left: 8px;
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        
+        .favorite-btn i {
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        
+        .favorite-btn i.fas {
+            color: #dc3545;
+            animation: heartPulse 0.3s ease-in-out;
+        }
+        
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -296,6 +334,11 @@
                 
                 <div class="nav-links">
                     <a href="{{ route('home') }}" class="nav-link">Home</a>
+                    @auth
+                    <a href="{{ route('favorites.index') }}" class="nav-link">
+                        <i class="fas fa-heart"></i> Favorites
+                    </a>
+                    @endauth
                     <a href="{{ route('cart.view') }}" class="nav-link">
                         <i class="fas fa-shopping-cart"></i> Cart
                         <span class="badge bg-danger rounded-pill">
@@ -353,13 +396,24 @@
                                     <p class="service-description">{{ $service->service_description }}</p>
                                     
                                     <div class="mt-auto">
-                                        <form action="{{ route('cart.add') }}" method="POST">
+                                        <div class="d-flex">
+                                            <form action="{{ route('cart.add') }}" method="POST" class="me-2" style="flex-grow: 1;">
                                             @csrf
                                             <input type="hidden" name="service_id" value="{{ $service->id }}">
                                             <button type="submit" class="cart-button w-100">
                                                 <i class="fas fa-cart-plus me-2"></i> Add to Cart
                                             </button>
                                         </form>
+                                            
+                                            @auth
+                                            <button class="favorite-btn" 
+                                                    data-service-id="{{ $service->id }}" 
+                                                    data-is-favorited="false" 
+                                                    onclick="toggleFavorite({{ $service->id }}, this)">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                            @endauth
+                                        </div>
                                     </div>
                                 </div>
 
@@ -426,5 +480,91 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if services are favorited
+            checkFavoritedServices();
+        });
+
+        function checkFavoritedServices() {
+            const favoriteButtons = document.querySelectorAll('.favorite-btn');
+            favoriteButtons.forEach(button => {
+                const serviceId = button.dataset.serviceId;
+                fetch(`/favorites/is-favorited/${serviceId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.isFavorited) {
+                            button.dataset.isFavorited = 'true';
+                            button.querySelector('i').classList.remove('far');
+                            button.querySelector('i').classList.add('fas');
+                            console.log('Service ' + serviceId + ' is favorited');
+                        } else {
+                            console.log('Service ' + serviceId + ' is not favorited');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking favorites:', error);
+                    });
+            });
+        }
+
+        function toggleFavorite(serviceId, button) {
+            // Optimistic UI update - show the change immediately
+            const isFavorited = button.dataset.isFavorited === 'true';
+            const icon = button.querySelector('i');
+            
+            if (!isFavorited) {
+                // Optimistically mark as favorited
+                button.dataset.isFavorited = 'true';
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                // Optimistically mark as unfavorited
+                button.dataset.isFavorited = 'false';
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+            
+            // Get CSRF token
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            // Make the API call in the background
+            fetch(`/favorites/toggle/${serviceId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // If the server response doesn't match our optimistic update, revert
+                if (data.success && data.isFavorited !== (button.dataset.isFavorited === 'true')) {
+                    button.dataset.isFavorited = data.isFavorited ? 'true' : 'false';
+                    if (data.isFavorited) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // On error, revert to original state
+                button.dataset.isFavorited = isFavorited ? 'true' : 'false';
+                if (isFavorited) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

@@ -70,7 +70,7 @@ public function rejectService($id)
 public function manageSellers()
     {
         $sellers = Seller::paginate(10);
-        return view('admin.sellers', compact('sellers'));
+    return redirect()->route('admin.sellers.index');
     }
 
     public function manageServices()

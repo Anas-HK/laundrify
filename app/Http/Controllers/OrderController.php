@@ -51,25 +51,31 @@ class OrderController extends Controller
     {
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
         $order->load(['seller', 'items.service']);
+        
+        // Ensure the cancelled_at date is properly cast for cancelled orders
+        if ($order->status === 'cancelled' && $order->cancelled_at && is_string($order->cancelled_at)) {
+            $order->cancelled_at = \Carbon\Carbon::parse($order->cancelled_at);
+        }
+        
         return view('orders.show', compact('order'));
     }
     public function history()
     {
         $orders = Order::where('user_id', Auth::id())
-                        ->where('status', 'completed')
+                        ->where(function($query) {
+                            $query->where('status', 'completed')
+                                  ->orWhere('status', 'delivered')
+                                  ->orWhere('status', 'cancelled');
+                        })
                         ->orderBy('created_at', 'desc')
                         ->get();
         
-        // If no completed orders are found, check for delivered orders too (which should be considered complete)
-        if ($orders->isEmpty()) {
-            $orders = Order::where('user_id', Auth::id())
-                          ->where(function($query) {
-                              $query->where('status', 'completed')
-                                    ->orWhere('status', 'delivered');
-                          })
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-        }
+        // Ensure the cancelled_at date is properly cast for cancelled orders
+        $orders->each(function($order) {
+            if ($order->status === 'cancelled' && $order->cancelled_at && is_string($order->cancelled_at)) {
+                $order->cancelled_at = \Carbon\Carbon::parse($order->cancelled_at);
+            }
+        });
         
         return view('order.history', compact('orders'));
     }
@@ -206,9 +212,7 @@ class OrderController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $order->load('orderItems');
         $order->load(['user', 'seller', 'items.service']);
-
 
         return view('order.track', compact('order'));
     }
@@ -262,5 +266,65 @@ class OrderController extends Controller
     public function showOrderHandling(Order $order)
     {
         return view('seller.order-handle', compact('order'));
+    }
+
+    /**
+     * Show the form for cancelling an order.
+     *
+     * @param  \App\Models\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function showCancelForm(Order $order)
+    {
+        // Check if the order belongs to the authenticated user
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Check if the order can be cancelled
+        if (!$order->canBeCancelled()) {
+            return redirect()->route('order.show', $order->id)
+                ->with('error', 'This order cannot be cancelled at its current status.');
+        }
+
+        return view('order.cancel', compact('order'));
+    }
+
+    /**
+     * Process the order cancellation.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function cancelOrder(Request $request, Order $order)
+    {
+        // Check if the order belongs to the authenticated user
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Check if the order can be cancelled
+        if (!$order->canBeCancelled()) {
+            return redirect()->route('order.show', $order->id)
+                ->with('error', 'This order cannot be cancelled at its current status.');
+        }
+
+        // Validate the request
+        $request->validate([
+            'cancellation_reason' => 'required|string|min:5|max:500',
+        ]);
+
+        // Update the order
+        $order->status = 'cancelled';
+        $order->cancellation_reason = $request->cancellation_reason;
+        $order->cancelled_at = now();
+        $order->save();
+
+        // Notify the seller about the cancellation
+        $order->seller->notify(new \App\Notifications\OrderCancelledNotification($order));
+
+        return redirect()->route('order.all')
+            ->with('success', 'Order #' . $order->id . ' has been cancelled successfully. The seller has been notified.');
     }
 }

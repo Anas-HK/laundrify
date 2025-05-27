@@ -216,7 +216,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{{ route('login') }}"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
-                            <li><a class="dropdown-item" href="{{ route('register') }}"><i class="fas fa-user-plus me-2"></i>Register</a></li>
+                            <li><a class="dropdown-item" href="{{ route('register.form') }}"><i class="fas fa-user-plus me-2"></i>Register</a></li>
                         </ul>
                     @endauth
                 </div>
@@ -262,7 +262,7 @@
                     </form>
                 @else
                     <a href="{{ route('login') }}">Login</a>
-                    <a href="{{ route('register') }}">Register</a>
+                    <a href="{{ route('register.form') }}">Register</a>
                 @endauth
             </div>
         </div>

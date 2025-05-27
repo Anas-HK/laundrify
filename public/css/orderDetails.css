@@ -322,10 +322,28 @@
 }
 
 .btn-feedback:hover {
-    background: linear-gradient(145deg, var(--secondary-dark), var(--secondary));
-    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
     transform: translateY(-2px);
-    color: white;
+    box-shadow: var(--shadow);
+}
+
+.btn-cancel {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-cancel:hover {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.15);
 }
 
 .breadcrumb {

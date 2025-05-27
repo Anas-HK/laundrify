@@ -26,4 +26,19 @@ class Service extends Model
         return $this->belongsTo(Seller::class, 'seller_id');
     }
 
+    /**
+     * Get the favorites for the service.
+     */
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+    
+    /**
+     * Get the users who favorited this service.
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'service_id', 'user_id')->withTimestamps();
+    }
 }

@@ -55,6 +55,51 @@
     border-radius: 8px;
 }
 
+/* Favorite button styling */
+.favorite-btn {
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.favorite-btn i {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.favorite-btn i.fas {
+    color: #dc3545;
+    animation: heartPulse 0.3s ease-in-out;
+}
+
+@keyframes heartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.favorite-btn.active-favorite {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.favorite-btn.active-favorite i {
+    color: white;
+}
 </style>
 </head>
 <body>
@@ -123,15 +168,6 @@
                 <div class="notification-dropdown dropdown">
                     <button class="notification-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
-                        @auth
-                            @php
-                                $unreadCount = Auth::user()->unreadNotifications->count();
-                            @endphp
-
-                            @if($unreadCount > 0)
-                                <span class="notification-badge">{{ $unreadCount }}</span>
-                            @endif
-                        @endauth
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="notificationDropdown">
@@ -190,6 +226,7 @@
                             <li class="dropdown-header">Welcome, {{ Auth::user()->name }}!</li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i>Update Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('favorites.index') }}"><i class="fas fa-heart me-2"></i>My Favorites</a></li>
                             <li><a class="dropdown-item" href="{{ route('order.all') }}"><i class="fas fa-shopping-bag me-2"></i>View Your Orders</a></li>
                             <li><a class="dropdown-item" href="{{ route('order.history') }}"><i class="fas fa-history me-2"></i>Order History</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -216,7 +253,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end profile-menu" aria-labelledby="profileDropdown">
                             <li><a class="dropdown-item" href="{{ route('login') }}"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
-                            <li><a class="dropdown-item" href="{{ route('register') }}"><i class="fas fa-user-plus me-2"></i>Register</a></li>
+                            <li><a class="dropdown-item" href="{{ route('register.form') }}"><i class="fas fa-user-plus me-2"></i>Register</a></li>
                         </ul>
                     @endauth
                 </div>
@@ -247,6 +284,7 @@
                 <a href="#about">About</a>
                 @auth
                     <a href="{{ route('profile.edit') }}">Update Profile</a>
+                    <a href="{{ route('favorites.index') }}"><i class="fas fa-heart"></i> My Favorites</a>
                     <a href="{{ route('order.all') }}">View Your Orders</a>
                     <a href="{{ route('order.history') }}">Order History</a>
                     @if(Auth::user()->sellerType == 1)
@@ -262,7 +300,7 @@
                     </form>
                 @else
                     <a href="{{ route('login') }}">Login</a>
-                    <a href="{{ route('register') }}">Register</a>
+                    <a href="{{ route('register.form') }}">Register</a>
                 @endauth
             </div>
         </div>
@@ -400,6 +438,14 @@
 
                                         <div class="button-container d-flex justify-content-between mt-auto">
                                         <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
+                                            @auth
+                                            <button class="favorite-btn" 
+                                                    data-service-id="{{ $service->id }}" 
+                                                    data-is-favorited="false" 
+                                                    onclick="toggleFavorite({{ $service->id }}, this)">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                            @endauth
                                         </div>
                                     </div>
                                 </div>
@@ -519,133 +565,89 @@
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+        
+        // Check if services are favorited
+        checkFavoritedServices();
     });
-</script>
 
-<script>
-// Initialize toasts
-document.addEventListener('DOMContentLoaded', function() {
-    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
-    var toastList = toastElList.map(function(toastEl) {
-        return new bootstrap.Toast(toastEl, {
-            autohide: true,
-            delay: 5000
-        }).show();
-    });
-    
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    
-    if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('active');
-            mobileMenuBtn.querySelector('i').classList.toggle('fa-bars');
-            mobileMenuBtn.querySelector('i').classList.toggle('fa-times');
+    function checkFavoritedServices() {
+        const favoriteButtons = document.querySelectorAll('.favorite-btn');
+        favoriteButtons.forEach(button => {
+            const serviceId = button.dataset.serviceId;
+            fetch(`/favorites/is-favorited/${serviceId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isFavorited) {
+                        button.dataset.isFavorited = 'true';
+                        button.querySelector('i').classList.remove('far');
+                        button.querySelector('i').classList.add('fas');
+                        console.log('Service ' + serviceId + ' is favorited');
+                    } else {
+                        console.log('Service ' + serviceId + ' is not favorited');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking favorites:', error);
+                });
         });
     }
-});
 
-// Function to search for services
-function searchServices() {
-    let searchTerm = document.getElementById('serviceSearch').value;
-    let resultContainer = document.getElementById('searchResults');
-
-    if (searchTerm.length >= 3) {
-        fetch(`/search-services?q=${searchTerm}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
+    function toggleFavorite(serviceId, button) {
+        // Optimistic UI update - show the change immediately
+        const isFavorited = button.dataset.isFavorited === 'true';
+        const icon = button.querySelector('i');
+    
+        if (!isFavorited) {
+            // Optimistically mark as favorited
+            button.dataset.isFavorited = 'true';
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+        } else {
+            // Optimistically mark as unfavorited
+            button.dataset.isFavorited = 'false';
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+        }
+        
+        // Get CSRF token
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // Make the API call in the background
+        fetch(`/favorites/toggle/${serviceId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
             .then(data => {
-                let results = data.services || [];
-                resultContainer.innerHTML = '';
-
-                if (results.length > 0) {
-                    resultContainer.style.display = 'block';  // Show results container
-                    results.forEach(service => {
-                        let name = service.service_name || "Unnamed Service";
-                        let description = service.service_description || "No description available";
-
-                        resultContainer.innerHTML += `
-                            <div class="service-item">
-                                <h5>${name}</h5>
-                                <p>${description}</p>
-                            </div>
-                        `;
-                    });
+            // If the server response doesn't match our optimistic update, revert
+            if (data.success && data.isFavorited !== (button.dataset.isFavorited === 'true')) {
+                button.dataset.isFavorited = data.isFavorited ? 'true' : 'false';
+                if (data.isFavorited) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
                 } else {
-                    resultContainer.style.display = 'block';  // Still show container with no results message
-                    resultContainer.innerHTML = '<p class="no-results">No services found.</p>';
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
                 }
             })
             .catch(error => {
-                console.error('Error fetching search results:', error);
-                resultContainer.style.display = 'block';  // Show container with error message
-                resultContainer.innerHTML = '<p class="search-error">An error occurred while searching. Please try again.</p>';
-            });
+            console.error('Error:', error);
+            // On error, revert to original state
+            button.dataset.isFavorited = isFavorited ? 'true' : 'false';
+            if (isFavorited) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
     } else {
-        resultContainer.style.display = 'none';  // Hide results if search term is too short
-        resultContainer.innerHTML = '';
-    }
-}
-
-// Function to toggle the visibility of search results
-function toggleSearchResults() {
-    let searchTerm = document.getElementById('serviceSearch').value;
-    let resultContainer = document.getElementById('searchResults');
-    
-    if (searchTerm.length >= 3) {
-        resultContainer.style.display = 'block';  // Show only if there's a valid search term
-    }
-}
-
-// Function to handle click outside of search bar
-document.addEventListener('click', function(event) {
-    const searchBar = document.getElementById('serviceSearch');
-    const resultContainer = document.getElementById('searchResults');
-
-    // Hide results if clicked outside search bar and results container
-    if (searchBar && resultContainer && !searchBar.contains(event.target) && !resultContainer.contains(event.target)) {
-        resultContainer.style.display = 'none';
+                icon.classList.remove('fas');
+                icon.classList.add('far');
     }
 });
-
-var swiper = new Swiper('.swiper-container', {
-    slidesPerView: 1,
-    spaceBetween: 20,
-    loop: true,
-    pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-    },
-    navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-    },
-    autoplay: {
-        delay: 3000,
-    },
-    breakpoints: {
-        640: {
-            slidesPerView: 1,
-        },
-        768: {
-            slidesPerView: 2,
-        },
-        1024: {
-            slidesPerView: 3,
-        },
     }
-});
 </script>
 
 
@@ -694,5 +696,19 @@ var swiper = new Swiper('.swiper-container', {
         },
     });
 
+</script>
+
+<script>
+    // Initialize all toasts
+    document.addEventListener('DOMContentLoaded', function() {
+        var toastElements = document.querySelectorAll('.toast');
+        toastElements.forEach(function(toast) {
+            var bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: 5000
+            });
+            bsToast.show();
+        });
+    });
 </script>
 </html>
