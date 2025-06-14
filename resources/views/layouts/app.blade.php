@@ -42,7 +42,7 @@
                     <a href="{{ route('cart.view') }}" class="nav-link {{ request()->routeIs('cart.*') ? 'active' : '' }}">
                         <i class="fas fa-shopping-cart"></i> Cart
                     </a>
-                    <a href="{{ route('order.all') }}" class="nav-link {{ request()->routeIs('order.*') ? 'active' : '' }}">
+                    <a href="{{ route('orders.all') }}" class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
                         <i class="fas fa-box"></i> Orders
                     </a>
                 </div>

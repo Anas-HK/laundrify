@@ -32,7 +32,7 @@
                     </a>
                 </div>
                 <div>
-                    <a href="{{ route('order.all') }}" class="btn-contact btn-sm me-2">
+                    <a href="{{ route('orders.all') }}" class="btn-contact btn-sm me-2">
                         <i class="fas fa-box"></i> My Orders
                     </a>
                     <a href="{{ route('home') }}" class="btn-contact btn-sm">
@@ -94,7 +94,7 @@
                             </div>
                             
                             <div class="mt-4 text-center">
-                                <a href="{{ route('order.all') }}" class="btn btn-primary">
+                                <a href="{{ route('orders.all') }}" class="btn btn-primary">
                                     <i class="fas fa-arrow-left me-2"></i> Back to Orders
                                 </a>
                             </div>
@@ -104,7 +104,7 @@
                                 <div>Your feedback helps us improve our services and assists other customers in making informed decisions.</div>
                             </div>
                             
-                            <form action="{{ route('order.feedback.submit', $order->id) }}" method="POST" class="feedback-form">
+                            <form action="{{ route('orders.feedback.submit', $order->id) }}" method="POST" class="feedback-form">
                                 @csrf
                                 <div class="form-group">
                                     <label for="feedback" class="form-label">Your Feedback</label>
@@ -122,7 +122,7 @@
                                 </div>
                                 
                                 <div class="d-flex justify-content-between align-items-center mt-4">
-                                    <a href="{{ route('order.all') }}" class="btn btn-secondary">
+                                    <a href="{{ route('orders.all') }}" class="btn btn-secondary">
                                         <i class="fas fa-arrow-left me-2"></i> Back
                                     </a>
                                     <button type="submit" class="btn btn-success">

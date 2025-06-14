@@ -190,8 +190,8 @@
                             <li class="dropdown-header">Welcome, {{ Auth::user()->name }}!</li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i>Update Profile</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.all') }}"><i class="fas fa-shopping-bag me-2"></i>View Your Orders</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history') }}"><i class="fas fa-history me-2"></i>Order History</a></li>
+                            <li><a class="dropdown-item" href="{{ route('orders.all') }}"><i class="fas fa-shopping-bag me-2"></i>View Your Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fas fa-history me-2"></i>Order History</a></li>
                             <li><hr class="dropdown-divider"></li>
                             @if(Auth::user()->sellerType == 1)
                                 <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</a></li>
@@ -247,8 +247,8 @@
                 <a href="#about">About</a>
                 @auth
                     <a href="{{ route('profile.edit') }}">Update Profile</a>
-                    <a href="{{ route('order.all') }}">View Your Orders</a>
-                    <a href="{{ route('order.history') }}">Order History</a>
+                    <a href="{{ route('orders.all') }}">View Your Orders</a>
+                    <a href="{{ route('orders.history') }}">Order History</a>
                     @if(Auth::user()->sellerType == 1)
                         <a href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
                     @elseif(Auth::user()->sellerType == 3)
@@ -331,7 +331,7 @@
                                 </h5>
                                 <p class="card-text"><strong>City:</strong> {{ $seller->city }}</p>
                                 <p class="card-text"><strong>Area:</strong> {{ $seller->area }}</p>
-                                <a href="{{ route('sellers.services', $seller->id) }}" class="btn btn-primary">View Services</a>
+                                <a href="{{ route('sellers.services', ['sellerId' => $seller->id]) }}" class="btn btn-primary">View Services</a>
                             </div>
                         </div>
                     </div>
@@ -399,7 +399,7 @@
                                         </div>
 
                                         <div class="button-container d-flex justify-content-between mt-auto">
-                                        <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
+                                        <a href="{{ route('sellers.services', ['sellerId' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
                                         </div>
                                     </div>
                                 </div>

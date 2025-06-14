@@ -74,7 +74,7 @@
                             </div>
                             
                             <div class="button-container d-flex justify-content-between mt-auto">
-                                <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
+                                <a href="{{ route('sellers.services', ['sellerId' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
                                 <button class="favorite-btn active" 
                                         data-service-id="{{ $service->id }}" 
                                         onclick="removeFavorite({{ $service->id }}, this)">

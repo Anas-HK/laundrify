@@ -39,7 +39,7 @@ class OrderController extends Controller
             'feedback' => $request->feedback,
         ]);
     
-        return redirect()->route('order.history')->with('success', 'Feedback submitted successfully!');
+        return redirect()->route('orders.history')->with('success', 'Feedback submitted successfully!');
     }
     
     
@@ -283,7 +283,7 @@ class OrderController extends Controller
 
         // Check if the order can be cancelled
         if (!$order->canBeCancelled()) {
-            return redirect()->route('order.show', $order->id)
+            return redirect()->route('orders.show', $order->id)
                 ->with('error', 'This order cannot be cancelled at its current status.');
         }
 
@@ -306,7 +306,7 @@ class OrderController extends Controller
 
         // Check if the order can be cancelled
         if (!$order->canBeCancelled()) {
-            return redirect()->route('order.show', $order->id)
+            return redirect()->route('orders.show', $order->id)
                 ->with('error', 'This order cannot be cancelled at its current status.');
         }
 
@@ -324,7 +324,7 @@ class OrderController extends Controller
         // Notify the seller about the cancellation
         $order->seller->notify(new \App\Notifications\OrderCancelledNotification($order));
 
-        return redirect()->route('order.all')
+        return redirect()->route('orders.all')
             ->with('success', 'Order #' . $order->id . ' has been cancelled successfully. The seller has been notified.');
     }
 }

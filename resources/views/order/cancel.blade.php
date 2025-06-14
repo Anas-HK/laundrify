@@ -32,7 +32,7 @@
                         </div>
                     </div>
                     
-                    <form method="POST" action="{{ route('order.cancel', $order->id) }}" id="cancelOrderForm">
+                    <form method="POST" action="{{ route('orders.cancel', $order->id) }}" id="cancelOrderForm">
                         @csrf
                         
                         <div class="mb-3">
@@ -52,7 +52,7 @@
                         </div>
                         
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ route('order.show', $order->id) }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('orders.show', $order->id) }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Back to Order
                             </a>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmCancellationModal">

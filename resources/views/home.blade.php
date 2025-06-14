@@ -227,8 +227,8 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="fas fa-user-edit me-2"></i>Update Profile</a></li>
                             <li><a class="dropdown-item" href="{{ route('favorites.index') }}"><i class="fas fa-heart me-2"></i>My Favorites</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.all') }}"><i class="fas fa-shopping-bag me-2"></i>View Your Orders</a></li>
-                            <li><a class="dropdown-item" href="{{ route('order.history') }}"><i class="fas fa-history me-2"></i>Order History</a></li>
+                            <li><a class="dropdown-item" href="{{ route('orders.all') }}"><i class="fas fa-shopping-bag me-2"></i>View Your Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ route('orders.history') }}"><i class="fas fa-history me-2"></i>Order History</a></li>
                             <li><hr class="dropdown-divider"></li>
                             @if(Auth::user()->sellerType == 1)
                                 <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</a></li>
@@ -285,8 +285,8 @@
                 @auth
                     <a href="{{ route('profile.edit') }}">Update Profile</a>
                     <a href="{{ route('favorites.index') }}"><i class="fas fa-heart"></i> My Favorites</a>
-                    <a href="{{ route('order.all') }}">View Your Orders</a>
-                    <a href="{{ route('order.history') }}">Order History</a>
+                    <a href="{{ route('orders.all') }}">View Your Orders</a>
+                    <a href="{{ route('orders.history') }}">Order History</a>
                     @if(Auth::user()->sellerType == 1)
                         <a href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
                     @elseif(Auth::user()->sellerType == 3)
@@ -352,11 +352,12 @@
                         <div class="card h-100">
                             <div class="card-img-top d-flex justify-content-center align-items-center" 
                                 style="width: 120px; height: 120px; background-color: #f0f0f0; border-radius: 50%; overflow: hidden; margin: 0 auto;">
-                                @if ($seller->profile_image && file_exists(public_path('storage/' . $seller->profile_image)))
-                                    <img src="{{ asset('storage/' . $seller->profile_image) }}" alt="{{ $seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                @if ($seller->profile_image)
+                                    <img src="{{ $seller->profile_image }}" alt="{{ $seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
                                 @else
                                     <i class="fas fa-user" style="font-size: 70px; color: #aaa;"></i>
                                 @endif
+
                             </div>
                             <div class="card-body text-center">
                                 <h5 class="card-title">
@@ -369,7 +370,7 @@
                                 </h5>
                                 <p class="card-text"><strong>City:</strong> {{ $seller->city }}</p>
                                 <p class="card-text"><strong>Area:</strong> {{ $seller->area }}</p>
-                                <a href="{{ route('sellers.services', $seller->id) }}" class="btn btn-primary">View Services</a>
+                                <a href="{{ route('sellers.services', ['sellerId' => $seller->id]) }}" class="btn btn-primary">View Services</a>
                             </div>
                         </div>
                     </div>
@@ -394,11 +395,12 @@
                             <div class="col">
                                 <div class="card h-100">
                                     <div class="card-img-top d-flex justify-content-center align-items-center" style="width: 120px; height: 120px; background-color: #f0f0f0; border-radius: 50%; overflow: hidden; margin: 0 auto;">
-                                        @if ($service->seller->profile_image && file_exists(public_path('storage/' . $service->seller->profile_image)))
-                                            <img src="{{ asset('storage/' . $service->seller->profile_image) }}" alt="{{ $service->seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
-                                        @else
-                                            <i class="fas fa-user" style="font-size: 70px; color: #aaa;"></i>
-                                        @endif
+                                    @if ($service->seller->profile_image)
+                                        <img src="{{ $service->seller->profile_image }}" alt="{{ $service->seller->name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                    @else
+                                        <i class="fas fa-user" style="font-size: 70px; color: #aaa;"></i>
+                                    @endif
+
                                     </div>
 
                                     <div class="card-body d-flex flex-column">
@@ -420,11 +422,12 @@
                                         </div>
 
                                         <div class="d-flex justify-content-center" style="width: 100%; height: 200px; background-color: #f0f0f0; align-items: center; justify-content: center;">
-                                            @if ($service->image && file_exists(public_path('storage/' . $service->image)))
-                                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
-                                            @else
-                                                <i class="fas fa-image" style="font-size: 70px; color: #aaa;"></i>
-                                            @endif
+                                        @if ($service->image)
+                                            <img src="{{ $service->image }}" alt="{{ $service->service_name }}" class="img-fluid" style="object-fit: cover; width: 100%; height: 100%;">
+                                        @else
+                                            <i class="fas fa-image" style="font-size: 70px; color: #aaa;"></i>
+                                        @endif
+
                                         </div>
 
                                         <p class="card-text description-line-clamp">
@@ -437,7 +440,7 @@
                                         </div>
 
                                         <div class="button-container d-flex justify-content-between mt-auto">
-                                        <a href="{{ route('seller.services', ['seller_id' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
+                                        <a href="{{ route('sellers.services', ['sellerId' => $service->seller->id]) }}" class="btn btn-primary">Avail</a>
                                             @auth
                                             <button class="favorite-btn" 
                                                     data-service-id="{{ $service->id }}" 

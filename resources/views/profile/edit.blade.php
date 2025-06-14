@@ -32,7 +32,7 @@
                     </a>
                 </div>
                 <div>
-                    <a href="{{ route('order.all') }}" class="btn-contact btn-sm me-2">
+                    <a href="{{ route('orders.all') }}" class="btn-contact btn-sm me-2">
                         <i class="fas fa-box"></i> My Orders
                     </a>
                     <a href="{{ route('home') }}" class="btn-contact btn-sm">

@@ -16,11 +16,6 @@ use App\Http\Controllers\FavoriteController;
 
 
 
-// Default route
-Route::get('/', function () {
-    return view('welcome');
-});
-
 // Home route
 Route::get('/', [HomeController::class, 'showHomePage'])->name('home');
 
@@ -43,7 +38,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/seller/logout', [SellerController::class, 'logout'])->name('logout.seller');
 
 // Seller service routes
-Route::middleware(['auth:seller', 'check.seller.suspension'])->group(function () {
+Route::middleware(['auth:seller'])->group(function () {
     Route::put('/seller/services/{id}', [SellerServiceController::class, 'update'])->name('seller.updateService');
     Route::get('/seller/add-service', [SellerServiceController::class, 'showAddServiceForm'])->name('add.service');
     Route::post('/seller/add-service', [SellerServiceController::class, 'storeService'])->name('store.service');
@@ -56,17 +51,20 @@ Route::middleware(['auth:seller', 'check.seller.suspension'])->group(function ()
     
     // Notifications
     Route::post('/seller/notifications/mark-as-read', [SellerController::class, 'markNotificationsAsRead'])->name('seller.notifications.markAsRead');
+    
+    // Order handling
+    Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])->name('seller.order.handle');
+    Route::post('/seller/order/{order}/update-status', [OrderController::class, 'updateOrderStatus'])->name('seller.order.updateStatus');
 });
 
 // Seller Verification routes
-Route::middleware(['auth:seller', 'check.seller.suspension'])->group(function () {
+Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/verification/apply', [SellerVerificationController::class, 'showVerificationForm'])->name('seller.verification.apply');
     Route::post('/seller/verification/submit', [SellerVerificationController::class, 'submitVerificationRequest'])->name('seller.verification.submit');
     Route::get('/seller/verification/status', [SellerVerificationController::class, 'showVerificationStatus'])->name('seller.verification.status');
 });
 
 // Admin routes
-
 Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/approve-seller/{id}', [AdminController::class, 'approveSeller'])->name('admin.approveSeller');
@@ -89,20 +87,18 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])-
 Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit')->middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class]);
 Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class]);
 
+// Notification routes
 Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])->group(function () {
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 Route::post('/notifications/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-Route::get('notifications/{id}/redirect', [NotificationController::class, 'redirectToService'])->name('notifications.redirect');
-Route::post('notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::get('/notifications/{id}/redirect', [NotificationController::class, 'redirectToService'])->name('notifications.redirect');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
-Route::get('/sellers/{seller}', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
-Route::get('sellers/{sellerId}/services', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
+// Seller services routes
+Route::get('/sellers/{sellerId}/services', [ServiceController::class, 'showSellerServices'])->name('sellers.services');
 
-Route::get('services/{id}', [ServiceController::class, 'showService'])->name('service.show');
-
-// Notification route
-Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::get('/services/{id}', [ServiceController::class, 'showService'])->name('service.show');
 
 // Routes for cart functionality
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -113,31 +109,23 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])->group(function () {
     Route::get('/checkout', [OrderController::class, 'showCheckout'])->name('checkout.show');
     Route::post('/checkout', [OrderController::class, 'placeOrder'])->name('checkout.place');
-    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
-    Route::get('/order/track/{order}', [OrderController::class, 'trackOrder'])->name('order.track');
-    Route::post('/order/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('order.acceptReject');
-    Route::get('/order/history', [OrderController::class, 'history'])->name('order.history');
-    Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
+    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('orders.track');
+    Route::get('/orders/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('orders.acceptReject');
+    Route::post('/orders/{order}/accept-reject', [OrderController::class, 'acceptRejectOrder'])->name('orders.acceptReject.submit');
+    Route::get('/orders/history', [OrderController::class, 'history'])->name('orders.history');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     
     // Order cancellation routes
-    Route::get('/orders/{order}/cancel', [OrderController::class, 'showCancelForm'])->name('order.cancel.form');
-    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
+    Route::get('/orders/{order}/cancel', [OrderController::class, 'showCancelForm'])->name('orders.cancel.form');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+
+    // All orders
+    Route::get('/orders', [OrderController::class, 'allOrders'])->name('orders.all');
+    
+    // Feedback
+    Route::get('/orders/{id}/feedback', [OrderController::class, 'feedback'])->name('orders.feedback');
+    Route::post('/orders/{id}/feedback', [OrderController::class, 'submitFeedback'])->name('orders.feedback.submit');
 });
-
-// Remove this duplicate route that's causing confusion
-// Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])->name('order.handle');
-Route::post('/seller/order/{order}/update-status', [OrderController::class, 'updateOrderStatus'])->name('order.updateStatus');
-
-Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])->group(function () {
-    Route::get('/orders', [OrderController::class, 'allOrders'])->name('order.all');
-    Route::get('/orders/{order}/track', [OrderController::class, 'track'])->name('order.track');
-    // Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
-});
-
-Route::get('/sellers/{seller_id}/services', [SellerController::class, 'showServices'])->name('seller.services');
-
-
-
 
 // User (buyer) chat routes
 Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])->group(function () {
@@ -148,21 +136,12 @@ Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])-
 });
 
 // Seller chat routes
-Route::middleware(['auth:seller', 'check.seller.suspension'])->group(function () {
+Route::middleware(['auth:seller'])->group(function () {
     Route::get('/seller/chat/{order}', [MessageController::class, 'chat'])->name('seller.chat.index');
     Route::post('/seller/chat/{order}/send', [MessageController::class, 'send'])->name('seller.chat.send');
     Route::post('/seller/chat/{order}/read', [MessageController::class, 'markAsRead'])->name('seller.chat.mark-read');
     Route::get('/seller/chat/{order}/messages', [MessageController::class, 'getMessages'])->name('seller.chat.get-messages');
 });
-
-
-Route::get('/order/{id}/feedback', [OrderController::class, 'feedback'])->name('order.feedback');
-Route::post('/order/{id}/feedback', [OrderController::class, 'submitFeedback'])->name('order.feedback.submit');
-
-
-Route::get('/seller/order/{order}/handle', [OrderController::class, 'handleOrder'])
-    ->name('seller.order.handle')
-    ->middleware(['auth:seller', 'check.seller.suspension']);
 
 // Favorites routes
 Route::middleware(['auth', \App\Http\Middleware\CheckAccountSuspension::class])->group(function () {

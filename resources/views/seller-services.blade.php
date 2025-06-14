@@ -382,7 +382,8 @@
                             <div class="service-card">
                                 <div class="service-img-container">
                                     @if($service->image)
-                                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="service-img">
+                                        <img src="{{ $service->image }}" alt="{{ $service->service_name }}" class="service-img">
+
                                     @else
                                         <div class="d-flex justify-content-center align-items-center h-100" style="background-color: #f5f5f5;">
                                             <i class="fas fa-shirt" style="font-size: 3rem; color: #ddd;"></i>

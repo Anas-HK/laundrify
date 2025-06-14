@@ -302,7 +302,7 @@
                     <a href="{{ route('cart.view') }}" class="nav-link">
                         <i class="fas fa-shopping-cart"></i> Cart
                     </a>
-                    <a href="{{ route('order.all') }}" class="nav-link active">
+                    <a href="{{ route('orders.all') }}" class="nav-link active">
                         <i class="fas fa-box"></i> Orders
                     </a>
                 </div>
@@ -367,11 +367,11 @@
                                         <div class="order-date">{{ $order->created_at->format('h:i A') }}</div>
                                     </td>
                                     <td>
-                                        <a href="{{ route('order.track', $order) }}" class="track-button">
+                                        <a href="{{ route('orders.track', $order) }}" class="track-button">
                                             <i class="fas fa-truck"></i> Track
                                         </a>
                                         @if(in_array($order->status, ['pending', 'accepted']))
-                                        <a href="{{ route('order.cancel.form', $order) }}" class="cancel-button">
+                                        <a href="{{ route('orders.cancel.form', $order) }}" class="cancel-button">
                                             <i class="fas fa-times-circle"></i> Cancel
                                         </a>
                                         @endif

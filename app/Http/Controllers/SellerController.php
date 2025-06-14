@@ -24,6 +24,10 @@ class SellerController extends Controller
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email is already registered. Please use a different email.',
             'email.max' => 'Email cannot exceed 255 characters.',
+            'profile_image.required' => 'Profile image is required.',
+            'profile_image.image' => 'The file must be an image.',
+            'profile_image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif, svg.',
+            'profile_image.max' => 'The image size cannot exceed 2MB.',
         ];
         
         $request->validate([
@@ -65,10 +69,39 @@ class SellerController extends Controller
                 return back()->withInput()->withErrors($errors);
             }
             
+            $imagePath = null;
+            
+            // Handle profile image upload with better error handling
             if ($request->hasFile('profile_image')) {
-                $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+                $image = $request->file('profile_image');
+                
+                // Double-check if the file is valid
+                if ($image->isValid()) {
+                    try {
+                        // Create the directory if it doesn't exist
+                        $directory = storage_path('app/public/profile_images');
+                        if (!file_exists($directory)) {
+                            mkdir($directory, 0775, true);
+                        }
+                        
+                        // Store the image with a unique name
+                        $imagePath = $image->store('profile_images', 'public');
+                        
+                        // Verify the file was actually saved
+                        if (!file_exists(storage_path('app/public/' . $imagePath))) {
+                            throw new \Exception("Failed to save image to storage.");
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Profile image upload failed: ' . $e->getMessage());
+                        return back()->withInput()->withErrors(['profile_image' => 'Failed to upload profile image. Please try again.']);
+                    }
+                } else {
+                    \Log::error('Invalid profile image provided');
+                    return back()->withInput()->withErrors(['profile_image' => 'The provided image file is invalid.']);
+                }
             } else {
-                $imagePath = null;
+                \Log::error('No profile image provided');
+                return back()->withInput()->withErrors(['profile_image' => 'Profile image is required.']);
             }
         
             $seller = Seller::create([
@@ -84,6 +117,7 @@ class SellerController extends Controller
             // Return to registration page with success parameter
             return redirect()->route('register.seller', ['registration' => 'success']);
         } catch (\Exception $e) {
+            \Log::error('Seller registration failed: ' . $e->getMessage());
             return back()->withInput()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
         }
     }

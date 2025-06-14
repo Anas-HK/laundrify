@@ -34,7 +34,7 @@ class MessageController extends Controller
         // Different back URLs for buyer and seller
         $backUrl = $isSeller 
             ? route('seller.order.handle', $order->id) // Seller back URL
-            : route('order.track', $order->id);        // Buyer back URL
+            : route('orders.track', $order->id);        // Buyer back URL
         
         return view('chat.index', compact('order', 'messages', 'isSeller', 'backUrl'));
     }

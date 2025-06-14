@@ -291,7 +291,7 @@
                             @foreach($services as $service)
                                 <div class="service-card">
                                     <div class="service-image">
-                                        <img src="{{ Storage::url($service->image) }}" alt="{{ $service->service_name }}" class="service-img">
+                                    <img src="{{ $service->image }}" alt="{{ $service->service_name }}" class="service-img">
                                         <div class="service-overlay">
                                             <div class="service-actions">
                                                 <a href="{{ route('seller.editService', $service->id) }}" class="btn btn-sm btn-light">

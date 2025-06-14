@@ -39,7 +39,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('order.history') }}">Order History</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('orders.history') }}">Order History</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Order #{{ $order->id }}</li>
                     </ol>
                 </nav>
@@ -148,7 +148,7 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted mb-3">Share your experience with this service to help other customers make better decisions.</p>
-                        <a href="{{ route('order.feedback', $order->id) }}" class="action-btn btn-feedback">
+                        <a href="{{ route('orders.feedback', $order->id) }}" class="action-btn btn-feedback">
                             <i class="fas fa-comment"></i> Write a Review
                         </a>
                     </div>
@@ -238,12 +238,12 @@
                     </div>
                     <div class="card-body">
                         <div class="action-buttons">
-                            <a href="{{ route('order.track', $order->id) }}" class="action-btn mb-3">
+                            <a href="{{ route('orders.track', $order->id) }}" class="action-btn mb-3">
                                 <i class="fas fa-map-marker-alt"></i> Track Order
                             </a>
                             
                             @if(in_array($order->status, ['pending', 'accepted']))
-                            <a href="{{ route('order.cancel.form', $order->id) }}" class="action-btn btn-cancel mb-3">
+                            <a href="{{ route('orders.cancel.form', $order->id) }}" class="action-btn btn-cancel mb-3">
                                 <i class="fas fa-times-circle"></i> Cancel Order
                             </a>
                             @endif
