@@ -33,7 +33,7 @@ To get started with the project locally:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/laundrify.git
+   git clone https://github.com/Anas-HK/laundrify.git
    
 2. Navidate the Project Directory
    ```bash
